@@ -1,4 +1,4 @@
-# iFM uniApp+SSM
+# iFM uniApp+SpringBoot
  播客App 前后端分离小程序项目
 
 前端技术栈:
