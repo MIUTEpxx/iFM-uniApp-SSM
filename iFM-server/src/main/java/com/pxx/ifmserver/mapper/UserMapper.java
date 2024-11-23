@@ -12,13 +12,7 @@ public interface UserMapper {
      * 获取所有用户的数据。
      * @return 返回一个包含所有用户数据的List<User>列表。
      */
-    @Select("SELECT " +
-            "user_id AS userId, " +
-            "user_name AS userName, " +
-            "user_password AS userPassword, " +
-            "user_email AS userEmail, " +
-            "user_picture AS userPicture " +
-            "FROM user")
+    @Select("SELECT * FROM user")
     List<User> listUser();
 
 
@@ -27,13 +21,22 @@ public interface UserMapper {
      * @param userId 用户ID，作为查询条件。
      * @return 返回一个User对象，包含用户的所有基本信息。
      */
-    @Select("SELECT " +
+/*    @Select("SELECT " +
             "user_id AS userId, " +
             "user_name AS userName, " +
             "user_password AS userPassword, " +
             "user_email AS userEmail, " +
             "user_picture AS userPicture " +
             "FROM user WHERE user_id = #{userId}")
+    User getUserByUserId(Integer userId);*/
+
+
+    /**
+     * 根据用户ID查询用户信息。
+     * @param userId 用户ID，作为查询条件。
+     * @return 返回一个User对象，包含用户的所有基本信息。
+     */
+    @Select("SELECT * FROM user WHERE user_id = #{userId}")
     User getUserByUserId(Integer userId);
 
 
@@ -42,13 +45,7 @@ public interface UserMapper {
      * @param userEmail 用户ID，作为查询条件。
      * @return 返回一个User对象，包含用户的所有基本信息。
      */
-    @Select("SELECT " +
-            "user_id AS userId, " +
-            "user_name AS userName, " +
-            "user_password AS userPassword, " +
-            "user_email AS userEmail, " +
-            "user_picture AS userPicture " +
-            "FROM user WHERE user_email = #{userEmail}")
+    @Select("SELECT * FROM user WHERE user_email = #{userEmail}")
     User getUserByUserEmail(String userEmail);
 
 
@@ -57,13 +54,7 @@ public interface UserMapper {
      * @param userName 用户ID，作为查询条件。
      * @return 返回一个User对象，包含用户的所有基本信息。
      */
-    @Select("SELECT " +
-            "user_id AS userId, " +
-            "user_name AS userName, " +
-            "user_password AS userPassword, " +
-            "user_email AS userEmail, " +
-            "user_picture AS userPicture " +
-            "FROM user WHERE user_name = #{userName}")
+    @Select("SELECT * FROM user WHERE user_name = #{userName}")
     User getUserByUserName(String userName);
 
 

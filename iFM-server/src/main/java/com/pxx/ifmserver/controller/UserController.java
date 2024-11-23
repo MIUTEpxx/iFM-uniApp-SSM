@@ -140,9 +140,9 @@ public class UserController {
     }
 
 
-    /*
+    /**
      * 检测邮箱格式是否正确,然后向该邮箱发送验证码
-     * @param 邮箱字符串
+     * @param email 邮箱字符串
      * @return 1/-1
      */
     @GetMapping("/getVCode")
@@ -168,11 +168,11 @@ public class UserController {
         return ResponseEntity.ok("1");
     }
 
-    /*
+    /**
      * 验证码验证
      */
-    @GetMapping("/verify")
-    public ResponseEntity<String> verify(@RequestParam String email,@RequestParam String vCodeReceive) {
+    @GetMapping("/verifyEmail")
+    public ResponseEntity<String> verifyEmail(@RequestParam String email,@RequestParam String vCodeReceive) {
         if ((vCode.containsKey(email) && vCode.get(email).equals(vCodeReceive))) {
             // 验证成功后，删除验证码和定时任务
             vCode.remove(email);
@@ -182,9 +182,9 @@ public class UserController {
         }
     }
 
-    /*
+    /**
      * 邮箱正确性检测
-     * @param 邮箱字符串
+     * @param email 邮箱字符串
      * @return true/false
      */
     private boolean isEmail(String email) {

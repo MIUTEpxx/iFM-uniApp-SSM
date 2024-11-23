@@ -4,6 +4,7 @@ import com.pxx.ifmserver.entity.dto.User;
 import com.pxx.ifmserver.mapper.UserMapper;
 import com.pxx.ifmserver.result.Result;
 import com.pxx.ifmserver.service.UserService;
+import com.pxx.ifmserver.utils.PictureUtil;
 import com.pxx.ifmserver.utils.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -17,13 +18,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class UserServiceImpl implements UserService {
+    //用户头像储存的目录常量
+    private static final String USER_HEAD_PICTURE_PATH="/resources/images/user/head/";
+
     @Autowired
     private UserMapper userMapper;
     @Override
@@ -65,19 +68,19 @@ public class UserServiceImpl implements UserService {
      * 最后更新数据库中对应的用户信息
      *
      * @param userId 用户ID
-     * @param file 头像图片文件
+     * @param userPicture 头像图片文件
      * @return 成功则返回新头像路径,失败则返回错误信息
      */
     @Override
-    public Result updateUserPicurlByUserId(Integer userId, MultipartFile file){
+    public Result updateUserPicurlByUserId(Integer userId, MultipartFile userPicture){
         Map<String, Object> data = new HashMap<>();
-        if (file.isEmpty()) {
+        if (userPicture.isEmpty()) {
             data.put("error","文件为空");
             Result result = new Result(false,70000,"文件上传失败",data);
             return result;
         }
         try {
-            //获取时间戳,用于组成图片名称
+           /* //获取时间戳,用于组成图片名称
             long currentTimestamp = System.currentTimeMillis() / 1000;
             String timestampString = String.valueOf(currentTimestamp);
             // 构建完整的文件路径
@@ -90,18 +93,22 @@ public class UserServiceImpl implements UserService {
                 Files.delete(destinationFile);
             }
             // 保存新文件
-            file.transferTo(destinationFile.toFile());
-
-            //删除旧头像图片
-            String oldPicUrl = userMapper.getUserByUserId(userId).getUserPicture();//获取旧头像
-            if(oldPicUrl.length() >= 5 && oldPicUrl.charAt(oldPicUrl.length() - 5) != 'D'){
+            userPicture.transferTo(destinationFile.toFile());*/
+            /* if(oldPicUrl.length() >= 5 && oldPicUrl.charAt(oldPicUrl.length() - 5) != 'D'){
                 //若不是默认头像D.png则删除
                 destinationFile=Paths.get(directory.getCanonicalPath()+"/src/main/resources/static" +oldPicUrl);
                 // 检查文件是否存在，如果存在则删除
                 if (Files.exists(destinationFile)) {
                     Files.delete(destinationFile);
                 }
-            }
+            }*/
+            //储存新头像文件
+            String filename=PictureUtil.savePicture(userId,userPicture,USER_HEAD_PICTURE_PATH);
+
+            //删除旧头像图片
+            String oldPicture = userMapper.getUserByUserId(userId).getUserPicture();//获取旧头像储存路径
+            PictureUtil.deletePicture(oldPicture);
+
 
             try {
                 // 更新数据库
@@ -123,7 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 向数据库user表插入新的用户信息记录
+     * 向数据库user表插入新的用户信息记录(用户注册)
      * 依次检查昵称,邮箱是否被使用
      * 最后尝试插入数据库user表中,成功则返回用户信息,失败返回错误信息
      *
@@ -148,7 +155,6 @@ public class UserServiceImpl implements UserService {
         try {
             user.setUserPicture("/images/user/head/D.png");//默认头像
             userMapper.insertUser(user);
-            user.setUserId(userMapper.getUserByUserEmail(user.getUserEmail()).getUserId());
             data.put("user",user);
             return  Result.ok().data(data);
         } catch (DuplicateKeyException e) {
