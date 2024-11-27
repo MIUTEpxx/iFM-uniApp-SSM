@@ -7,13 +7,13 @@
 			}
 		},
 		{
-			"path": "pages/community/index",
+			"path": "pages/community/community",
 			"style": {
 				"navigationBarTitleText": "社区"
 			}
 		},
 		{
-			"path": "pages/my/index",
+			"path": "pages/my/my",
 			"style": {
 				"navigationBarTitleText": "个人中心"
 			}
@@ -37,11 +37,11 @@
 					"text": "主页"
 	            },
 	            {
-	                "pagePath": "pages/community/index",
+	                "pagePath": "pages/community/community",
 					"text": "社区"
 	            },
 	            {
-	                "pagePath": "pages/my/index",
+	                "pagePath": "pages/my/my",
 					"text": "个人"
 	            }
 	        ]
