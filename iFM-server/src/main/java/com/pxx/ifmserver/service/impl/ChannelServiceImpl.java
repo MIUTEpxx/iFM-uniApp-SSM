@@ -3,12 +3,15 @@ package com.pxx.ifmserver.service.impl;
 
 import com.pxx.ifmserver.entity.dto.Channel;
 import com.pxx.ifmserver.entity.dto.Hashtag;
+import com.pxx.ifmserver.entity.dto.User;
+import com.pxx.ifmserver.entity.vo.ChannelItemVO;
 import com.pxx.ifmserver.entity.vo.ChannelVO;
 import com.pxx.ifmserver.mapper.ChannelMapper;
 import com.pxx.ifmserver.mapper.HashtagMapper;
+import com.pxx.ifmserver.mapper.UserMapper;
 import com.pxx.ifmserver.result.Result;
 import com.pxx.ifmserver.service.ChannelService;
-import com.pxx.ifmserver.utils.PictureUtil;
+import com.pxx.ifmserver.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
@@ -27,9 +30,10 @@ public class ChannelServiceImpl implements ChannelService {
     private ChannelMapper channelMapper;
     @Autowired
     private HashtagMapper hashtagMapper;
-
+    @Autowired
+    private UserMapper userMapper;
     /**
-     * 根据频道Id获取该频道信息
+     * 根据频道Id获取该频道详细信息
      * 其中频道基本信息和频道主题标签信息分贝获取再整合
      * @param channelId 频道id
      * @return 频道信息
@@ -46,9 +50,12 @@ public class ChannelServiceImpl implements ChannelService {
             }
             //获取频道主题标签信息
             List<Hashtag> channelHashtag = channelMapper.listHashtagByChannelId(channelId);
-            //整合 频道基本信息+频道主题标签信息
+            //获取频道作者用户信息
+            User user=userMapper.getUserByUserId(channel.getUserId());
+            //整合 频道基本信息+频道主题标签信息+作者基本信息
             ChannelVO channelVO = new ChannelVO();
             channelVO.setChannel(channel);
+            channelVO.setUser(user);
             channelVO.setChannelHashtag(channelHashtag);
             //将频道信息存入返回体的数据部分
             data.put("channel", channelVO);
@@ -70,21 +77,25 @@ public class ChannelServiceImpl implements ChannelService {
     public Result listChannelByUserId(Integer userId){
         Map<String, Object> data = new HashMap<>();
         try{
+            //获取用户昵称
+            String userName=userMapper.getUserByUserId(userId).getUserName();
             //获取用户创建的所有频道信息列表
-            List<Channel> channels = channelMapper.listChannelByUserId(userId);
-            List<ChannelVO> channelVOLst = new ArrayList<>();
+            List<Channel> channelList = channelMapper.listChannelByUserId(userId);
+            List<ChannelItemVO> ChannelItemVOLst = new ArrayList<>();
             //将频道信息存入返回体的数据部分
-            for (Channel channel : channels) {
+            for (Channel channel : channelList) {
                 //获取每个频道的主题标签
                 List<Hashtag> channelHashtag = channelMapper.listHashtagByChannelId(channel.getChannelId());
-                ChannelVO channelVO = new ChannelVO();
+                ChannelItemVO channelItemVO = new ChannelItemVO();
                 //整合频道信息数据
-                channelVO.setChannel(channel);
+                channelItemVO.setChannel(channel);
+                //用户昵称
+                channelItemVO.setChannelHashtag(channelHashtag);
                 //整合频道主题标签数据
-                channelVO.setChannelHashtag(channelHashtag);
-                channelVOLst.add(channelVO);
+                channelItemVO.setChannelHashtag(channelHashtag);
+                ChannelItemVOLst.add(channelItemVO);
             }
-            data.put("channelList", channelVOLst);
+            data.put("ChannelItemVOLst", ChannelItemVOLst);
             return Result.ok().data(data);
         }catch (RuntimeException e){
             data.put("error", e.getMessage());
@@ -131,7 +142,7 @@ public class ChannelServiceImpl implements ChannelService {
             //储存频道封面图片并获得图片文件名称
             String pictureFileName;
             try {
-                pictureFileName = PictureUtil.savePicture(channel.getChannelId(),channelPicture,CHANNEL_PICTURE_PATH);
+                pictureFileName = FileUtils.savePicture(channel.getChannelId(),channelPicture,CHANNEL_PICTURE_PATH);
             } catch (IOException e) {
                 data.put("error.message", e.getMessage());
                 data.put("channelId",channel.getChannelId());//返回频道ID
@@ -181,9 +192,9 @@ public class ChannelServiceImpl implements ChannelService {
             String oldPicture = channelMapper.getChannelByChannelId(channelId).getChannelPicture();
             try {
                 //储存新图片文件并获取文件名称
-                pictureFileName = PictureUtil.savePicture(channelId,channelPicture,CHANNEL_PICTURE_PATH);
+                pictureFileName = FileUtils.savePicture(channelId,channelPicture,CHANNEL_PICTURE_PATH);
                 //删除旧图片
-                PictureUtil.deletePicture(oldPicture);
+                FileUtils.deletePicture(oldPicture);
             } catch (IOException e) {
                 data.put("error.message", e.getMessage());
                 return new Result(false,20001,"未知错误,封面图片上传失败",data);
@@ -298,20 +309,23 @@ public class ChannelServiceImpl implements ChannelService {
         Map<String, Object> data = new HashMap<>();
         try {
             //获取36小时内更新过节目的频道
-            List<Channel> channelList=channelMapper.listChannelsUpdatedWithin36HoursSortedBySubscribe();
+            List<Channel> channelList=channelMapper.listPopularChannel();
             //将频道信息存入返回体的数据部分
-            List<ChannelVO> channelVOLst = new ArrayList<>();
+            List<ChannelItemVO> ChannelItemVOLst = new ArrayList<>();
+            //将频道信息存入返回体的数据部分
             for (Channel channel : channelList) {
                 //获取每个频道的主题标签
                 List<Hashtag> channelHashtag = channelMapper.listHashtagByChannelId(channel.getChannelId());
-                ChannelVO channelVO = new ChannelVO();
+                ChannelItemVO channelItemVO = new ChannelItemVO();
                 //整合频道信息数据
-                channelVO.setChannel(channel);
+                channelItemVO.setChannel(channel);
+                //用户昵称
+                channelItemVO.setChannelHashtag(channelHashtag);
                 //整合频道主题标签数据
-                channelVO.setChannelHashtag(channelHashtag);
-                channelVOLst.add(channelVO);
+                channelItemVO.setChannelHashtag(channelHashtag);
+                ChannelItemVOLst.add(channelItemVO);
             }
-            data.put("channelList", channelVOLst);
+            data.put("ChannelItemVOLst", ChannelItemVOLst);
         }catch (RuntimeException e){
             data.put("error.message", e.getMessage());
             return new Result(false,20001,"未知错误",data);
@@ -351,10 +365,12 @@ public class ChannelServiceImpl implements ChannelService {
             if(channelMapper.checkChannelSubscriptionById(userId,channelId)){
                 //取消订阅,返回订阅结果:false
                 channelMapper.deleteChannelSubscriptionById(userId,channelId);
+                channelMapper.updateChannelSubscribeByChannelId(channelId,-1);
                 data.put("subscription",false);
             }else{
                 //订阅频道,返回订阅结果:true
                 channelMapper.insertChannelSubscription(userId,channelId);
+                channelMapper.updateChannelSubscribeByChannelId(channelId,1);
                 data.put("subscription",true);
             }
         }catch (RuntimeException e){
@@ -383,18 +399,21 @@ public class ChannelServiceImpl implements ChannelService {
                 }
             }
             //将频道信息存入返回体的数据部分
-            List<ChannelVO> channelVOLst = new ArrayList<>();
+            List<ChannelItemVO> ChannelItemVOLst = new ArrayList<>();
+            //将频道信息存入返回体的数据部分
             for (Channel channel : channelList) {
                 //获取每个频道的主题标签
                 List<Hashtag> channelHashtag = channelMapper.listHashtagByChannelId(channel.getChannelId());
-                ChannelVO channelVO = new ChannelVO();
+                ChannelItemVO channelItemVO = new ChannelItemVO();
                 //整合频道信息数据
-                channelVO.setChannel(channel);
+                channelItemVO.setChannel(channel);
+                //用户昵称
+                channelItemVO.setChannelHashtag(channelHashtag);
                 //整合频道主题标签数据
-                channelVO.setChannelHashtag(channelHashtag);
-                channelVOLst.add(channelVO);
+                channelItemVO.setChannelHashtag(channelHashtag);
+                ChannelItemVOLst.add(channelItemVO);
             }
-            data.put("channelList", channelVOLst);
+            data.put("ChannelItemVOLst", ChannelItemVOLst);
             return Result.ok().data(data);
         }catch (RuntimeException e){
             data.put("error", e.getMessage());
@@ -412,20 +431,23 @@ public class ChannelServiceImpl implements ChannelService {
         Map<String, Object> data = new HashMap<>();
         try{
             //根据关键词获取频道数据
-            List<Channel> channels = channelMapper.listChannelsByKeyWord(keyWord);
+            List<Channel> channelList = channelMapper.listChannelByKeyWord(keyWord);
             //将频道信息存入返回体的数据部分
-            List<ChannelVO> channelVOLst = new ArrayList<>();
-            for (Channel channel : channels) {
+            List<ChannelItemVO> ChannelItemVOLst = new ArrayList<>();
+            //将频道信息存入返回体的数据部分
+            for (Channel channel : channelList) {
                 //获取每个频道的主题标签
                 List<Hashtag> channelHashtag = channelMapper.listHashtagByChannelId(channel.getChannelId());
-                ChannelVO channelVO = new ChannelVO();
+                ChannelItemVO channelItemVO = new ChannelItemVO();
                 //整合频道信息数据
-                channelVO.setChannel(channel);
+                channelItemVO.setChannel(channel);
+                //用户昵称
+                channelItemVO.setChannelHashtag(channelHashtag);
                 //整合频道主题标签数据
-                channelVO.setChannelHashtag(channelHashtag);
-                channelVOLst.add(channelVO);
+                channelItemVO.setChannelHashtag(channelHashtag);
+                ChannelItemVOLst.add(channelItemVO);
             }
-            data.put("channelList", channelVOLst);
+            data.put("ChannelItemVOLst", ChannelItemVOLst);
             return Result.ok().data(data);
         }catch (RuntimeException e){
             data.put("error", e.getMessage());

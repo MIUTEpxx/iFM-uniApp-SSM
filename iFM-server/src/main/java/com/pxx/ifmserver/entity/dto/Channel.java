@@ -10,6 +10,7 @@ public class Channel {
     private String          channelTitle;
     private String          channelDetail;
     private Integer         channelSubscribe;
+    private Integer         channelPostCount;
     private LocalDateTime   channelUpdateTime;
     private LocalDateTime   gmtCreate;
     private Integer         userId;

@@ -13,7 +13,7 @@ public interface ChannelMapper {
 
     /**
      * 获取所有频道的数据。
-     * @return 返回一个包含所有用户数据的List<Channel>列表。
+     * @return 返回一个包含所有频道数据的List<Channel>列表。
      */
     @Select("SELECT * FROM channel")
     List<Channel> listChannel();
@@ -33,12 +33,12 @@ public interface ChannelMapper {
      */
     @Select("SELECT * FROM channel WHERE channel_title LIKE CONCAT('%', #{keyWord}, '%') " +
             "OR channel_detail LIKE CONCAT('%', #{keyWord}, '%')")
-    List<Channel> listChannelsByKeyWord(@Param("keyWord") String keyWord);
+    List<Channel> listChannelByKeyWord(@Param("keyWord") String keyWord);
 
     /**
-     * 根据用户ID,查询用户创建的频道ID
+     * 根据用户ID,查询用户创建的频道
      * @param userId 用户ID
-     * @return 频道ID列表
+     * @return 频道数据列表
      */
     @Select("SELECT * FROM channel WHERE user_id = #{userId}")
     List<Channel> listChannelByUserId(Integer userId);
@@ -76,7 +76,7 @@ public interface ChannelMapper {
      * @return 36小时内更新过节目的频道列表
      */
     @Select("SELECT * FROM channel WHERE channel_update_time > NOW() - INTERVAL 36 HOUR ORDER BY channel_subscribe DESC LIMIT 20")
-    List<Channel> listChannelsUpdatedWithin36HoursSortedBySubscribe();
+    List<Channel> listPopularChannel();
 
 
     /**
@@ -110,6 +110,7 @@ public interface ChannelMapper {
     @Insert({"INSERT INTO channel_subscription(channel_id,user_id) VALUES (#{channelId},#{userId})"})
     int insertChannelSubscription(Integer userId,Integer channelId);
 
+
     /**
      * 根据频道ID更新对应频道的封面图片路径。
      * @param channelId，作为查询条件。
@@ -140,11 +141,19 @@ public interface ChannelMapper {
     /**
      * 更新频道的上一次节目更新时间
      * @param channelId
-     * @param channelUpdateTime
      * @return
      */
-    @Update("UPDATE channel SET channel_update_tiem = #{channelUpdateTime} WHERE channel_id={channelId}")
-    int updateChannelUpdateTimeByChannelId(Integer channelId, LocalDateTime channelUpdateTime);
+    @Update("UPDATE channel SET channel_update_time = NOW() WHERE channel_id=#{channelId}")
+    int updateChannelUpdateTimeByChannelId(Integer channelId);
+
+    /**
+     * 更新界面订阅数
+     * @param channelId
+     * @param num
+     * @return
+     */
+    @Update("UPDATE channel SET channel_subscribe = channel_subscribe + #{num} WHERE channel_id=#{channelId}")
+    int updateChannelSubscribeByChannelId(Integer channelId, Integer num);
 
     /**
      * 根据频道ID删除对应的频道。

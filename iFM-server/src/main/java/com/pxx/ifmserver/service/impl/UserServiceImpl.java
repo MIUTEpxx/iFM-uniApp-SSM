@@ -4,19 +4,15 @@ import com.pxx.ifmserver.entity.dto.User;
 import com.pxx.ifmserver.mapper.UserMapper;
 import com.pxx.ifmserver.result.Result;
 import com.pxx.ifmserver.service.UserService;
-import com.pxx.ifmserver.utils.PictureUtil;
+import com.pxx.ifmserver.utils.FileUtils;
 import com.pxx.ifmserver.utils.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
@@ -103,11 +99,11 @@ public class UserServiceImpl implements UserService {
                 }
             }*/
             //储存新头像文件
-            String filename=PictureUtil.savePicture(userId,userPicture,USER_HEAD_PICTURE_PATH);
+            String filename= FileUtils.savePicture(userId,userPicture,USER_HEAD_PICTURE_PATH);
 
             //删除旧头像图片
             String oldPicture = userMapper.getUserByUserId(userId).getUserPicture();//获取旧头像储存路径
-            PictureUtil.deletePicture(oldPicture);
+            FileUtils.deletePicture(oldPicture);
 
 
             try {
