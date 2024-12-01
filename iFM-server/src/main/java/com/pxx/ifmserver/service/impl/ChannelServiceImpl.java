@@ -81,7 +81,7 @@ public class ChannelServiceImpl implements ChannelService {
             String userName=userMapper.getUserByUserId(userId).getUserName();
             //获取用户创建的所有频道信息列表
             List<Channel> channelList = channelMapper.listChannelByUserId(userId);
-            List<ChannelItemVO> ChannelItemVOLst = new ArrayList<>();
+            List<ChannelItemVO> channelItemVOList = new ArrayList<>();
             //将频道信息存入返回体的数据部分
             for (Channel channel : channelList) {
                 //获取每个频道的主题标签
@@ -90,12 +90,12 @@ public class ChannelServiceImpl implements ChannelService {
                 //整合频道信息数据
                 channelItemVO.setChannel(channel);
                 //用户昵称
-                channelItemVO.setChannelHashtag(channelHashtag);
+                channelItemVO.setUserName(userName);
                 //整合频道主题标签数据
                 channelItemVO.setChannelHashtag(channelHashtag);
-                ChannelItemVOLst.add(channelItemVO);
+                channelItemVOList.add(channelItemVO);
             }
-            data.put("ChannelItemVOLst", ChannelItemVOLst);
+            data.put("channelList", channelItemVOList);
             return Result.ok().data(data);
         }catch (RuntimeException e){
             data.put("error", e.getMessage());
@@ -311,21 +311,22 @@ public class ChannelServiceImpl implements ChannelService {
             //获取36小时内更新过节目的频道
             List<Channel> channelList=channelMapper.listPopularChannel();
             //将频道信息存入返回体的数据部分
-            List<ChannelItemVO> ChannelItemVOLst = new ArrayList<>();
+            List<ChannelItemVO> channelItemVOList = new ArrayList<>();
             //将频道信息存入返回体的数据部分
             for (Channel channel : channelList) {
                 //获取每个频道的主题标签
                 List<Hashtag> channelHashtag = channelMapper.listHashtagByChannelId(channel.getChannelId());
+                User user = userMapper.getUserByUserId(channel.getUserId());
                 ChannelItemVO channelItemVO = new ChannelItemVO();
                 //整合频道信息数据
                 channelItemVO.setChannel(channel);
                 //用户昵称
-                channelItemVO.setChannelHashtag(channelHashtag);
+                channelItemVO.setUserName(user.getUserName());
                 //整合频道主题标签数据
                 channelItemVO.setChannelHashtag(channelHashtag);
-                ChannelItemVOLst.add(channelItemVO);
+                channelItemVOList.add(channelItemVO);
             }
-            data.put("ChannelItemVOLst", ChannelItemVOLst);
+            data.put("channelList", channelItemVOList);
         }catch (RuntimeException e){
             data.put("error.message", e.getMessage());
             return new Result(false,20001,"未知错误",data);
@@ -399,21 +400,22 @@ public class ChannelServiceImpl implements ChannelService {
                 }
             }
             //将频道信息存入返回体的数据部分
-            List<ChannelItemVO> ChannelItemVOLst = new ArrayList<>();
+            List<ChannelItemVO> channelItemVOList = new ArrayList<>();
             //将频道信息存入返回体的数据部分
             for (Channel channel : channelList) {
                 //获取每个频道的主题标签
                 List<Hashtag> channelHashtag = channelMapper.listHashtagByChannelId(channel.getChannelId());
                 ChannelItemVO channelItemVO = new ChannelItemVO();
+                User user = userMapper.getUserByUserId(channel.getUserId());
                 //整合频道信息数据
                 channelItemVO.setChannel(channel);
                 //用户昵称
-                channelItemVO.setChannelHashtag(channelHashtag);
+                channelItemVO.setUserName(user.getUserName());
                 //整合频道主题标签数据
                 channelItemVO.setChannelHashtag(channelHashtag);
-                ChannelItemVOLst.add(channelItemVO);
+                channelItemVOList.add(channelItemVO);
             }
-            data.put("ChannelItemVOLst", ChannelItemVOLst);
+            data.put("channelList", channelItemVOList);
             return Result.ok().data(data);
         }catch (RuntimeException e){
             data.put("error", e.getMessage());
@@ -433,21 +435,76 @@ public class ChannelServiceImpl implements ChannelService {
             //根据关键词获取频道数据
             List<Channel> channelList = channelMapper.listChannelByKeyWord(keyWord);
             //将频道信息存入返回体的数据部分
-            List<ChannelItemVO> ChannelItemVOLst = new ArrayList<>();
+            List<ChannelItemVO> channelItemVOList = new ArrayList<>();
             //将频道信息存入返回体的数据部分
             for (Channel channel : channelList) {
+                //获取每个频道的主题标签
+                List<Hashtag> channelHashtag = channelMapper.listHashtagByChannelId(channel.getChannelId());
+                ChannelItemVO channelItemVO = new ChannelItemVO();
+                User user = userMapper.getUserByUserId(channel.getUserId());
+                //整合频道信息数据
+                channelItemVO.setChannel(channel);
+                //用户昵称
+                channelItemVO.setUserName(user.getUserName());
+                //整合频道主题标签数据
+                channelItemVO.setChannelHashtag(channelHashtag);
+                channelItemVOList.add(channelItemVO);
+            }
+            data.put("channelList", channelItemVOList);
+            return Result.ok().data(data);
+        }catch (RuntimeException e){
+            data.put("error", e.getMessage());
+            return new Result(false,20001,"未知错误",data);
+        }
+    }
+
+    /**
+     * 获取所有主题标签
+     * @return
+     */
+    @Override
+    public Result listHashtag(){
+        Map<String, Object> data = new HashMap<>();
+        try{
+            List<Hashtag> hashtagList=hashtagMapper.listHash();
+            data.put("hashtagList",hashtagList);
+            return Result.ok().data(data);
+        }catch (RuntimeException e){
+            data.put("error", e.getMessage());
+            return new Result(false,20001,"未知错误,主题标签获取失败",data);
+        }
+    }
+
+    /**
+     * 根据主题标签获取对应频道数据
+     * @param hashtagId
+     * @return
+     */
+    @Override
+    public Result listChannelIdByHashtag(Integer hashtagId){
+        Map<String, Object> data = new HashMap<>();
+        try{
+            //根据主题标签获取对应频道的id
+            List<Integer> channelIdList = channelMapper.listChannelIdByHashtag(hashtagId);
+            //将频道信息存入返回体的数据部分
+            List<ChannelItemVO> channelItemVOList = new ArrayList<>();
+            //将频道信息存入返回体的数据部分
+            for (Integer channelId : channelIdList) {
+                //获取频道数据
+                Channel channel = channelMapper.getChannelByChannelId(channelId);
+                User user = userMapper.getUserByUserId(channel.getUserId());
                 //获取每个频道的主题标签
                 List<Hashtag> channelHashtag = channelMapper.listHashtagByChannelId(channel.getChannelId());
                 ChannelItemVO channelItemVO = new ChannelItemVO();
                 //整合频道信息数据
                 channelItemVO.setChannel(channel);
                 //用户昵称
-                channelItemVO.setChannelHashtag(channelHashtag);
+                channelItemVO.setUserName(user.getUserName());
                 //整合频道主题标签数据
                 channelItemVO.setChannelHashtag(channelHashtag);
-                ChannelItemVOLst.add(channelItemVO);
+                channelItemVOList.add(channelItemVO);
             }
-            data.put("ChannelItemVOLst", ChannelItemVOLst);
+            data.put("channelList", channelItemVOList);
             return Result.ok().data(data);
         }catch (RuntimeException e){
             data.put("error", e.getMessage());

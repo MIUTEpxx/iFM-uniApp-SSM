@@ -19,4 +19,6 @@ public interface ChannelService {
     Result changeSubscribe(Integer userId, Integer channelId);
     Result listSubscribedChannel(Integer userId);
     Result searchChannel(String keyWord);
+    Result listHashtag();
+    Result listChannelIdByHashtag(Integer hashtagId);
 }

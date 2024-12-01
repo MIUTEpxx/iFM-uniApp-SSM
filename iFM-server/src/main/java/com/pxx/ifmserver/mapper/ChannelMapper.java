@@ -52,6 +52,14 @@ public interface ChannelMapper {
     List<Hashtag> listHashtagByChannelId(Integer channelId);
 
     /**
+     * 根据主题标签id获取包含该主题标签的频道id
+     * @param hashtagId
+     * @return
+     */
+    @Select("SELECT channel_id FROM channel_hashtag WHERE hashtag_id = #{hashtagId}")
+    List<Integer> listChannelIdByHashtag(Integer hashtagId);
+
+    /**
      * 查询频道订阅表中,是否有用户订阅该频道的记录
      * @param channelId 频道ID
      * @param userId 用户ID

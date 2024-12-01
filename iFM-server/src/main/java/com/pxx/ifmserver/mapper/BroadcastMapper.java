@@ -104,6 +104,7 @@ public interface BroadcastMapper {
     @Select("SELECT * FROM broadcast WHERE gmt_create > (NOW() - INTERVAL 72 HOUR)")
     List<Broadcast> listBroadcastCtreateIn72H();
 
+
     /**
      * 添加新节目
      * @param broadcast 节目数据。

@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Service
@@ -574,8 +575,8 @@ public class BroadcastServiceImpl implements BroadcastService {
                 broadcastItemVO.setBroadcast(broadcast);
                 //获取上次收听到的上次
                 broadcastItemVO.setLastListenDuration(broadcastHistory.getLastListenDuration());
-                //获取上次收听的时间
-                broadcastItemVO.setHitoryTime(broadcastHistory.getHistoryTime());
+                //获取上次收听的时间戳
+                broadcastItemVO.setHitoryTime(broadcastHistory.getHistoryTime().toInstant(ZoneOffset.of("+8")).toEpochMilli());
                 broadcastItemVOList.add(broadcastItemVO);
             }
             data.put("broadcastList",broadcastItemVOList);
@@ -628,8 +629,8 @@ public class BroadcastServiceImpl implements BroadcastService {
                 Broadcast broadcast=broadcastMapper.getBroadcastByBroadcastId(broadcastFavorite.getBroadcastId());
                 BroadcastItemVO broadcastItemVO=new BroadcastItemVO();
                 broadcastItemVO.setBroadcast(broadcast);
-                //获取收藏时间
-                broadcastItemVO.setFavoriteTime(broadcastFavorite.getGmt_create());
+                //获取收藏时间戳
+                broadcastItemVO.setFavoriteTime(broadcastFavorite.getGmt_create().toInstant(ZoneOffset.of("+8")).toEpochMilli());
                 broadcastItemVOList.add(broadcastItemVO);
             }
             data.put("broadcastList",broadcastItemVOList);

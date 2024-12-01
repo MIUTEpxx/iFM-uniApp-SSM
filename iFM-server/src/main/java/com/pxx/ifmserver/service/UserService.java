@@ -17,6 +17,11 @@ public interface UserService {
     Result updateUserNameByUserId(Integer userId, String userName);
     Result updateUserProfileByUserId(Integer userId, String userProfile);
     Result updateUserPicurlByUserId(Integer userId, MultipartFile file);
+    Result updateUserPassword(Integer userId, String userEmail, String password,  String code);
+    Result updateUserEmail(Integer userId, String userEmail, String newEmail,  String code1,String code2);
     Result insertUser(User user);
-    Result login(Integer userId,String password) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+    Result loginPassword(Integer userId, String password) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+    Result loginEamil(String email, String code);
+    Result getVCode(String userEmail);
+    boolean verifyEmail(String userEmail, String code);
 }

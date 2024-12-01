@@ -32,6 +32,8 @@ public class ChannelController {
     public Result getChannelByChannelId(@RequestParam Integer channelId) {
         return channelService.getChannelByChannelId(channelId);
     }
+
+
     /**
      * 根据用户ID获取用户创建的频道接口
      * @param userId 用户id
@@ -99,6 +101,27 @@ public class ChannelController {
         r.getData().put("Token",newToken);
         return r;
     }
+
+    /**
+     * 获取主题标签接口
+     * @return
+     */
+    @GetMapping("/getHashtag")
+    public Result getHashtag() {
+        return channelService.listHashtag();
+    }
+
+
+    /**
+     * 根据主题标签获取频道数据
+     * @param hashtagId
+     * @return
+     */
+    @GetMapping("/getChannelByHashtag")
+    public Result getChannelByHashtag(@RequestParam Integer hashtagId) {
+        return channelService.listChannelIdByHashtag(hashtagId);
+    }
+
 
     /**
      * 订阅频道/取消订阅接口
@@ -268,10 +291,10 @@ public class ChannelController {
      * @throws ParseException
      * @throws NoSuchAlgorithmException
      */
-    @DeleteMapping("/deleteChannel/{userId}/{channelId}")
+    @DeleteMapping("/deleteChannel")
     Result deleteChannel(
-            @PathVariable("userId") Integer userId,
-            @PathVariable("channelId") Integer channelId,
+            @RequestParam Integer userId,
+            @RequestParam Integer channelId,
             HttpServletRequest req,
             HttpServletResponse resp) throws IOException, ParseException, NoSuchAlgorithmException {
         // 检验Token
