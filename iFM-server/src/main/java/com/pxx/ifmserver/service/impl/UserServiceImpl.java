@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
             return new Result(false,20004,"修改失败",data);
         }
         try{
-            userMapper.updateUserProfileByUserId(userId,userPassword);
+            userMapper.updateUserPasswordByUserId(userId,userPassword);
             return  Result.ok().data(data);
         }catch (RuntimeException e){
             data.put("error",e.getMessage());
@@ -200,7 +200,7 @@ public class UserServiceImpl implements UserService {
      * @return 成功则返回完整的用户信息,失败则返回错误信息
      */
     @Override
-    public Result insertUser(User user) {
+    public Result insertUser(User user,String code) {
         Map<String, Object> data = new HashMap<>();
         if(userMapper.getUserByUserName(user.getUserName())!=null){
             data.put("error","昵称已被使用");
@@ -212,6 +212,9 @@ public class UserServiceImpl implements UserService {
             Result result = new Result(false,50002,"用户创建失败",data);
             return result;
 
+        }else if(!verifyEmail(user.getUserEmail(), code)){
+            data.put("error","验证码错误");
+            return new Result(false,20004,"用户注册失败",data);
         }
 
         try {
@@ -289,8 +292,10 @@ public class UserServiceImpl implements UserService {
             data.put("error","密码错误");
             return new Result(false,60001,"登录失败",data);
         }
+        //生成Token安全令牌
+        String newToken = TokenUtil.createToken(user.getUserId(),1);
+        data.put("token",newToken);
         data.put("user",user);
-        data.put("Token", TokenUtil.createToken(user.getUserId(),1));
         return Result.ok().data(data);
     }
 
@@ -301,7 +306,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public  Result loginEamil(String userEmail, String code){
+    public  Result loginEamil(String userEmail, String code) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         Map<String, Object> data = new HashMap<>();
         User user = userMapper.getUserByUserEmail(userEmail);
         if(user==null){
@@ -312,6 +317,9 @@ public class UserServiceImpl implements UserService {
             data.put("error","验证码错误");
             return new Result(false,20004,"登录失败",data);
         }
+        //生成Token安全令牌
+        String newToken = TokenUtil.createToken(user.getUserId(),1);
+        data.put("token",newToken);
         data.put("user",user);
         return Result.ok().data(data);
     }

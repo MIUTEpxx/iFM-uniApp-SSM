@@ -74,7 +74,7 @@ public interface BroadcastMapper {
     boolean checkBroadcastHistoryById( Integer userId,Integer broadcastId);
 
     /**
-     * 查询节目收藏表中,用户ID收藏的节目ID
+     * 查询节目收藏表中,用户ID收藏的节目
      * @param userId 用户id
      * @return 节目ID列表
      */

@@ -61,8 +61,8 @@ public class ChannelController {
      * @return
      */
     @GetMapping("/searchChannelByKeyWord")
-    public Result searchChannelByKeyWord(@RequestParam String keyWord) {
-        return channelService.searchChannel(keyWord);
+    public Result searchChannelByKeyWord(@RequestParam String keyword) {
+        return channelService.searchChannel(keyword);
     }
 
     /**
@@ -93,12 +93,12 @@ public class ChannelController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 获取用户订阅的频道列表
         Result r= channelService.listSubscribedChannel(userId);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -144,12 +144,12 @@ public class ChannelController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 订阅频道/取消订阅(根据用户是否已订阅)
         Result r= channelService.changeSubscribe(userId,channelId);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -175,12 +175,12 @@ public class ChannelController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
         Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 创建频道
         Result r= channelService.createChannel(userId, channelTitle, channelDetail, channelPicture, hashtagIdList);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -207,12 +207,12 @@ public class ChannelController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 更换频道图片
         Result r= channelService.updateChannelPicture(userId,channelId, channelPicture);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -239,12 +239,12 @@ public class ChannelController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 更换频道图片
         Result r= channelService.updateChannelDetail(userId,channelId, channelDetail);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -271,12 +271,12 @@ public class ChannelController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 更换频道图片
         Result r= channelService.updateChannelTitle(userId,channelId, channelTitle);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -306,7 +306,7 @@ public class ChannelController {
         }
         // 删除频道
         Result r = channelService.deleteChannel(userId, channelId);
-        r.getData().put("Token", newToken);
+        r.getData().put("token", newToken);
         return r;
     }
 }

@@ -491,7 +491,7 @@ public class BroadcastServiceImpl implements BroadcastService {
      * @return
      */
     @Override
-    public Result changeCollection(Integer userId, Integer broadcastId) {
+    public Result changeFavorite(Integer userId, Integer broadcastId) {
         Map<String, Object> data = new HashMap<>();
         try{
             if(broadcastMapper.checkBroadcastFavoriteById(userId,broadcastId)){
@@ -627,10 +627,14 @@ public class BroadcastServiceImpl implements BroadcastService {
             for(BroadcastFavorite broadcastFavorite:broadcastFavoriteList){
                 //整合节目基础数据
                 Broadcast broadcast=broadcastMapper.getBroadcastByBroadcastId(broadcastFavorite.getBroadcastId());
+                Channel channel = channelMapper.getChannelByChannelId(broadcast.getChannelId());
                 BroadcastItemVO broadcastItemVO=new BroadcastItemVO();
                 broadcastItemVO.setBroadcast(broadcast);
+                if(channel!=null){
+                    broadcastItemVO.setChannelTitle(channel.getChannelTitle());
+                }
                 //获取收藏时间戳
-                broadcastItemVO.setFavoriteTime(broadcastFavorite.getGmt_create().toInstant(ZoneOffset.of("+8")).toEpochMilli());
+                broadcastItemVO.setFavoriteTime(broadcastFavorite.getGmtCreate().toInstant(ZoneOffset.of("+8")).toEpochMilli());
                 broadcastItemVOList.add(broadcastItemVO);
             }
             data.put("broadcastList",broadcastItemVOList);

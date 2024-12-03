@@ -345,7 +345,7 @@ public class ChannelServiceImpl implements ChannelService {
         Map<String, Object> data = new HashMap<>();
         try{
             //订阅信息储存于返回体
-            data.put("subscription",channelMapper.checkChannelSubscriptionById(userId,channelId));
+            data.put("subscribe",channelMapper.checkChannelSubscriptionById(userId,channelId));
         }catch (RuntimeException e){
             data.put("error.message", e.getMessage());
             return new Result(false,20001,"未知错误",data);
@@ -367,12 +367,12 @@ public class ChannelServiceImpl implements ChannelService {
                 //取消订阅,返回订阅结果:false
                 channelMapper.deleteChannelSubscriptionById(userId,channelId);
                 channelMapper.updateChannelSubscribeByChannelId(channelId,-1);
-                data.put("subscription",false);
+                data.put("subscribe",false);
             }else{
                 //订阅频道,返回订阅结果:true
                 channelMapper.insertChannelSubscription(userId,channelId);
                 channelMapper.updateChannelSubscribeByChannelId(channelId,1);
-                data.put("subscription",true);
+                data.put("subscribe",true);
             }
         }catch (RuntimeException e){
             data.put("error.message", e.getMessage());

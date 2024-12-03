@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 public class BroadcastFavorite {
     private Integer         broadcastId;
     private Integer         userId;
-    private LocalDateTime   gmt_create;
+    private LocalDateTime   gmtCreate;
 }

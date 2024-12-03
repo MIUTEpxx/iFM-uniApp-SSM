@@ -1,13 +1,11 @@
 package com.pxx.ifmserver.controller;
 
 
-import com.pxx.ifmserver.entity.dto.Broadcast;
 import com.pxx.ifmserver.result.Result;
 import com.pxx.ifmserver.service.BroadcastService;
 import com.pxx.ifmserver.utils.TokenUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,12 +45,12 @@ public class BroadcastController {
 
     /**
      * 根据关键词模糊匹配标题搜索节目
-     * @param keyWord
+     * @param keyword
      * @return
      */
     @GetMapping("/getBroadcastByKeyword")
-    public Result getBroadcastByKeyword(@RequestParam String keyWord) {
-        return broadcastService.searchBroadcast(keyWord);
+    public Result getBroadcastByKeyword(@RequestParam String keyword) {
+        return broadcastService.searchBroadcast(keyword);
     }
 
     /**
@@ -80,7 +78,7 @@ public class BroadcastController {
      * @param userId
      * @return
      */
-    @GetMapping("/getCollection")
+    @GetMapping("/getFavoriteBroadcast")
     public Result getCollection(@RequestParam Integer userId) {
         return broadcastService.listFavoriteBroadcast(userId);
     }
@@ -133,12 +131,12 @@ public class BroadcastController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 节目创建
         Result r= broadcastService.createBroadcast(channelId, userId, broadcastTitle, broadcastDetail, broadcastPicture, broadcastAudio);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -164,12 +162,12 @@ public class BroadcastController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 更改界面封面
         Result r= broadcastService.updateBroadcastPicture(userId,broadcastId,broadcastPicture);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -196,12 +194,12 @@ public class BroadcastController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 更改节目详情内容
         Result r= broadcastService.updateBroadcastDetail(userId,broadcastId,broadcastDetail);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -227,12 +225,12 @@ public class BroadcastController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 更改节目标题
         Result r=broadcastService.updateBroadcastTitle(userId,broadcastId,broadcastTitle);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -258,12 +256,12 @@ public class BroadcastController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 更改节目音频文件
         Result r= broadcastService.updateBroadcastAudio(userId,broadcastId,broadcastAudio);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -275,8 +273,8 @@ public class BroadcastController {
      * @param resp
      * @return
      */
-    @PostMapping("/changeCollection")
-    public Result changeCollection(
+    @PostMapping("/changeFavorite")
+    public Result changeFavorite(
             @RequestParam Integer userId,
             @RequestParam Integer broadcastId,
             HttpServletRequest req,
@@ -285,12 +283,12 @@ public class BroadcastController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 用户收藏/取消收藏接口
-        Result r= broadcastService.changeCollection(userId,broadcastId);
-        r.getData().put("Token",newToken);
+        Result r= broadcastService.changeFavorite(userId,broadcastId);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -341,12 +339,12 @@ public class BroadcastController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 用户删除节目
         Result r= broadcastService.deleteBroadcast(userId,broadcastId);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -371,12 +369,12 @@ public class BroadcastController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         // 用户删除节目收听历史记录
         Result r= broadcastService.deleteBroadcastHistory(userId,broadcastId);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 

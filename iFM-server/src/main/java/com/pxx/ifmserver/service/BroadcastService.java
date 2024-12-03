@@ -16,7 +16,7 @@ public interface BroadcastService {
     Result listPopularBroadcast();
     Result checkBroadcast(Integer userId, Integer broadcastId);
     Result updateHistory(Integer userId, Integer broadcastId, Integer lastListenDuraction);
-    Result changeCollection(Integer userId, Integer broadcastId);
+    Result changeFavorite(Integer userId, Integer broadcastId);
     Result increasePlayCount(Integer broadcastId);
     Result deleteBroadcastHistory(Integer userId, Integer broadcastId);
     Result listBroadcastHistory(Integer userId);

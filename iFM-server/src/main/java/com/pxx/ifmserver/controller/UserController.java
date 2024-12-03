@@ -59,32 +59,47 @@ public class UserController {
      * @param userPassword 密码
      * @return 成功则返回完整的用户信息,失败则返回错误信息
      */
-    @PostMapping("/userLoginPassword")
-    public Result loginPassword(@RequestParam("userId") Integer userId,
-                        @RequestParam("userPassword") String  userPassword) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    @GetMapping("/userLoginPassword")
+    public Result loginPassword(
+            @RequestParam Integer userId,
+            @RequestParam String  userPassword) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         return userService.loginPassword(userId,userPassword);
     }
 
     /**
-     * 用户登录
+     * 用户邮箱登录
      * @param userEmail 账号
      * @param code 密码
      * @return 成功则返回完整的用户信息,失败则返回错误信息
      */
-    @PostMapping("/userLoginEmail")
+    @GetMapping("/userLoginEmail")
     public Result loginEmail(@RequestParam String userEmail,
                         @RequestParam String code ) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         return userService.loginEamil(userEmail,code);
     }
 
     /**
-     *创建新用户
-     * @param user 待插入的用户数据
-     * @return 成功则返回完整的用户信息,失败则返回错误信息
+     * 创建新用户
+     * @param userName
+     * @param userPassword
+     * @param userEmail
+     * @param code
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException
      */
-    @PostMapping("/creatNewUser")
-    public Result insertUser(@RequestBody User user) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        return userService.insertUser(user);
+    @PostMapping("/userRegister")
+    public Result userRegister(
+            @RequestParam String userName,
+            @RequestParam String userPassword,
+            @RequestParam String userEmail,
+            @RequestParam String code)
+            throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        User user = new User();
+        user.setUserName(userName);
+        user.setUserPassword(userPassword);
+        user.setUserEmail(userEmail);
+        return userService.insertUser(user,code);
     }
 
     /**
@@ -104,11 +119,11 @@ public class UserController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         Result r = userService.updateUserPicurlByUserId(userId,file);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -129,11 +144,11 @@ public class UserController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         Result r = userService.updateUserProfileByUserId(userId,userProfile);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -145,8 +160,8 @@ public class UserController {
      */
     @PostMapping("/updateUserName")
     public Result updateUserName(
-            @RequestParam("userName") String userName,
             @RequestParam("userId") Integer  userId,
+            @RequestParam("userName") String userName,
             HttpServletRequest req,
             HttpServletResponse resp)
             throws ParseException, IOException, NoSuchAlgorithmException {
@@ -154,11 +169,11 @@ public class UserController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         Result r = userService.updateUserNameByUserId(userId,userName);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -188,11 +203,11 @@ public class UserController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         Result r = userService.updateUserPassword(userId,userEmail,userPassword,code);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -224,11 +239,11 @@ public class UserController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         Result r = userService.updateUserEmail(userId,userEmail,userNewEmail,code1,code2);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
