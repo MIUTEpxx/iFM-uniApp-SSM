@@ -11,5 +11,6 @@ onHide(() => {
 });
 </script>
 <style>
+	@import url('asses/iconfont.css');
 	@import url('styles/tailwind.css');
 </style>

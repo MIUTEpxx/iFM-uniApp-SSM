@@ -1,5 +1,5 @@
 {
-    "name" : "",
+    "name" : "iFM爱播客",
     "appid" : "",
     "description" : "",
     "versionName" : "1.0.0",
@@ -65,8 +65,13 @@
     "mp-toutiao" : {
         "usingComponents" : true
     },
-    "uniStatistics": {  
-        "enable": false
+    "uniStatistics" : {
+        "enable" : false
     },
-    "vueVersion" : "3"
+    "vueVersion" : "3",
+    "h5" : {
+        "devServer" : {
+            "port" : 8081
+        }
+    }
 }

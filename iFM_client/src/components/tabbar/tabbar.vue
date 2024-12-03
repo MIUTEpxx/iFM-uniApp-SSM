@@ -1,12 +1,24 @@
 <template>
+<<<<<<< Updated upstream
   <view>
     <uv-tabbar :active="useStore.activeTab" :fixed="true" :placeholder="true" :safeAreaInsetBottom="true">
+=======
+  <view class="tabbar">
+    <uv-tabbar 
+	:active="useStore.activeTab" 
+	:fixed="true" 
+	:safeAreaInsetBottom="true"
+	customStyle="height:70px"
+	>
+	
+>>>>>>> Stashed changes
 	  <uv-tabbar-item
 	  v-for="(item, index) in tabbarItems" 
 	  :key="index" 
 	  :icon="getTabbarIcon(item, index)" 
 	  :iconSize=30
 	  :text="item.text" 
+	  customStyle="margin-top:15px;"
 	  @click="handleTabbarItemClick(item, index)">
 	  </uv-tabbar-item>
     </uv-tabbar>
@@ -53,3 +65,9 @@ const getTabbarIcon = (item: { selectedIconPath: any; iconPath: any; }, index: n
   return useStore.activeTab === index ? item.selectedIconPath : item.iconPath
 }
 </script>
+<<<<<<< Updated upstream
+=======
+
+<style>
+</style>
+>>>>>>> Stashed changes

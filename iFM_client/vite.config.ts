@@ -12,5 +12,15 @@ export default defineConfig({
     uni(),
     uvtw(),
   ],
+<<<<<<< Updated upstream
+=======
+   resolve: {
+      alias: {
+        '@': `$${__dirname}/src`,
+		'@utils': `$${__dirname}/src/utils`,
+		'@request': `$${__dirname}/src/request`,
+      },
+    },
+>>>>>>> Stashed changes
 });
 
