@@ -19,7 +19,6 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/user")
@@ -43,25 +42,64 @@ public class UserController {
     }
 
     /**
+     * 检测邮箱格式是否正确,然后向该邮箱发送验证码
+     * @param userEmail 邮箱字符串
+     * @return 1/-1
+     */
+    @GetMapping("/getVCode")
+    public Result getVCode(@RequestParam String userEmail) {
+        return userService.getVCode(userEmail);
+    }
+
+
+
+    /**
      * 用户登录
      * @param userId 账号
      * @param userPassword 密码
      * @return 成功则返回完整的用户信息,失败则返回错误信息
      */
-    @PostMapping("/login")
-    public Result login(@RequestParam("userId") Integer userId,
-                        @RequestParam("userPassword") String  userPassword) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        return userService.login(userId,userPassword);
+    @GetMapping("/userLoginPassword")
+    public Result loginPassword(
+            @RequestParam Integer userId,
+            @RequestParam String  userPassword) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        return userService.loginPassword(userId,userPassword);
     }
 
     /**
-     *创建新用户
-     * @param user 待插入的用户数据
+     * 用户邮箱登录
+     * @param userEmail 账号
+     * @param code 密码
      * @return 成功则返回完整的用户信息,失败则返回错误信息
      */
-    @PostMapping("/creatNewUser")
-    public Result insertUser(@RequestBody User user) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        return userService.insertUser(user);
+    @GetMapping("/userLoginEmail")
+    public Result loginEmail(@RequestParam String userEmail,
+                        @RequestParam String code ) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        return userService.loginEamil(userEmail,code);
+    }
+
+    /**
+     * 创建新用户
+     * @param userName
+     * @param userPassword
+     * @param userEmail
+     * @param code
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws NoSuchAlgorithmException
+     */
+    @PostMapping("/userRegister")
+    public Result userRegister(
+            @RequestParam String userName,
+            @RequestParam String userPassword,
+            @RequestParam String userEmail,
+            @RequestParam String code)
+            throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        User user = new User();
+        user.setUserName(userName);
+        user.setUserPassword(userPassword);
+        user.setUserEmail(userEmail);
+        return userService.insertUser(user,code);
     }
 
     /**
@@ -81,11 +119,11 @@ public class UserController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         Result r = userService.updateUserPicurlByUserId(userId,file);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -106,11 +144,11 @@ public class UserController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         Result r = userService.updateUserProfileByUserId(userId,userProfile);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
         return r;
     }
 
@@ -122,8 +160,8 @@ public class UserController {
      */
     @PostMapping("/updateUserName")
     public Result updateUserName(
-            @RequestParam("userName") String userName,
             @RequestParam("userId") Integer  userId,
+            @RequestParam("userName") String userName,
             HttpServletRequest req,
             HttpServletResponse resp)
             throws ParseException, IOException, NoSuchAlgorithmException {
@@ -131,69 +169,84 @@ public class UserController {
         String newToken = TokenUtil.verifyToken(req, resp,userId);
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
-            data.put("erro","Token安全令牌失效,请重新登录");
+            data.put("error","Token安全令牌失效,请重新登录");
             return new Result(false,80000,"处理失败",data);
         }
         Result r = userService.updateUserNameByUserId(userId,userName);
-        r.getData().put("Token",newToken);
+        r.getData().put("token",newToken);
+        return r;
+    }
+
+    /**
+     * 修改密码接口
+     * @param userId
+     * @param userEmail
+     * @param userPassword
+     * @param code
+     * @param req
+     * @param resp
+     * @return
+     * @throws ParseException
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     */
+    @PostMapping("/updateUserPassword")
+    public Result updateUserPassword(
+            @RequestParam Integer  userId,
+            @RequestParam String userEmail,
+            @RequestParam String userPassword,
+            @RequestParam String code,
+            HttpServletRequest req,
+            HttpServletResponse resp)
+            throws ParseException, IOException, NoSuchAlgorithmException {
+        // 检验Token
+        String newToken = TokenUtil.verifyToken(req, resp,userId);
+        if(newToken==null){
+            Map<String, Object> data = new HashMap<>();
+            data.put("error","Token安全令牌失效,请重新登录");
+            return new Result(false,80000,"处理失败",data);
+        }
+        Result r = userService.updateUserPassword(userId,userEmail,userPassword,code);
+        r.getData().put("token",newToken);
+        return r;
+    }
+
+    /**
+     * 修改邮箱接口
+     * @param userId
+     * @param userEmail
+     * @param userNewEmail
+     * @param code1
+     * @param code2
+     * @param req
+     * @param resp
+     * @return
+     * @throws ParseException
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     */
+    @PostMapping("/updateUserEmail")
+    public Result updateUserEmail(
+            @RequestParam Integer  userId,
+            @RequestParam String userEmail,
+            @RequestParam String userNewEmail,
+            @RequestParam String code1,
+            @RequestParam String code2,
+            HttpServletRequest req,
+            HttpServletResponse resp)
+            throws ParseException, IOException, NoSuchAlgorithmException {
+        // 检验Token
+        String newToken = TokenUtil.verifyToken(req, resp,userId);
+        if(newToken==null){
+            Map<String, Object> data = new HashMap<>();
+            data.put("error","Token安全令牌失效,请重新登录");
+            return new Result(false,80000,"处理失败",data);
+        }
+        Result r = userService.updateUserEmail(userId,userEmail,userNewEmail,code1,code2);
+        r.getData().put("token",newToken);
         return r;
     }
 
 
-    /*
-     * 检测邮箱格式是否正确,然后向该邮箱发送验证码
-     * @param 邮箱字符串
-     * @return 1/-1
-     */
-    @GetMapping("/getVCode")
-    public ResponseEntity<String> getVCode(@RequestParam String email) {
-        if (!isEmail(email)) {  // 邮箱不正确
-            return ResponseEntity.badRequest().body("-1");
-        }
-        try {
-            emailUtil.sendEmail(email);//生成验证码并发送验证码
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("-1");
-        }
-        String vCode_ = emailUtil.getVCode();//获取验证码
-
-        if(vCode.containsKey(email)){
-            vCode.remove(email);//删除该邮箱的旧验证码(如果存在的话)
-        }
-
-        vCode.put(email, vCode_);//保存邮箱和对应的新验证码
-
-        System.out.println("验证码为：" + vCode_);
-        return ResponseEntity.ok("1");
-    }
-
-    /*
-     * 验证码验证
-     */
-    @GetMapping("/verify")
-    public ResponseEntity<String> verify(@RequestParam String email,@RequestParam String vCodeReceive) {
-        if ((vCode.containsKey(email) && vCode.get(email).equals(vCodeReceive))) {
-            // 验证成功后，删除验证码和定时任务
-            vCode.remove(email);
-            return ResponseEntity.ok("1");
-        } else {
-            return ResponseEntity.badRequest().body("-1");
-        }
-    }
-
-    /*
-     * 邮箱正确性检测
-     * @param 邮箱字符串
-     * @return true/false
-     */
-    private boolean isEmail(String email) {
-        if (email == null || email.length() == 0) {
-            return false;
-        }
-        // 正则表达式验证邮箱
-        Pattern pattern = Pattern.compile("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$");
-        return pattern.matcher(email).matches();
-    }
 
 }

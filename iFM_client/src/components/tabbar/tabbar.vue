@@ -1,12 +1,19 @@
 <template>
-  <view>
-    <uv-tabbar :active="useStore.activeTab" :fixed="true" :placeholder="true" :safeAreaInsetBottom="true">
+
+  <view class="tabbar">
+    <uv-tabbar 
+	:active="useStore.activeTab" 
+	:fixed="true" 
+	:safeAreaInsetBottom="true"
+	customStyle="height:70px"
+	>
 	  <uv-tabbar-item
 	  v-for="(item, index) in tabbarItems" 
 	  :key="index" 
 	  :icon="getTabbarIcon(item, index)" 
-	  :iconSize=30
+	  :iconSize=50
 	  :text="item.text" 
+	  customStyle="margin-top:15px;"
 	  @click="handleTabbarItemClick(item, index)">
 	  </uv-tabbar-item>
     </uv-tabbar>
@@ -15,8 +22,8 @@
  
 <script setup lang="ts">
 //引入pinia仓库
-import useUserStore from '@/stores/user'
-let useStore = useUserStore()
+import useBaseStore from '@/stores/base'
+let useStore = useBaseStore()
  
 const tabbarItems = [
   {
@@ -26,13 +33,13 @@ const tabbarItems = [
     selectedIconPath: '/static/tab_icons/home-active.png'
   },
   {
-    pagePath: '/pages/community/index',
+    pagePath: '/pages/community/community',
     text: '社区',
     iconPath: '/static/tab_icons/community.png',
     selectedIconPath: '/static/tab_icons/community-active.png'
   },
   {
-    pagePath: '/pages/my/index',
+    pagePath: '/pages/my/my',
     text: '个人',
     iconPath: '/static/tab_icons/my.png',
     selectedIconPath: '/static/tab_icons/my-active.png'
@@ -53,3 +60,8 @@ const getTabbarIcon = (item: { selectedIconPath: any; iconPath: any; }, index: n
   return useStore.activeTab === index ? item.selectedIconPath : item.iconPath
 }
 </script>
+
+
+<style>
+</style>
+

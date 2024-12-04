@@ -12,5 +12,12 @@ export default defineConfig({
     uni(),
     uvtw(),
   ],
+   resolve: {
+      alias: {
+        '@': `$${__dirname}/src`,
+		'@utils': `$${__dirname}/src/utils`,
+		'@request': `$${__dirname}/src/request`,
+      },
+    },
 });
 

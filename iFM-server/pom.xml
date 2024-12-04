@@ -88,6 +88,12 @@
             <artifactId>commons-codec</artifactId>
             <version>1.15</version> <!-- 请使用最新版本 -->
         </dependency>
+        <!-- MP3 SPI -->
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>mp3spi</artifactId>
+            <version>1.9.5.4</version>
+        </dependency>
 <!--        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
