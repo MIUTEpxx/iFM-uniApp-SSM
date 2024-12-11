@@ -1,13 +1,13 @@
 <template>
 	<view class="head">
 		<view class="back-button"   @click="goBack" v-if="props.showBackButton">
-			<uv-icon name="arrow-left" color="#86c7f9" size="40px"></uv-icon>
+			<uv-icon name="arrow-left" :color="props.color" size="40px"></uv-icon>
 		</view>
 		<view class="home-button"   @click="goBackHome" v-if="props.showHomeButton">
-			<uv-icon name="home" color="#86c7f9" size="50px"></uv-icon>
+			<uv-icon name="home" :color="props.color" size="50px"></uv-icon>
 		</view>
 		<view class="title">
-			<uv-text :text="props.titleContent" color="#86c7f9" size="40px" bold="true" ></uv-text>
+			<uv-text :text="props.titleContent" :color="props.color" size="40px" bold="true" ></uv-text>
 		</view>
 	</view>
 	
@@ -20,11 +20,13 @@ import useBaseStore from '@/stores/base';
 		showBackButton:boolean;
 		showHomeButton:boolean;
 		titleContent:string;
+		color:string;
 	}
 	const props = withDefaults(defineProps<IHead>(), {
 		showBackButton:true,
 		showHomeButton:true,
 		titleContent:"默认",
+		color:"#86c7f9",
 	});
 	
 	// 定义返回上一页的方法

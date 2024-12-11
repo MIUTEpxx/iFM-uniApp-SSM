@@ -3,7 +3,7 @@
 		
 		<uv-sticky bgColor="white" customStyle="top:0;">
 			<head-general titleContent="频道分类"></head-general>
-			<hashtag-tabs customStyle="margin:0 10px 10px 10px;" @click="handleTabClick" :hashtag="hashtagList"></hashtag-tabs>
+			<tags-tabs customStyle="margin:0 10px 10px 10px;" @click="handleTabClick" :hashtag="hashtagList"></tags-tabs>
 			<sort-method-box customStyle="margin-bottom:10px;" @change="sortMethodClick"></sort-method-box>	
 		</uv-sticky>
 		

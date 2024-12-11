@@ -20,7 +20,7 @@
 		</view>
 
 		<view class="broadcast-button">
-			<view class="play-button">
+			<view class="play-button" @click="playBroadcastAudio">
 				<uv-icon name="play-circle-fill" color="#86c7f9" size="75"></uv-icon>
 				<uv-text :lines="3" text="点击播放" color="#5cbaf9" size="18px" bold="true"></uv-text>
 			</view>
@@ -41,7 +41,7 @@
 					<p style="color:#6cb3ff;">{{numConversion(CollectionCount)}}</p>
 				</view>
 				
-				<view class="add-playList-button">
+				<view class="add-playList-button" @click="addPlayerList">
 					<uv-icon name="tianjialiebiaoxiang" custom-prefix="custom-icon" color="#343b4c" size="35px" customStyle="padding:7px;"></uv-icon>
 					<p>添加至</p>
 					<p>播放列表</p>
@@ -59,24 +59,29 @@
 				<uv-text :text="broadcast.broadcastDetail" color="#203d53" size="18px" customStyle="margin:15px 5px 5px 10px;"></uv-text>
 			</uv-read-more>
 		</view>	
+		<player-bar></player-bar>
 	</view>
 </template>
 
 <script  setup lang="ts">
 	import { onLoad } from "@dcloudio/uni-app";
-	import { getBroadcastByChannel,getChannelDetail,checkSubscribe, getBroadacastDetail, checkCollect, changeFavorite } from "@/request/api"; 
+	import { getChannelDetail, getBroadacastDetail, checkCollect, changeFavorite } from "@/request/api"; 
 	import { ref,watch } from 'vue';
 	import { changeTime } from "@/utils/timeChange"
 	import { numConversion} from '@/utils/numConversion';
 	import { formatDuration} from '@/utils/durationFormatter';
 	import useBaseStores from '@/stores/base';
 	import useUserStores from '@/stores/user';
-import { logOut } from "@/utils/logOut";
+	import { logOut } from "@/utils/logOut";
+	import { usePlayerStore } from "@/stores/player";
 	
 	//后端请求路径
 	const base_url = useBaseStores().baseUrl;
 	//获取用户信息
 	const userStore = useUserStores();
+	//全局音频播放器
+	const playerStore= usePlayerStore();
+	
 	let broadcastId = ref(0);
 	//储存频道信息
 	let channel = ref<any>([]);
@@ -165,8 +170,19 @@ import { logOut } from "@/utils/logOut";
 		
 		
 	});
-	
-
+	//将音频添加至播放列表
+	const addPlayerList =()=>{
+		playerStore.pushPlayList(false, [broadcastId.value]);
+		uni.showToast({
+			title: "音频已添加至列表",
+			icon: 'none',
+			duration: 3000
+		}) 
+	}
+	//播放节目音频
+	const playBroadcastAudio =()=>{
+		playerStore.play(broadcastId.value);
+	}
 </script>
 
 <style>
@@ -174,7 +190,7 @@ import { logOut } from "@/utils/logOut";
 		display: flex;
 	    justify-content: space-between;
 	    align-items: center;
-			margin: 0 20px;
+		margin: 0 20px;
 	}
 	.broadcast-detail-head .broadcast-image {
 		position: relative;
@@ -211,6 +227,7 @@ import { logOut } from "@/utils/logOut";
 	}
 	.broadcast-detail-content {
 		margin: 10px 20px;
+		padding-bottom: 110px;
 	}
 	.broadcast-detail-content .uv-read-more {
 		margin-top: 10px;

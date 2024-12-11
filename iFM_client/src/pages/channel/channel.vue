@@ -86,6 +86,7 @@
 				<broadcast-item  v-for="(item,i) in broadcastList" :key="i" v-bind="item"></broadcast-item>
 				<uv-load-more status="nomore" customStyle="padding:5px 0 10px 0;" />
 			</scroll-view>
+			<player-bar></player-bar>
 		</view>
 		
 	</view>
@@ -127,6 +128,7 @@
 		if(currentSortMethod.value===2){
 			currentSortMethod.value=4;//最早发布排序的序号为4,而页面显示对应的序号为2,所以需要修改
 		}
+		console.log("currentSortMethod",currentSortMethod.value)
 		broadcastList.value=sortBroadcastList(broadcastList.value,currentSortMethod.value)
 	}
 	
@@ -175,6 +177,7 @@
 			//转化时间格式
 			channelDetail.value.channelCreateTime=changeTime(channelDetail.value.channelCreateTime);
 			channelDetail.value.channelUpdateTime=changeTime(channelDetail.value.channelUpdateTime);
+			//console.log("channelDetail",channelDetail.value)
 		}).catch((err:any) => { 
 		  console.error('频道数据请求失败', err); 
 		});
@@ -287,8 +290,9 @@
 			display: flex;
 		}
 		.broadcast-scroll {
-			height: 375px;
+			max-height: 500px;
 			margin-top: 10px;
+			padding-bottom: 110px;
 			overflow: hidden;
 			border-top: 3px dashed #9dcaf9;
 		}

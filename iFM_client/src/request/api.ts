@@ -130,7 +130,38 @@ export const changeFavorite = (userId:number,broadcastId:number) =>{
 		data:{userId:userId,broadcastId:broadcastId},
 	})
 }
-
+//检查节目是否在用户收听历史中,以决定起始播放时长
+export const checkHistory = (userId:number,broadcastId:number) =>{
+	return request({
+		url:'/broadcast/checkHistory',
+		method:'get',
+		data:{userId:userId,broadcastId:broadcastId},
+	})
+}
+//获取节目音频信息(包括作者名,若为登录状态,则可获得上次播放到的时长数据)
+export const getBroadcastAudio = (userId:number,broadcastId:number) =>{
+	return request({
+		url:'/broadcast/getBroadcastAudio',
+		method:'get',
+		data:{"userId":userId,"broadcastId":broadcastId},
+	})
+}
+//更新节目收听历史记录
+export const updateHistory = (userId:number,broadcastId:number,lastListenDuraction:number) =>{
+	return request({
+		url:'/broadcast/updateHistory',
+		method:'post',
+		data:{userId:userId,broadcastId:broadcastId,lastListenDuraction:lastListenDuraction},
+	})
+}
+//根据节目id列表,一次性获取复数节目信息
+export const getBroadcastByIdList = (broadcastIdList:number[]) =>{
+	return request({
+		url:'/broadcast/getBroadcastByIdList',
+		method:'get',
+		data:{"broadcastIdList":broadcastIdList},
+	})
+}
 //获取验证码
 export const getVCode = (userEmail:string) =>{
 	return request({

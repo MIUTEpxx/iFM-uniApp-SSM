@@ -23,7 +23,7 @@
 			</view>
 		</view>
 		<view class="play-button" v-if="props.showPlayButton">
-			<uv-icon name="play-circle-fill" color="#86c7f9" size="55"></uv-icon>
+			<uv-icon @click="playBroadcastAudio" name="play-circle-fill" color="#86c7f9" size="55"></uv-icon>
 		</view>
 	</view>
 </template>
@@ -33,8 +33,10 @@
 	import { formatDuration } from '@/utils/durationFormatter';
 	import { numConversion} from '@/utils/numConversion';
 	import useBaseStores from '@/stores/base';
+	import { usePlayerStore } from '@/stores/player';
 	
 	const base_url = useBaseStores().baseUrl;
+	const playerStore=usePlayerStore();
 	
 	interface IBroadcast {
 		//节目id
@@ -72,6 +74,11 @@
 		uni.navigateTo({
 		  url: "/pages/broadcast/broadcast?broadcastId="+props.broadcastId,
 		});   
+	}
+	
+	//播放节目音频
+	const playBroadcastAudio =()=>{
+		playerStore.play(props.broadcastId);
 	}
 </script>
 

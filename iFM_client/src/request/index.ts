@@ -2,11 +2,10 @@
 import useBaseStore from '@/stores/base'
 import useUserStore from '@/stores/user'
 
-let baseStore = useBaseStore()
-let userStore = useUserStore()
 
+//let Token = useUserStore().Token
 // 全局请求封装
-const base_url = baseStore.baseUrl
+//const base_url = useBaseStore().baseUrl
 // 请求超出时间
 const timeout = 5000
  
@@ -17,19 +16,19 @@ export default async (params: any) => {
 	let data = params.data || {};
 	let header = {
 		'Content-Type': 'application/json;charset=UTF-8',
-		'Token': userStore.Token || '',//Token安全令牌验证
+		'Token': useUserStore().Token || '',//Token安全令牌验证
 		...params.header
 	}
 	if (method == "post") {
 		header = {
 			'Content-Type': 'application/x-www-form-urlencoded' ,
-			'Token': userStore.Token || '',//Token安全令牌验证
+			'Token': useUserStore().Token || '',//Token安全令牌验证
 		};
 	}
 	try {
 		return await new Promise((resolve, reject) => {
 			uni.request({
-				url: base_url + url,
+				url: useBaseStore().baseUrl + url,
 				method: method,
 				header: header,
 				data: data,

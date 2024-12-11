@@ -19,7 +19,7 @@
 			<my-button v-if="!userStore.isLogin" @click="goLogin" textContent="用户登录" iconContent="tuichudenglu1" iconSize="50"></my-button>
 			<my-button v-else @click="logOut" textContent="退出登录" iconContent="tuichudenglu1" iconSize="50"></my-button>
 		</view>
-		
+		<player-bar :reserveSpace="true"></player-bar>
 		<tabbar></tabbar>
 	</view>
 </template>

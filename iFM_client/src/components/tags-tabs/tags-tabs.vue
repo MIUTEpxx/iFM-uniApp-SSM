@@ -6,7 +6,7 @@
 	lineColor="#63b1f9" 
 	:activeStyle="{
 		color: '#63b1f9',
-		fontSize:'26px',
+		fontSize:'24px',
 		fontWeight: 'bold',
 		transform: 'scale(1.05)',
 	}"

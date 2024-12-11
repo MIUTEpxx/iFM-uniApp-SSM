@@ -58,10 +58,10 @@
 </template>
 
 <script setup lang="ts">
-import EditUserEmail from '@/components/editWindow/edit-user-email.vue';
-import EditUserName from '@/components/editWindow/edit-user-name.vue';
-import EditUserPassword from '@/components/editWindow/edit-user-password.vue';
-import EditUserProfile from '@/components/editWindow/edit-user-profile.vue';	
+import EditUserEmail from '@/components/edit-window/edit-user-email.vue';
+import EditUserName from '@/components/edit-window/edit-user-name.vue';
+import EditUserPassword from '@/components/edit-window/edit-user-password.vue';
+import EditUserProfile from '@/components/edit-window/edit-user-profile.vue';	
 import useUserStore from '@/stores/user';
 import useBaseStores from '@/stores/base';
 import { onShow } from '@dcloudio/uni-app';

@@ -6,7 +6,7 @@
 		<uv-textarea 
 		v-model="newUserProfile" maxlength=50
 		adjustPosition count
-		placeholder="请输入新昵称"
+		placeholder="请输入新个性签名"
 		height="110px"
 		customStyle="background:#dbe3ee;"
 		countStyle="background-color:#dbe3ee;"

@@ -28,6 +28,7 @@
 						ref="dropDown"
 						sign="dropDown_1" 
 						:defaultValue="[0,'0','all']" 
+						customStyle="border-bottom:none;" 
 					>
 						<uv-drop-down-item 
 							name="order" 
@@ -158,7 +159,6 @@ const sortSearchResult =()=>{
 		margin: 10px 20px 10px 10px;
 	}
 	.search-result-body {
-		
 		margin: 10px;
 	}
 	.drop-content {

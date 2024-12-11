@@ -83,6 +83,34 @@
 				"navigationBarTitleText": "节目详情页",
 				"titleNView": false
 			}
+		},
+		{
+			"path": "pages/player/player",
+			"style": {
+				"navigationBarTitleText": "播放界面",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/player/player-list",
+			"style": {
+				"navigationBarTitleText": "播放列表",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/community/post-detail",
+			"style": {
+				"navigationBarTitleText": "帖子详情",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/community/more-reply",
+			"style": {
+				"navigationBarTitleText": "帖子详情",
+				"titleNView": false
+			}
 		}
 	],
 	"globalStyle": {

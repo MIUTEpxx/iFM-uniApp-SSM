@@ -5,7 +5,7 @@ const useUserStore = defineStore('User', {
   state: () => {
     return {
 		 isLogin:false,//登录状态
-		 userId:0,//用户账号
+		 userId:-1,//用户账号
 		 userName:'游客',//用户昵称
 		 userEmail:'',//用户邮箱
 		 userPicture:'/images/user/head/D.png',//用户头像

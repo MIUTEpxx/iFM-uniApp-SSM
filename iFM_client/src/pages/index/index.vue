@@ -27,6 +27,7 @@
 			</scroll-view>
 		</view>
 	</view>
+	<player-bar :reserveSpace="true"></player-bar>
 	<tabbar></tabbar>
   </view>
 
@@ -116,12 +117,12 @@ onHide(() => {
 				height: 390px;
 				margin-top: 10px;
 				overflow: hidden;
-				border: 3px solid #9dcaf9;
+				border: 3px dashed #9dcaf9;
 				border-radius: 10px;
 			}
 		}
 		.pop-channel{
-			margin-bottom: 30px;
+			margin-bottom: 100px;
 			
 			.channle-scroll {
 				height: 390px;

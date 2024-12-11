@@ -30,7 +30,7 @@
 			<view class="subscribe-channel">
 				<scroll-view scroll-y class="channel-scroll">
 					<view class="channel-item-list" v-for="(item,i) in channelList" :key="i" >
-						<channel-item :showSubscribeButton="false" v-bind="item" :showPlayButton="false"></channel-item>	
+						<channel-item class="item" :showSubscribeButton="false" v-bind="item" :showPlayButton="false"></channel-item>	
 						<uv-icon v-if="inDelete" @click="deleteBroacast(item,i)" name="trash" color="#ff7d7d" size="28"></uv-icon>	
 					</view>
 				</scroll-view>
@@ -143,7 +143,7 @@ onShow(() => {
 	.channel-item-list>*{
 		flex: 1;
 	}
-	.channel-item-list :first-child{
+	.channel-item-list .item{
 		flex: 5;
 	}
 

@@ -1,14 +1,13 @@
 import { createSSRApp } from "vue";
 import App from "./App.vue";
-import * as Pinia from 'pinia';
-
-	App.mpType = 'app'
+import { createPinia } from 'pinia';
 
 export function createApp() {
   const app = createSSRApp(App);
-  app.use(Pinia.createPinia());
+  const pinia = createPinia();
+  app.use(pinia);
   return {
     app,
-    Pinia, // 此处必须将 Pinia 返回
+    // 不需要返回 Pinia，因为 createPinia 已经被调用并使用了
   };
 }
