@@ -4,20 +4,33 @@
 			<head-general titleContent="帖子正文" ></head-general>
 		</uv-sticky>
 		<view class="post-detail-head">
-			<uv-text  text="这里是帖子标题" lineHeight="60rpx" color="#39414b" align="left" size="24px" bold="true"></uv-text>
-			<post-head></post-head>
+			<uv-text  :text="post.postTitle" lineHeight="60rpx" color="#39414b" align="left" size="24px" bold="true"></uv-text>
+			<post-head
+			:userId="post.userId" 
+			:userName="post.userName" 
+			:userPicture="post.userPicture"
+			:postCreateTime="post.postCreateTime"
+			:postSection="post.postSection"></post-head>
 		</view>
 		<view class="post-detail-body">
-			<uv-text class="post-detail"  text="帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容" lineHeight="40rpx" color="#363e47"  size="16px"></uv-text>
+			<uv-text class="post-detail"  :text="post.postDetail" lineHeight="40rpx" color="#363e47"  size="16px"></uv-text>
 		</view>
-		<view class="post-detail-picture" v-if="urls.length!=0">
-			<uv-album :urls="urls" singleSize="230rpx" multipleSize="230rpx" space="8rpx" maxCount="9"  singleMode="aspectFill"></uv-album>
+		<view class="post-detail-picture" v-if="postImageList.length!=0">
+			<uv-album :urls="postImageList" singleSize="230rpx" multipleSize="230rpx" space="8rpx" maxCount="9"  singleMode="aspectFill"></uv-album>
 		</view>
-		<view class="post-detail-association">
+		<view class="post-detail-association" v-if="post.postAssociation!=-1">
 			<uv-text class="text" :lines="1" text="关联节目" color="#86c7f9"  size="18px"></uv-text>
-			<broadcast-item></broadcast-item>
+			<channel-item v-if="post.postAssociation==0" v-bind="association"></channel-item>
+			<broadcast-item v-else v-bind="association"></broadcast-item>
 		</view>
-		<post-interaction></post-interaction>
+		<post-interaction 
+		:postId="post.postId"
+		:postCollectionCount="postCollectionCount"
+		:postLikeCount="postLikeCount"
+		:postCommentCount="post.postCommentCount"
+		v-bind="post"
+		:haveCollection="haveCollect"
+		></post-interaction>
 		<view class="post-comment-section">
 			<comment-item></comment-item>
 			<comment-item></comment-item>
@@ -41,30 +54,109 @@
 </template>
 
 <script setup lang="ts">
-	import { onShow } from "@dcloudio/uni-app";
+	import { onLoad, onShow } from "@dcloudio/uni-app";
 	import useBaseStore from "@/stores/base"
-	import { ref } from "vue";
+	import { ref } from "vue"; 
+	import { checkPostCollection, getBroadcastDetail, getChannelDetail, getPostByPostId } from "@/request/api";
+	import useUserStore from "@/stores/user";
 	
 	const baseStore=useBaseStore();
-	let urls = ref([
-		'https://via.placeholder.com/100x200.png/3c9cff/fff',
-		'https://via.placeholder.com/200x200.png/3c9cff/fff',
-		'https://via.placeholder.com/300x200.png/3c9cff/fff',
-		'https://via.placeholder.com/280x200.png/3c9cff/fff',
-		'https://via.placeholder.com/240x200.png/3c9cff/fff',
-		'https://via.placeholder.com/180x200.png/3c9cff/fff',
-		'https://via.placeholder.com/140x200.png/3c9cff/fff',
-		'https://via.placeholder.com/150x200.png/3c9cff/fff',
-		'https://via.placeholder.com/90x200.png/3c9cff/fff',		
-	])
-	
+	const userStore=useUserStore();
+	//帖子id
+	const postId = ref(0);
+	//关联内容
+	const association = ref();
+	//弹窗索引
 	const popup = ref<any>(null);
-	
+	//帖子是否已被收藏
+	let haveCollect = ref();
+	//帖子数据
+	let post = ref<any>([])
+	//帖子图片数据
+	let postImageList = ref<any>([])
+	let postLikeCount = ref(-1);
+	let postCollectionCount = ref(-1);
 	const open = () => {
 	  if (popup.value) {
 	    popup.value.open();
 	  }
 	};
+	
+	onLoad((options:any)=>{
+		postId.value = JSON.parse(options.postId); // 字符串转对象
+		//获取帖子详情内容
+		getPostByPostId(postId.value).then((res:any)=>{
+			//console.log(res);
+			if(res.success==true){
+				post.value=res.data.post
+				postImageList.value = post.value.postImageList.map((postImage:any) => {
+					return useBaseStore().baseUrl + postImage;
+				});
+				postLikeCount.value=post.postLikeCount
+				postCollectionCount.value=post.postCollectionCount
+				//console.log(post.value)
+			}else{
+				uni.showToast({
+					title: res.message+'\n'+res.data.error,
+					icon: 'error',
+					duration: 6000
+				}) 
+			}
+		}).catch((err:any) => { 
+			console.error('获取帖子详情数据请求失败', err); 
+		});
+		//获取帖子关联内容
+		if(post.value.postAssociation==0){
+			getChannelDetail(post.value.associationId).then((res:any)=>{
+				if(res.success==true){
+					association.value=res.data.channel
+				}else{
+					uni.showToast({
+						title: res.message+'\n'+res.data.error,
+						icon: 'error',
+						duration: 6000
+					}) 
+				}
+			}).catch((err:any) => { 
+				console.error('关联频道数据请求失败', err); 
+			});
+		}else if(post.value.postAssociation==1){
+			getBroadcastDetail(post.value.associationId).then((res:any)=>{
+				if(res.success==true){
+					association.value=res.data.broadcast
+				}else{
+					uni.showToast({
+						title: res.message+'\n'+res.data.error,
+						icon: 'error',
+						duration: 6000
+					}) 
+				}
+			}).catch((err:any) => { 
+				console.error('关联节目数据请求失败', err); 
+			});
+		}
+		
+		if(userStore.isLogin==true){
+			//检查帖子是否已被用户收藏
+			checkPostCollection(userStore.userId,postId.value).then((res:any)=>{
+				if(res.success==true){
+					haveCollect.value=res.data.favorite
+					//console.log(haveCollect.value)
+				}else{
+					uni.showToast({
+						title: res.message+'\n'+res.data.error,
+						icon: 'error',
+						duration: 6000
+					}) 
+				}
+			}).catch((err:any) => { 
+				console.error('检查帖子是否被收藏请求失败', err); 
+			});
+		}
+
+		
+	})
+	
 </script>
 
 <style>
@@ -77,7 +169,7 @@
 	}
 	.post-detail-body {
 		margin:0 25rpx 30rpx 25rpx;
-		min-height: 280rpx;
+		min-height: 200rpx;
 	}
 	
 	.post-detail-picture {

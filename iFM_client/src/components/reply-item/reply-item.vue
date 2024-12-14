@@ -44,7 +44,7 @@
 	.reply-item {
 		display: flex;
 		padding: 20rpx;
-		margin-bottom: 25rpx;
+		margin-bottom: 15rpx;
 		background: white;
 	}
 	.reply-item .user-avatar {

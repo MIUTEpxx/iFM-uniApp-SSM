@@ -10,11 +10,11 @@
 		></my-head>
 		<my-head v-else></my-head>
 		<view class="my-body">
-			<my-button textContent="创作中心" iconContent="jixuchuangzuo" iconSize="40"></my-button>
+			<my-button @click="goCreation" textContent="创作中心" iconContent="jixuchuangzuo" iconSize="40"></my-button>
 			<uv-divider :dot="true" :hairline="false"></uv-divider>
 			<my-button @click="goMySubscribe" textContent="频道订阅" iconContent="dingyue1" iconSize="50"></my-button>
 			<my-button @click='goMyFavorite' textContent="我的收藏" iconContent="shoucang" iconSize="50"></my-button>
-			<my-button textContent="收听历史" iconContent="lishixiangmu_jilu" iconSize="50"></my-button>
+			<my-button @click="goMyHistory" textContent="收听历史" iconContent="lishixiangmu_jilu" iconSize="50"></my-button>
 			<uv-divider :dot="true" :hairline="false"></uv-divider>
 			<my-button v-if="!userStore.isLogin" @click="goLogin" textContent="用户登录" iconContent="tuichudenglu1" iconSize="50"></my-button>
 			<my-button v-else @click="logOut" textContent="退出登录" iconContent="tuichudenglu1" iconSize="50"></my-button>
@@ -43,6 +43,20 @@ const goLogin =()=>{
 		url: "/pages/login-register/login"
 	});   
 }	
+//跳转创作中心页
+const goCreation =()=>{
+	if(!userStore.isLogin){
+		uni.showToast({
+			title: '请登录后操作',
+			icon: 'error',
+			duration: 1000
+		}) 
+		return;
+	}
+	uni.navigateTo({
+		url: "/pages/creation/creation"
+	});  
+}
 //跳转我的收藏页
 const goMyFavorite =()=>{
 	if(!userStore.isLogin){
@@ -71,6 +85,21 @@ const goMySubscribe =()=>{
 		url: "/pages/my/my-subscribe"
 	});  
 }
+//跳转收听历史页
+const goMyHistory =()=>{
+	if(!userStore.isLogin){
+		uni.showToast({
+			title: '请登录后操作',
+			icon: 'error',
+			duration: 1000
+		}) 
+		return;
+	}
+	uni.navigateTo({
+		url: "/pages/my/my-history"
+	});  
+}
+
 const logOut =()=>{
 	uni.showToast({
 		title: '成功退出账号',

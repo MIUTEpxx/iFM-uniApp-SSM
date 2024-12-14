@@ -172,7 +172,6 @@
 			if(res.success!=false){
 				//注册成功
 				userStroe.setUserInfo(res.data.user);
-				userStroe.setToken(res.data.token);
 				uni.showToast({
 					title: "注册成功!",
 					icon: 'success',

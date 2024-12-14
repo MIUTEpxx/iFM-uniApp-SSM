@@ -94,13 +94,6 @@ const getVCodeFunc =(userEmail:string,index:number) =>{
 		return;
 	}
 	getVCode (userEmail).then((res:any) => {
-		if(res.code==20005){
-			//安全令牌失效,重新登录
-			logOut()
-			return
-		}
-		//更新Token安全令牌
-		userStore.setToken(res.data.token)
 		if(res.code===20000){
 			//验证码发送成功
 			uni.showToast({

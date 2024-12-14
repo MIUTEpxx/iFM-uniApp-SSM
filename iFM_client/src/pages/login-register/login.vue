@@ -190,11 +190,10 @@
 			
 			loginPassword (userId,userPassword).then((res:any) => {
 				userInfo.value=res.data.user
-				console.log("userInfo",userInfo.value)
+				//console.log("userInfo",userInfo.value)
 				if(res.success==true){
 					//登录成功
 					userStroe.setUserInfo(res.data.user);
-					userStroe.setToken(res.data.token)
 					uni.showToast({
 						title: "登录成功!",
 						icon: 'success',

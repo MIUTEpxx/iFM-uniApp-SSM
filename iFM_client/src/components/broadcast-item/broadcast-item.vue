@@ -12,11 +12,11 @@
 			<uv-text
 			:lines="1" 
 			:text="props.channelTitle" 
-			 color="#8a8a8a" size="16px"></uv-text>
+			 color="#8a8a8a" size="26rpx"></uv-text>
 			<uv-text 
 			:lines="2" 
 			:text="props.broadcastTitle" 
-			 color="#2b2b2b" size="20px" bold="true"></uv-text>
+			 color="#2b2b2b" size="32rpx" bold="true"></uv-text>
 			<view class="other-info">
 				<p class="play-count">播放{{numConversion(props.broadcastPlayCount)}}</p>
 				<p class="audio-duration">时长{{formatDuration(props.broadcastDuration)}}</p>
@@ -55,6 +55,8 @@
 		broadcastPlayCount: number;
 		//是否显示播放按钮
 		showPlayButton: boolean;
+		//是否启用组件内的点击方法
+		enableComponentClick:boolean;
 	};
 	
 	// 定义默认值
@@ -67,9 +69,11 @@
 	  broadcastDuration: 3600, // 默认1小时
 	  broadcastPlayCount: 1111111,
 	  showPlayButton:true,
+	  enableComponentClick:true,
 	});
 	
 	const goBroadcastDetail =()=>{
+		if(props.enableComponentClick==false){return;}
 		// 使用 uni.navigateTo 方法进行页面跳转，并传递 broadcastId参数
 		uni.navigateTo({
 		  url: "/pages/broadcast/broadcast?broadcastId="+props.broadcastId,
@@ -78,6 +82,7 @@
 	
 	//播放节目音频
 	const playBroadcastAudio =()=>{
+		if(props.enableComponentClick==false){return;}
 		playerStore.play(props.broadcastId);
 	}
 </script>

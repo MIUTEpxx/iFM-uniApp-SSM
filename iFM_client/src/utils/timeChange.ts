@@ -2,13 +2,21 @@
  * 时间格式 普通时间戳转换时间
  * @param value 时间戳
  */
-export function changeTimeStamp(value: any) {
-  return new Date(value.format('YYYY-MM-DD HH:mm:ss')).getTime();
+export function changeTimeStamp(value: any) {	
+	const data = new Date(value);
+	const month = data.getMonth() + 1;
+	const day = data.getDate();
+	const year = data.getFullYear();
+	const hours = data.getHours();
+	const minutes = data.getMinutes();
+	//const seconds = data.getSeconds();
+	const formattedTime = `${year}-${month}-${day} ${hours}:${minutes}`;
+	return formattedTime;
 }
 
 /**
  * 优化时间格式 
- * 如 2024-11-22T18:57:35->2024-11-22 18:57
+ * 如 2024-11-22 18:57:35->2024-11-22 18:57
  * @param {any} value 
  * @return 
  */ 

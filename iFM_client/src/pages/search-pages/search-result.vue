@@ -82,6 +82,7 @@ let broadcastList=ref<any>([])
 let channelList=ref<any>([])
 //排序方法列表
 let sortMethodList =ref([''])
+//当前排序方法
 let currentSortMethod=ref({key:0,name:'综合排序'})
 
 onPageScroll((e:any)=>{

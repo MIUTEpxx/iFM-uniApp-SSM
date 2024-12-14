@@ -50,6 +50,13 @@
 			}
 		},
 		{
+			"path": "pages/my/my-history",
+			"style": {
+				"navigationBarTitleText": "收听历史页",
+				"titleNView": false
+			}
+		},
+		{
 			"path": "pages/login-register/login",
 			"style": {
 				"navigationBarTitleText": "用户登录页",
@@ -108,7 +115,42 @@
 		{
 			"path": "pages/community/more-reply",
 			"style": {
-				"navigationBarTitleText": "帖子详情",
+				"navigationBarTitleText": "更多回复",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/creation/creation",
+			"style": {
+				"navigationBarTitleText": "创作中心",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/creation/creation-channel",
+			"style": {
+				"navigationBarTitleText": "创建频道",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/creation/creation-post",
+			"style": {
+				"navigationBarTitleText": "帖子创建",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/creation/creation-broadcast",
+			"style": {
+				"navigationBarTitleText": "节目创建",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/creation/post-association-choose",
+			"style": {
+				"navigationBarTitleText": "帖子关联选择",
 				"titleNView": false
 			}
 		}

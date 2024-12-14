@@ -1,25 +1,61 @@
 <template>
 	<view class="post-item">
-		<post-head></post-head>
+		<post-head 
+		@click="goToPostDetail"
+		:userId="props.userId" 
+		:userName="props.userName" 
+		:userPicture="props.userPicture"
+		:postCreateTime="props.postCreateTime"
+		:postSection="props.postSection"></post-head>
 		<view class="post-item-body" @click="goToPostDetail">
-			<uv-text class="post-titel" :lines="1" text="帖子标题帖子标题帖子标题帖子标题帖子标题帖子标题" lineHeight="60rpx" color="#39414b"  size="18px" bold="true"></uv-text>
-			<uv-text class="post-detail" :lines="2" text="帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容帖子详情内容" lineHeight="40rpx" color="#78889c"  size="16px"></uv-text>
+			<uv-text class="post-titel" :lines="1" :text="props.postTitle" lineHeight="60rpx" color="#39414b"  size="18px" bold="true"></uv-text>
+			<uv-text class="post-detail" :lines="2" :text="props.postDetail" lineHeight="40rpx" color="#78889c"  size="16px"></uv-text>
 		</view>
-		<view class="post-item-picture" v-if="urls.length!=0">
-			<uv-album :urls="urls" singleSize="230rpx" multipleSize="230rpx" space="8rpx" maxCount="6"  singleMode="aspectFill"></uv-album>
+		<view class="post-item-picture" v-if="props.postImageList.length!=0">
+			<uv-album :urls="props.postImageList" singleSize="230rpx" multipleSize="230rpx" space="8rpx" maxCount="6"  singleMode="aspectFill"></uv-album>
 		</view>
-		<post-interaction iconSize="50" textSize="26"></post-interaction>
-		
+		<post-interaction 
+		:postId="props.postId"
+		:postLikeCount="props.postLikeCount" 
+		:postCommentCount="props.postCommentCount" 
+		:postCollectionCount="props.postCollectionCount" 
+		:haveCollect="haveCollect"
+		iconSize="50" 
+		textSize="26"></post-interaction>
 	</view>
 </template>
 
 <script setup lang="ts">
 import { onShow } from "@dcloudio/uni-app";
 import useBaseStore from "@/stores/base"
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import useUserStore from "@/stores/user";
+import { checkPostCollection } from "@/request/api";
 	
 	const baseStore=useBaseStore()
-	let urls = ref([
+	const userStore=useUserStore()
+	
+	//父组件传递数据
+	const props = defineProps({
+		postId: {
+			type: Number,
+			default: -1
+		},
+		postCreateTime:{
+			type: Number,
+			default: "xxxx-xx-xx xx:xx"
+		},
+		postTitle: {
+			type: String,
+			default: "默认帖子标题"
+		},
+		postDetail: {
+			type: String,
+			default: "默认帖子详情"
+		},
+		postImageList: {
+			type:Array,
+			default:[
 		'https://via.placeholder.com/100x200.png/3c9cff/fff',
 		'https://via.placeholder.com/200x200.png/3c9cff/fff',
 		'https://via.placeholder.com/300x200.png/3c9cff/fff',
@@ -28,18 +64,63 @@ import { ref } from "vue";
 		'https://via.placeholder.com/180x200.png/3c9cff/fff',
 		'https://via.placeholder.com/140x200.png/3c9cff/fff',
 		'https://via.placeholder.com/150x200.png/3c9cff/fff',
-		'https://via.placeholder.com/90x200.png/3c9cff/fff',		
-	])
-	
-	onShow(() => {
-	  //隐藏pages.json里配置的导航栏，使用封装的tabbar组件
-	  	uni.hideTabBar({
-	          animation:false
-	       })
+		'https://via.placeholder.com/90x200.png/3c9cff/fff',]
+		},
+		postCollectionCount:{
+			type: Number,
+			default: 0
+		},
+		postLikeCount:{
+			type: Number,
+			default: 0
+		},
+		postCommentCount:{
+			type: Number,
+			default: 0
+		},
+		userId:{
+			type: Number,
+			default: -1
+		},
+		userName:{
+			type: String,
+			default: "匿名用户"
+		},
+		userPicture:{
+			type: String,
+			default: "/images/user/head/D.png"
+		},
+		postSection:{
+			type: Number,
+			default: 0
+		},
 	});
+	
+	let haveCollect = ref(true)
+	
+	onShow(()=>{
+		if(props.postId!=-1&&userStore.isLogin==true){
+			//检查帖子是否已被用户收藏
+			checkPostCollection(userStore.userId,props.postId).then((res:any)=>{
+				if(res.success==true){
+					haveCollect.value=res.data.favorite
+					console.log(props.postId,haveCollect.value)
+				}else{
+					uni.showToast({
+						title: res.message+'\n'+res.data.error,
+						icon: 'error',
+						duration: 6000
+					}) 
+				}
+			}).catch((err:any) => { 
+				console.error('检查帖子是否被收藏请求失败', err); 
+			});
+		}
+	})
+	
 	const goToPostDetail =()=>{
 		uni.navigateTo({
-		  url: "/pages/community/post-detail",
+		  url: "/pages/community/post-detail?postId="+props.postId,
 		});   
 	}
 </script>

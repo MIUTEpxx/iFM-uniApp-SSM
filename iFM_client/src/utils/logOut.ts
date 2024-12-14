@@ -12,4 +12,10 @@ export function logOut(){
 	uni.reLaunch({
 	    url: '/pages/index/index'
 	})
+	//提醒用户
+	uni.showToast({
+		title: '登录过期\n请重新登录',
+		icon: 'error',
+		duration: 2000
+	}) 
 }

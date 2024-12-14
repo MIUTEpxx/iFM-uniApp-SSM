@@ -25,6 +25,24 @@ export const getHashtag = () =>{
 	})
 }
 
+//根据用户id获取用户创建的频道
+export const getChannelByUserId = (userId:number) =>{
+	return request({
+		url:'/channel/getChannelByUserId',
+		method:'get',
+		data:{"userId":userId},
+	})
+}
+
+//根据频道id删除频道
+export const deleteChannel = (userId:number, channelId:number) =>{
+	return request({
+		url:'/channel/deleteChannel',
+		method:'delete',
+		data:{userId:userId,channelId:channelId},
+	})
+}
+
 //根据主题标签获取频道
 export const getChannelByHashtag = (hashtagId:number) =>{
 	return request({
@@ -79,6 +97,46 @@ export const getSubscribedChannel = (userId:number) =>{
 	})
 }
 
+//创建频道
+/* export const createChannel = (userId:number,channelTitle:string,channelDetail:string,channelPicture:File,hashtagIdList:Array<number>) =>{
+ 	const formData = new FormData();
+	formData.append('userId', userId.toString());
+	formData.append('channelTitle', channelTitle);
+	formData.append('channelDetail', channelDetail);
+	hashtagIdList.forEach((id) => formData.append('hashtagIdList', id.toString())); 
+	//console.log("formData", formData);
+	return request({
+		url:'/channel/createChannel',
+		method:'post',
+		haveFile:true,//表明请求参数中有文件数据, 则头部体有'Content-Type': 'multipart/form-data' 
+		data:{
+		userId:userId,
+		channelTitle:channelTitle,
+		channelDetail:channelDetail,
+		channelPicture:channelPicture,
+		hashtagIdList:hashtagIdList,
+		},
+	})
+} */
+
+//创建频道
+export const createChannel = (userId:number,channelTitle:string,channelDetail:string,channelPicture:any,hashtagIdList:Array<number>) =>{
+
+	return request({
+		url:'/channel/createChannel',
+		method:'post',
+		filePath:channelPicture.url,
+		name:"channelPicture",
+		haveFile:true,//表明请求参数中有文件数据
+		data: {
+			userId:userId,
+			channelTitle:channelTitle,
+			channelDetail:channelDetail,
+			hashtagIdList:hashtagIdList,
+		},
+	})
+}
+
 //用户订阅/取消订阅
 export const changeSubscribe = (userId:number,channelId:number) =>{
 	return request({
@@ -89,7 +147,7 @@ export const changeSubscribe = (userId:number,channelId:number) =>{
 }
 
 //获取节目详情
-export const getBroadacastDetail = (broadcastId:number) =>{
+export const getBroadcastDetail = (broadcastId:number) =>{
 	return request({
 		url:'/broadcast/getBroadcastByBroadcastId',
 		method:'get',
@@ -162,6 +220,24 @@ export const getBroadcastByIdList = (broadcastIdList:number[]) =>{
 		data:{"broadcastIdList":broadcastIdList},
 	})
 }
+//获取用户收听历史表中的节目
+export const getHistory = (userId:number) =>{
+	return request({
+		url:'/broadcast/getHistory',
+		method:'get',
+		data:{"userId":userId},
+	})
+}
+
+//删除节目收听历史记录
+export const deleteHistory = (userId:number,broadcastId:number) =>{
+	return request({
+		url:'/broadcast/deleteHistory',
+		method:'delete',
+		data:{userId:userId,broadcastId:broadcastId},
+	})
+}
+
 //获取验证码
 export const getVCode = (userEmail:string) =>{
 	return request({
@@ -252,5 +328,151 @@ export const changeUserProfile = (userId:number,userProfile:string) =>{
 			userId:userId,
 			userProfile:userProfile,
 		},
+	})
+}
+
+
+// 帖子 //
+//根据用户id获取用户创建的帖子
+export const getPostByUserId = (userId:number) =>{
+	return request({
+		url:'/post/getPostByUserId',
+		method:'get',
+		data:{"userId":userId},
+	})
+}
+
+//创建帖子(非图片部分)
+export const createPost = 
+	(userId:number,//用户Id
+	postTitle:string,//帖子标题
+	postDetail:string,//帖子详情内容
+	postSection:number,//帖子所属板块id
+	postAssociation:number,//帖子关联内容类型
+	associationId:number,//帖子关联内容id
+	postHashtagList:Array<number>) =>{
+	return request({
+		url:'/post/createPost',
+		method:'post',
+		data: {
+			userId:userId,
+			postTitle:postTitle,
+			postDetail:postDetail,
+			postSection:postSection,
+			postAssociation:postAssociation,
+			associationId:associationId,
+			postHashtagList:postHashtagList,
+		},
+	})
+}
+
+//创建帖子(图片部分,即为帖子添加图片)
+export const addImageForPost = (postId:number,postImage:any) =>{
+	return request({
+		url:'/post/addImageForPost',
+		method:'post',
+		filePath:postImage.url,
+		name:"postImage",
+		haveFile:true,//表明请求参数中有文件数据
+		data: {
+			postId:postId,
+			postImage:postImage,
+		},
+	})
+}
+//删除帖子
+export const deletePost = (userId:number,postId:number) =>{
+	return request({
+		url:'/post/deletePost',
+		method:'delete',
+		data: {
+			userId:userId,
+			postId:postId,
+		},
+	})
+}
+//获取热门帖子
+export const getPopularPost = () =>{
+	return request({
+		url:'/post/getPopularPost',
+		method:'get',
+	})
+}
+//根据帖子id获取对应帖子数据
+export const getPostByPostId = (postId:number) =>{
+	return request({
+		url:'/post/getPostByPostId',
+		method:'get',
+		data:{
+			"postId":postId,
+		}
+	})
+}
+
+//根据板块id获取帖子
+export const getPostBySectionId = (sectionId:number) =>{
+	return request({
+		url:'/post/getPostBySectionId',
+		method:'get',
+		data:{
+			"sectionId":sectionId,
+		}
+	})
+}
+
+//根据关键词获取帖子
+export const getPostByKeyword = (keyword:string) =>{
+	return request({
+		url:'/post/getPostByKeyword',
+		method:'get',
+		data:{
+			"keyword":keyword,
+		}
+	})
+}
+
+//检查帖子是否已经被用户收藏
+export const checkPostCollection = (userId:number,postId:number) =>{
+	return request({
+		url:'/post/checkCollection',
+		method:'get',
+		data:{
+			"userId":userId,
+			"postId":postId,
+		}
+	})
+}
+//根据频道或节目ID获取对应关联的帖子
+export const getPostByAssociationId = (postAssociation:number,associationId:number) =>{
+	return request({
+		url:'/post/getPostByAssociationId',
+		method:'get',
+		data:{
+			"postAssociation":postAssociation,
+			"associationId":associationId,
+		}
+	})
+}
+//用户收藏/取消收藏 帖子 (具体取决于帖子是否处于用户收藏表)
+export const changePostCollection = (userId:number,postId:number) =>{
+	return request({
+		url:'/post/changeCollection',
+		method:'post',
+		data:{
+			"userId":userId,
+			"postId":postId,
+		}
+	})
+}
+
+//点赞/取消点赞帖子,更改帖子点赞量
+export const changePostLike = (postId:number,value:number) =>{
+	return request({
+		url:'/post/changeLike',
+		method:'post',
+		data:{
+			"postId":postId,
+			"value":value,
+		}
 	})
 }

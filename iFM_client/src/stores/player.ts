@@ -149,7 +149,10 @@ export const usePlayerStore = defineStore('Player',{
 		        audio.src = this.baseUrl+this.broadcastAudio;
 				
 				//若有上次用户收听的历史时长记录
-				if(this.currentTime>0){
+				if(this.broadcastDuration-this.currentTime<=15){
+					this.currentTime=0;
+				}
+				else if(this.currentTime>0){
 					// 设置音频从特定时间开始播放
 					audio.seek(this.currentTime);
 					console.log("从上回收听到的时长开始播放",this.currentTime)
@@ -337,6 +340,7 @@ export const usePlayerStore = defineStore('Player',{
         },	
 		//定时器2触发
 		interval2() {
+			//console.log("收听历史!")
 			//若用户未登录,则不记录收听历史
 			if(!useUserStore().isLogin){return}
 			//当播放器处于播放状态且非正在被拖动进度条且并非处于暂停状态并且播放未结束

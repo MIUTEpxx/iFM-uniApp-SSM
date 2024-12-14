@@ -146,13 +146,6 @@
 		else {subscribeCount.value--}
 		//用户订阅/取消订阅
 		changeSubscribe(userStore.userId,channelId.value).then((res: any) => {
-			if(res.code==20005){
-				//安全令牌失效,重新登录
-				logOut()
-				return
-			}
-			//更新Token安全令牌
-			userStore.setToken(res.data.token)
 			if(res.success===false){
 				uni.showToast({
 					title: res.message+'\n'+res.data.error,

@@ -12,26 +12,31 @@
 			<uv-text
 			:lines="1" 
 			:text="props.userName" 
-			 color="#8a8a8a" size="16px"></uv-text>
+			 color="#8a8a8a" size="26rpx"></uv-text>
 			<uv-text 
 			:lines="2" 
 			:text="props.channelTitle" 
-			 color="#2b2b2b" size="20px" bold="true"></uv-text>
+			 color="#2b2b2b" size="32rpx" bold="true"></uv-text>
 			<view class="other-info" >
 				<p class="hashtag" v-for="(v,i) in props.channelHashtag" :key="i">{{v.hashtagName}}</p>
 			</view>
 		</view>
 		<view class="subscribe-button" v-if="props.showSubscribeButton">
-			<uv-icon name="plus-circle-fill" color="#86c7f9" size="45"></uv-icon>
+			<uv-icon @click="subscribeClick" v-if="!hasSubscribe" name="plus-circle-fill" color="#86c7f9" size="40"></uv-icon>
+			<uv-icon @click="subscribeClick" v-else name="close-circle" color="#86c7f9" size="40"></uv-icon>
 		</view>
 	</view>
 </template>
 
 <script setup lang="ts">
-	import { defineProps, withDefaults } from 'vue';
+	import { defineProps, ref, withDefaults } from 'vue';
 	import useBaseStores from '@/stores/base';
+	import { onShow } from '@dcloudio/uni-app';
+	import useUserStore from '@/stores/user';
+	import { changeSubscribe, checkSubscribe } from '@/request/api';
 	
 	const base_url = useBaseStores().baseUrl;
+	const userStore= useUserStore();
 	
 	interface IBroadcast {
 		//频道id
@@ -48,7 +53,11 @@
 		userName:string;
 		//是否显示订阅按钮
 		showSubscribeButton: boolean;
+		//是否启用组件内的点击方法
+		enableComponentClick:boolean;
 	}
+	//用户是否已订阅该频道
+	let hasSubscribe= ref(false);
 	
 	// 定义数据默认值
 	const props = withDefaults(defineProps<IBroadcast>(), {
@@ -59,15 +68,61 @@
 	  channelHashtag: () => [{ hashtagId: 1, hashtagName: '标签1' },{ hashtagId: 2, hashtagName: '标签2' }],
 	  userName: '匿名用户',
 	  showSubscribeButton:true,
+	  enableComponentClick:true,
 	});
 	
 	const goChannelDetail =()=>{			
+		if(props.enableComponentClick==false){return;}
 		// 使用 uni.navigateTo 方法进行页面跳转，并传递 channelId参数
 		uni.navigateTo({
 		  url: "/pages/channel/channel?channelId="+props.channelId,
 		});   
 	}
+	const subscribeClick =()=>{
+		if(!userStore.isLogin){
+			uni.showToast({
+				title: '请登录后操作',
+				icon: 'error',
+				duration: 1000
+			}) 
+			return;
+		}
+		hasSubscribe.value=!hasSubscribe.value
+		//用户订阅/取消订阅
+		changeSubscribe(userStore.userId,props.channelId).then((res: any) => {
+			if(res.success===false){
+				uni.showToast({
+					title: res.message+'\n'+res.data.error,
+					icon: 'error',
+					duration: 3000
+				}) 
+			}
+		}).catch((err: any) => {
+			console.error('频道订阅请求失败', err);
+		});
+		
+	}
 	
+	onShow(()=>{
+		if(userStore.isLogin===true){
+			//若用户处于登录状态,检查用户是否已订阅该频道
+			checkSubscribe (userStore.userId,props.channelId).then((res:any) => {
+				 console.log("res",res)
+				if(res.success===true){
+					hasSubscribe.value=res.data.subscribe
+					console.log("hasSubscribe",hasSubscribe.value)
+				}else{
+					uni.showToast({
+						title: res.message+'\n'+res.data.error,
+						icon: 'error',
+						duration: 3000
+					}) 
+				}
+			}).catch((err:any) => { 
+			  console.error('订阅数据请求失败', err); 
+			});
+		}
+	})
 </script>
 
 <style>
@@ -109,6 +164,6 @@
 	  flex: 1;
 	  display: flex;
 	  align-items: center; /* 垂直居中对齐图标 */
-	  justify-content: flex-start; /* 水平居中对齐图标 */
+	  justify-content: center; /* 水平居中对齐图标 */
 	}
 </style>

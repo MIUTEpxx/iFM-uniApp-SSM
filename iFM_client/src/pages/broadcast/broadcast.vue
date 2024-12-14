@@ -65,7 +65,7 @@
 
 <script  setup lang="ts">
 	import { onLoad } from "@dcloudio/uni-app";
-	import { getChannelDetail, getBroadacastDetail, checkCollect, changeFavorite } from "@/request/api"; 
+	import { getChannelDetail, getBroadcastDetail, checkCollect, changeFavorite } from "@/request/api"; 
 	import { ref,watch } from 'vue';
 	import { changeTime } from "@/utils/timeChange"
 	import { numConversion} from '@/utils/numConversion';
@@ -107,13 +107,6 @@
 		else {CollectionCount.value-=1}
 		//用户收藏/取消收藏
 		changeFavorite(userStore.userId,broadcastId.value).then((res: any) => {
-			if(res.code==20005){
-				//安全令牌失效,重新登录
-				logOut()
-				return
-			}
-			//更新Token安全令牌
-			userStore.setToken(res.data.token)
 			if(res.success===false){
 				uni.showToast({
 					title: res.message+'\n'+res.data.error,
@@ -129,7 +122,7 @@
 	 onLoad((options:any) => {
 		broadcastId.value = JSON.parse(options.broadcastId); // 字符串转对象
 		//获取节目信息
-		getBroadacastDetail (broadcastId.value).then((res:any) => {
+		getBroadcastDetail (broadcastId.value).then((res:any) => {
 			broadcast.value=res.data.broadcast
 			//处理节目的数据
 			broadcast.value.gmtCreate=changeTime(broadcast.value.gmtCreate)

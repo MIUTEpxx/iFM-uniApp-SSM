@@ -27,6 +27,7 @@
 			</scroll-view>
 		</view>
 	</view>
+	
 	<player-bar :reserveSpace="true"></player-bar>
 	<tabbar></tabbar>
   </view>
@@ -62,7 +63,7 @@ onShow(() => {
 	
 	getPopularChannel ().then((res:any) => {
 		channelList.value=res.data.channelList
-		console.log("channel",channelList.value)
+		//console.log("channel",channelList.value)
 	}).catch((err:any) => { 
 	  console.error('热门频道请求失败', err); 
 	});

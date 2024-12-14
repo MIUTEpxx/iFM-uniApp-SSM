@@ -53,7 +53,7 @@
 			<EditUserPassword :cancelClick="closeEdit"	class="overlay-content" v-if="editUserPassword"></EditUserPassword>
 			<EditUserProfile  :cancelClick="closeEdit"	class="overlay-content" v-if="editUserProfile"></EditUserProfile>
 		</uv-overlay>
-		
+		<player-bar :reserveSpace="true"></player-bar>
 	</view>
 </template>
 

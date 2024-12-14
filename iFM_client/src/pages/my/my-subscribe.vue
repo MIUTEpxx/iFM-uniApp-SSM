@@ -36,6 +36,7 @@
 				</scroll-view>
 			</view>
 		</view>
+		<player-bar></player-bar>
 	</view>
 </template>
 
@@ -63,8 +64,6 @@ const inDeleteClick =() =>{
 const deleteBroacast =(item:any,index:number) =>{
 	//取消订阅
 	changeSubscribe(userStore.userId,item.channelId).then((res: any) => {
-		//更新安全令牌
-		userStore.setToken(res.data.token)
 		if(res.success===true){
 			// 删除channelList中对应index的元素
 			channelList.value.splice(index, 1);
@@ -83,8 +82,6 @@ const deleteBroacast =(item:any,index:number) =>{
 onShow(() => {
 	//获取用户订阅的频道
 	 getSubscribedChannel(userStore.userId).then((res:any) => {
-		 //更新安全令牌
-		 userStore.setToken(res.data.token)
 		 if(res.success==true){
 			 channelList.value=res.data.channelList
 		 }else{
@@ -143,8 +140,8 @@ onShow(() => {
 	.channel-item-list>*{
 		flex: 1;
 	}
-	.channel-item-list .item{
-		flex: 5;
+	.channel-item-list>.item{
+		flex: 6;
 	}
 
 </style>
