@@ -511,4 +511,16 @@ public class ChannelServiceImpl implements ChannelService {
             return new Result(false,20001,"未知错误",data);
         }
     }
+    @Override
+    public  Result changeChannelPostCount (Integer id, int num){
+        Map<String, Object> data = new HashMap<>();
+        try {
+            //更新关联帖子数量
+            channelMapper.updateChannelPostCount(id, num);
+            return Result.ok().data(data);
+        }catch (RuntimeException e){
+            data.put("error.message", e.getMessage());
+            return new Result(false,20001,"未知错误,节目帖子数量修改失败",data);
+        }
+    }
 }

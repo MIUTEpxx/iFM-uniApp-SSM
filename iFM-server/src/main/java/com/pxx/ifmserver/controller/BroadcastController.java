@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -104,6 +105,28 @@ public class BroadcastController {
         return broadcastService.getBroadcastHistory(userId,broadcastId);
     }
 
+    /**
+     * 获取节目音频信息(包括作者名,若为登录状态,则可获得上次播放到的时长数据)
+     * @param userId
+     * @param broadcastId
+     * @return
+     */
+    @GetMapping("/getBroadcastAudio")
+    public Result getBroadcastAudio(@RequestParam Integer userId,@RequestParam Integer broadcastId) {
+        return broadcastService.getBroadcastAudioById(userId,broadcastId);
+    }
+
+    /**
+     * 根据节目id数组,一次性请求复数的节目项信息
+     * @param broadcastIdList
+     * @return
+     */
+    @GetMapping("/getBroadcastByIdList")
+    public Result getBroadcastByIdList(@RequestParam List<Integer> broadcastIdList) {
+        return broadcastService.getBroadcastByIdList(broadcastIdList);
+    }
+
+
 
     /**
      * 创建节目接口
@@ -112,7 +135,6 @@ public class BroadcastController {
      * @param broadcastTitle
      * @param broadcastDetail
      * @param broadcastPicture
-     * @param broadcastAudio
      * @param req
      * @param resp
      * @return
@@ -124,7 +146,7 @@ public class BroadcastController {
     public Result createBroadcast(
             @RequestParam  Integer channelId, @RequestParam Integer userId,
             @RequestParam String broadcastTitle, @RequestParam String broadcastDetail,
-            @RequestParam MultipartFile broadcastPicture, @RequestParam MultipartFile broadcastAudio,
+            @RequestParam MultipartFile broadcastPicture,
             HttpServletRequest req,
             HttpServletResponse resp) throws IOException, ParseException, NoSuchAlgorithmException {
         // 检验Token
@@ -135,7 +157,39 @@ public class BroadcastController {
             return new Result(false,80000,"处理失败",data);
         }
         // 节目创建
-        Result r= broadcastService.createBroadcast(channelId, userId, broadcastTitle, broadcastDetail, broadcastPicture, broadcastAudio);
+        Result r= broadcastService.createBroadcast(channelId, userId, broadcastTitle, broadcastDetail, broadcastPicture);
+        r.getData().put("token",newToken);
+        return r;
+    }
+
+    /**
+     * 为节目添加音频数据(配合创建节目接口使用)
+     * @param userId
+     * @param broadcastId
+     * @param audioFile
+     * @param req
+     * @param resp
+     * @return
+     * @throws IOException
+     * @throws ParseException
+     * @throws NoSuchAlgorithmException
+     */
+    @PostMapping("/addAudio")
+    public Result addAudio(
+            @RequestParam Integer userId,
+            @RequestParam Integer broadcastId,
+            @RequestParam MultipartFile audioFile,
+            HttpServletRequest req,
+            HttpServletResponse resp) throws IOException, ParseException, NoSuchAlgorithmException {
+        // 检验Token
+        String newToken = TokenUtil.verifyToken(req, resp,userId);
+        if(newToken==null){
+            Map<String, Object> data = new HashMap<>();
+            data.put("error","Token安全令牌失效,请重新登录");
+            return new Result(false,80000,"处理失败",data);
+        }
+        // 节目创建
+        Result r= broadcastService.addAudioForBroadcast(userId, broadcastId, audioFile);
         r.getData().put("token",newToken);
         return r;
     }
@@ -304,6 +358,7 @@ public class BroadcastController {
             @RequestParam Integer userId,
             @RequestParam Integer broadcastId,
             @RequestParam Integer lastListenDuraction){
+        if(userId==-1){return Result.ok();}
         return broadcastService.updateHistory(userId,broadcastId,lastListenDuraction);
     }
 

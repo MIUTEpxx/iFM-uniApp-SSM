@@ -46,7 +46,7 @@
 			</view>
 			<view class="creation-channel" v-if="showContent==0">
 				<view class="channel-item-list" v-for="(item,i) in channelList" :key="i" >
-					<channel-item  class="item" v-bind="item" :showSubscribeButton="false"></channel-item>
+					<channel-item  @click="goChannelDetailEdit(item)" class="item" v-bind="item" :showSubscribeButton="false" :enableComponentClick="false"></channel-item>
 					<uv-icon  v-if="inDelete" @click="open(item,i)" name="trash" color="#ff7d7d" size="28"></uv-icon>	
 				</view>
 				<uv-text text="没有更多频道了" color="#8e9aa7"  size="16px" align="center"></uv-text>
@@ -222,6 +222,12 @@ const goCreationNew	=()=>{
 		}); 
 	}
  
+}
+//前往可编辑频道详情页
+const goChannelDetailEdit=(item:any)=>{
+	uni.navigateTo({
+	  url: "/pages/channel/channel-detail-edit?channelId="+item.channelId,
+	}); 
 }
 </script>
 

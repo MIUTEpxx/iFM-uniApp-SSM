@@ -2,7 +2,6 @@ package com.pxx.ifmserver.service.impl;
 
 import com.pxx.ifmserver.entity.dto.*;
 import com.pxx.ifmserver.entity.vo.BroadcastItemVO;
-import com.pxx.ifmserver.entity.vo.ChannelVO;
 import com.pxx.ifmserver.mapper.BroadcastMapper;
 import com.pxx.ifmserver.mapper.ChannelMapper;
 import com.pxx.ifmserver.mapper.UserMapper;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
@@ -90,22 +88,17 @@ public class BroadcastServiceImpl implements BroadcastService {
      * @param broadcastTitle
      * @param broadcastDetail
      * @param broadcastPicture
-     * @param broadcastAudio
      * @return
      */
     @Override
     public Result createBroadcast(
             Integer channelId, Integer userId,
             String broadcastTitle, String broadcastDetail,
-            MultipartFile broadcastPicture, MultipartFile broadcastAudio){
+            MultipartFile broadcastPicture){
         Map<String, Object> data = new HashMap<>();
         if (broadcastPicture.isEmpty()) {
             data.put("error","封面图片文件为空");
             Result result = new Result(false,70000,"文件上传失败",data);
-            return result;
-        } else if (broadcastAudio.isEmpty()) {
-            data.put("error","音频文件为空");
-            Result result = new Result(false,70001,"文件上传失败",data);
             return result;
         }else if(!userId.equals(channelMapper.getChannelByChannelId(channelId).getUserId())){
             //若频道作者ID不等于此用户ID,无权操作
@@ -116,8 +109,6 @@ public class BroadcastServiceImpl implements BroadcastService {
         Broadcast broadcast=new Broadcast();
         //节目封面图片文件名称
         String pictureFileName=null;
-        //节目音频文件名称和时长(fileName,duration)
-        Map<String, Object> audioFile=null;
         try{
             //节目基本信息
             broadcast.setBroadcastTitle(broadcastTitle);
@@ -128,36 +119,33 @@ public class BroadcastServiceImpl implements BroadcastService {
             broadcastMapper.insertBroadcast(broadcast);
             try {
                 pictureFileName = FileUtils.savePicture(broadcast.getBroadcastId(), broadcastPicture,BROADCAST_PICTURE_PATH);
-                audioFile=FileUtils.saveAudio(broadcast.getBroadcastId(), broadcastAudio,BROADCAST_AUDIO_PATH);
+
             } catch (IOException e) {
+                //删除节目
+                deleteBroadcast(userId, broadcast.getBroadcastId());
                 data.put("error.message", e.getMessage());
-                data.put("channelId",broadcast.getBroadcastId());//返回节目ID
                 return new Result(false,20001,"未知错误,封面或音频文件上传失败",data);
             }
             //更新数据库中该节目的封面图片路径和音频文件路径,音频时长
             broadcastMapper.updateBroadcastPicurlByBroadcastId(broadcast.getBroadcastId(), "/images/broadcast/"+pictureFileName);
-            broadcastMapper.updateBroadcastAudioByBroadcastId(broadcast.getBroadcastId(), "/audio/"+audioFile.get("fileName"));
-            broadcastMapper.updateBroadcastDurationByBroadcastId(broadcast.getBroadcastId(), (Long) audioFile.get("duration"));
             //更新频道的上次更新时间
             channelMapper.updateChannelUpdateTimeByChannelId(channelId);
-            data.put("channelId",broadcast.getBroadcastId());//返回节目ID
+            data.put("broadcastId",broadcast.getBroadcastId());//返回节目ID
             return Result.ok().data(data);
         }catch (RuntimeException e){
             //创建失败,删除节目数据记录
-            broadcastMapper.deleteBroadcast(broadcast.getBroadcastId());
+/*            broadcastMapper.deleteBroadcast(broadcast.getBroadcastId());
             try {
                 //删除音频文件和封面图片文件
                 if(pictureFileName!=null){
                     FileUtils.deletePicture("/images/broadcast/"+pictureFileName);
                 }
-                if(audioFile!=null){
-                    FileUtils.deleteAudio("/audio/"+audioFile.get("fileName"));
-                }
             }catch (IOException ee){
                 data.put("error.message", ee.getMessage());
                 data.put("channelId",broadcast.getBroadcastId());//返回节目ID
                 return new Result(false,20001,"未知错误,封面或音频文件删除失败",data);
-            }
+            }*/
+            deleteBroadcast(userId,broadcast.getBroadcastId());
             data.put("error.message", e.getMessage());
             return new Result(false,20001,"未知错误",data);
         }
@@ -642,6 +630,109 @@ public class BroadcastServiceImpl implements BroadcastService {
         }catch (RuntimeException e){
             data.put("error.message", e.getMessage());
             return new Result(false,20001,"未知错误,历史收听节目数据获取失败",data);
+        }
+    }
+
+    /**
+     * 获取节目信息(包含作者名,用户上次收听到的时长)
+     * @param userId
+     * @param broadcastId
+     * @return
+     */
+    @Override
+    public Result getBroadcastAudioById(Integer userId, Integer broadcastId){
+        Map<String, Object> data = new HashMap<>();
+        try {
+            //获取此用户节目历史收听记录数据
+            BroadcastHistory broadcastHistory = broadcastMapper.getHistoryBroadcastByUserId(userId,broadcastId);
+            BroadcastItemVO broadcastItemVO=new BroadcastItemVO();
+            Broadcast broadcast=broadcastMapper.getBroadcastByBroadcastId(broadcastId);
+            broadcastItemVO.setBroadcast(broadcast);
+            if(broadcastHistory!=null){
+                broadcastItemVO.setLastListenDuration(broadcastHistory.getLastListenDuration());
+            }else{
+                broadcastItemVO.setLastListenDuration(0);
+            }
+            data.put("broadcast",broadcastItemVO);
+            return Result.ok().data(data);
+        }catch (RuntimeException e){
+            data.put("error.message", e.getMessage());
+            return new Result(false,20001,"未知错误,节目音频数据获取失败",data);
+        }
+    }
+
+    @Override
+    public Result getBroadcastByIdList(List<Integer> broadcastIdList){
+        Map<String, Object> data = new HashMap<>();
+        try {
+            List<BroadcastItemVO> broadcastItemVOList=new ArrayList<>();
+            for(Integer broadcastId:broadcastIdList){
+                Broadcast broadcast=broadcastMapper.getBroadcastByBroadcastId(broadcastId);
+                BroadcastItemVO broadcastItemVO=new BroadcastItemVO();
+                broadcastItemVO.setBroadcast(broadcast);
+                broadcastItemVOList.add(broadcastItemVO);
+            }
+            data.put("broadcastList",broadcastItemVOList);
+            return Result.ok().data(data);
+        }catch (RuntimeException e){
+            data.put("error.message", e.getMessage());
+            return new Result(false,20001,"未知错误,节目音频数据获取失败",data);
+        }
+    }
+
+    /**
+     * 为节目添加音频
+     * @param userId
+     * @param broadcastId
+     * @param audioFile
+     * @return
+     */
+    @Override
+    public Result addAudioForBroadcast(Integer userId, Integer broadcastId,MultipartFile audioFile){
+        Map<String, Object> data = new HashMap<>();
+        //节目音频文件名称和时长(fileName,duration)
+        Map<String, Object> audioFileInfo =null;
+        try{
+            if (audioFile.isEmpty()) {
+                data.put("error","音频文件为空");
+                Result result = new Result(false,70001,"文件上传失败",data);
+                return result;
+            }else if(!userId.equals(broadcastMapper.getBroadcastByBroadcastId(broadcastId).getUserId())){
+                //若节目作者ID不等于此用户ID,无权操作
+                data.put("error","非节目创建者,无权为ID为 "+broadcastId+" 的节目添加音频文件");
+                return new Result(false,20002,"操作失败,无权操作",data);
+            }
+
+            try {
+                audioFileInfo =FileUtils.saveAudio(broadcastId, audioFile,BROADCAST_AUDIO_PATH);
+            } catch (IOException e) {
+                //删除帖子
+                deleteBroadcast(userId,broadcastId);
+                data.put("error.message", e.getMessage());
+                return new Result(false,20001,"未知错误,节目创建失败",data);
+            }
+            //更新数据库中该节目的封面图片路径和音频文件路径,音频时长
+            broadcastMapper.updateBroadcastAudioByBroadcastId(broadcastId, "/audio/"+ audioFileInfo.get("fileName"));
+            broadcastMapper.updateBroadcastDurationByBroadcastId(broadcastId, (Long) audioFileInfo.get("duration"));
+
+            return Result.ok().data(data);
+        }catch (RuntimeException e){
+            //删除帖子
+            deleteBroadcast(userId,broadcastId);
+            data.put("error.message", e.getMessage());
+            return new Result(false,20001,"未知错误,节目创建失败",data);
+        }
+    }
+    @Override
+    public  Result changeBroadcastPostCount(Integer id, int num){
+        Map<String, Object> data = new HashMap<>();
+        try {
+            //更新关联帖子数量
+            broadcastMapper.updateBroadcastPostCount(id,num);
+            return Result.ok().data(data);
+        }catch (RuntimeException e){
+            data.put("error.message", e.getMessage());
+            return new Result(false,20001,"未知错误,节目帖子数量修改失败",data);
         }
     }
 }

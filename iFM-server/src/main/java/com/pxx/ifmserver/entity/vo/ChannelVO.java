@@ -13,7 +13,7 @@ import java.util.List;
 public class ChannelVO {
     private Integer         channelId;
     private String          channelTitle;
-    private String          channelDetile;
+    private String          channelDetail;
     private Integer         channelSubscribe;
     private Integer         channelPostCount;
     private LocalDateTime   channelUpdateTime;
@@ -27,7 +27,7 @@ public class ChannelVO {
     public void setChannel(Channel channel){
         this.channelId = channel.getChannelId();
         this.channelTitle = channel.getChannelTitle();
-        this.channelDetile = channel.getChannelDetail();
+        this.channelDetail = channel.getChannelDetail();
         this.channelSubscribe = channel.getChannelSubscribe();
         this.channelUpdateTime = channel.getChannelUpdateTime();
         this.channelCreateTime = channel.getGmtCreate();

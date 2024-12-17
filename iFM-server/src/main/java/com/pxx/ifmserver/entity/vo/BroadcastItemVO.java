@@ -20,7 +20,7 @@ public class BroadcastItemVO {
     private long          broadcastCreateTime;
     private String        channelTitle;
     private String        userName;
-    private Integer       lastListenDuration=-1;
+    private Integer       lastListenDuration=-0;
     private long          hitoryTime=-1;
     private long          favoriteTime=-1;
 

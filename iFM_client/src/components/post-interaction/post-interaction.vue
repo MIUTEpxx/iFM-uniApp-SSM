@@ -8,7 +8,7 @@
 				<uv-icon v-else name="thumb-up-fill" color="#86c7f9" :size="props.iconSize+'rpx'"></uv-icon>
 				<uv-text class="data" :text="postLikeCount" color="#676c7a"  :size="props.textSize+'rpx'" align="left"></uv-text>
 			</view>
-			<view class="button">
+			<view class="button" @click="CommentClick">
 				<uv-icon  name="chat" color="#858b9d" :size="props.iconSize+'rpx'"></uv-icon>
 				<uv-text class="data" :text="props.postCommentCount" color="#676c7a"  :size="props.textSize+'rpx'" align="left"></uv-text>
 			</view>
@@ -62,6 +62,11 @@
 			default:false
 		}
 	});
+	//父页面传递方法
+	const emit = defineEmits(['commentClick']);
+	const CommentClick = () => {
+		emit('commentClick');
+	};
 	
 	let haveLike = ref(props.haveLike);
 	let haveCollect = ref(props.haveCollect);

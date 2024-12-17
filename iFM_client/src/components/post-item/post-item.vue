@@ -12,7 +12,7 @@
 			<uv-text class="post-detail" :lines="2" :text="props.postDetail" lineHeight="40rpx" color="#78889c"  size="16px"></uv-text>
 		</view>
 		<view class="post-item-picture" v-if="props.postImageList.length!=0">
-			<uv-album :urls="props.postImageList" singleSize="230rpx" multipleSize="230rpx" space="8rpx" maxCount="6"  singleMode="aspectFill"></uv-album>
+			<uv-album :urls="props.postImageList" singleSize="500rpx" multipleSize="230rpx" space="8rpx" maxCount="6"  singleMode="aspectFill"></uv-album>
 		</view>
 		<post-interaction 
 		:postId="props.postId"
@@ -43,7 +43,7 @@ import { checkPostCollection } from "@/request/api";
 		},
 		postCreateTime:{
 			type: Number,
-			default: "xxxx-xx-xx xx:xx"
+			default: "114514666"
 		},
 		postTitle: {
 			type: String,

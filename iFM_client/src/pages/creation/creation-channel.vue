@@ -12,6 +12,7 @@
 					height="420rpx"
 					:previewFullImage="true"
 					:deletable="true"
+					accept="image"
 					@afterRead="handleAfterRead"
 					@delete="deletePic"
 					custom-style="
@@ -102,7 +103,7 @@
 	//频道详情内容
 	let channelDetail = ref("")
 	//频道主题标签
-	const hashtagList = ref([])
+	const hashtagList = ref<any>([])
 	//选中的频道主题标签
 	let checkboxValue = ref([])
 	
@@ -157,14 +158,16 @@
 		.then((res:any)=>{
 			//console.log("res",res);
 			if(res.success==true){
-				uni.navigateBack({
-					delta: 1 // 默认返回上一级页面
-				});
 				uni.showToast({
 					title: '频道创建成功!',
 					icon: 'success',
 					duration: 2000
-				}) 
+				})
+				setTimeout(() => {
+				   uni.navigateBack({
+				   	delta: 1 // 默认返回上一级页面
+				   });
+				}, 3000); // 这里的 3000 毫秒应该与 showToast 的 duration 相匹配
 			}else{
 				uni.showToast({
 						title: res.message+'\n'+res.data.error,

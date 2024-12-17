@@ -58,7 +58,7 @@
 				<channel-item v-for="(item,i) in channelList" :key="i" v-bind="item"></channel-item>	
 			</view>
 			<view v-if="searchContent==2" class="search-result-content">
-				
+				<post-item v-for="(item,i) in postList" :key="i" v-bind="item"></post-item>
 			</view>
 			<view v-if="searchContent==3" class="search-result-content">
 				
@@ -70,16 +70,19 @@
 
 <script setup lang="ts">
 import { onLoad, onPageScroll } from '@dcloudio/uni-app';
-import {searchBroadcast,searchChannel} from '@/request/api'
+import {getPostByKeyword, searchBroadcast,searchChannel} from '@/request/api'
 import { ref } from 'vue';
 import { sortChannelList } from '@/utils/channelSort';
 import { sortBroadcastList } from '@/utils/broadcastSort';
+import useBaseStore from '@/stores/base';
 
 let keyword=ref("")
 let searchContent=ref(0)
 let scrollTop=ref(0)
+//搜索结果内容
 let broadcastList=ref<any>([])
 let channelList=ref<any>([])
+let postList=ref<any>([])
 //排序方法列表
 let sortMethodList =ref([''])
 //当前排序方法
@@ -101,7 +104,7 @@ onLoad((options:any) => {
 			broadcastList.value=res.data.broadcastList
 		}
 	}).catch((err:any) => { 
-	  console.error('节目搜索失败', err); 
+	  console.error('节目搜索请求失败', err); 
 	});
 	
 	searchChannel(keyword.value).then((res:any)=>{
@@ -109,7 +112,28 @@ onLoad((options:any) => {
 			channelList.value=res.data.channelList
 		}
 	}).catch((err:any) => { 
-	  console.error('频道搜索失败', err); 
+	  console.error('频道搜索请求失败', err); 
+	});
+	
+	getPostByKeyword(keyword.value).then((res:any)=>{
+		if(res.success==true){
+			postList.value=res.data.postList
+			postList.value = res.data.postList.map((post:any) => {
+				// 修改每个帖子的图片列表
+				post.postImageList = post.postImageList.map((postImage:any) => {
+					return useBaseStore().baseUrl + postImage;
+				});
+				return post;
+			});
+		}else{
+			uni.showToast({
+				title: res.message+'\n'+res.data.error,
+				icon: 'error',
+				duration: 6000
+			}) 
+		}
+	}).catch((err:any) => { 
+	  console.error('帖子搜索请求失败', err); 
 	});
 })
 //改变当前排序
@@ -130,7 +154,7 @@ const changeMethodList =()=>{
 		sortMethodList.value=["综合排序","最新发布","最近更新","最多订阅"]
 	}else if(searchContent.value===2){
 		//搜索帖子
-		sortMethodList.value=["综合排序","最新发布","最多点赞","最多收藏"]
+		sortMethodList.value=["综合排序","最新发布","最早发布","最多收藏"]
 	}else{
 		//搜索用户
 	}
@@ -160,7 +184,7 @@ const sortSearchResult =()=>{
 		margin: 10px 20px 10px 10px;
 	}
 	.search-result-body {
-		margin: 10px;
+		margin-bottom: 10px;
 	}
 	.drop-content {
 		width: 100%;

@@ -25,7 +25,7 @@ public class FileUtils {
      */
     public static String savePicture(Integer id, MultipartFile picture,String path) throws IOException {
         //获取时间戳,用于组成图片名称
-        long currentTimestamp = System.currentTimeMillis() / 1000;
+        long currentTimestamp = System.currentTimeMillis() / 100;
         String timestampString = String.valueOf(currentTimestamp);
         // 构建完整的文件路径
         File directory = new File("");//参数为空

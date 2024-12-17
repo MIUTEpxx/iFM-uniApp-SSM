@@ -21,4 +21,5 @@ public interface ChannelService {
     Result searchChannel(String keyWord);
     Result listHashtag();
     Result listChannelIdByHashtag(Integer hashtagId);
+    Result changeChannelPostCount (Integer id, int num);
 }

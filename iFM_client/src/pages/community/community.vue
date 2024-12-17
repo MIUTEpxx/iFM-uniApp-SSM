@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-	import { onShow } from '@dcloudio/uni-app';
+	import { onLoad, onShow } from '@dcloudio/uni-app';
 	import { ref, watch } from 'vue';
 	import { getHashtag, getPopularPost, getPostBySectionId } from '@/request/api';
 	import { sortpostList } from '@/utils/postSort';
@@ -80,7 +80,7 @@
 	//当前选择的社区板块 0:话题讨论 1:分享推荐 2:求助问答
 	let currentSection = ref(0)
 	
-	onShow(()=>{
+	onLoad(()=>{
 			//获取主题标签数据
 			getHashtag ().then((res:any) => {
 				hashtagList.value=res.data.hashtagList

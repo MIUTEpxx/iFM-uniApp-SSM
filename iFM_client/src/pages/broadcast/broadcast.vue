@@ -25,7 +25,7 @@
 				<uv-text :lines="3" text="点击播放" color="#5cbaf9" size="18px" bold="true"></uv-text>
 			</view>
 			<view class="other-button">
-				<view class="post-button">
+				<view class="post-button" @click="goPostAssociation">
 					<uv-icon name="chat" color="#343b4c" size="50px"></uv-icon>
 					<p>关联帖子</p>
 					<p>{{broadcast.broadcastPostCount}}</p>
@@ -130,7 +130,6 @@
 			broadcast.value.dcastPostCount=numConversion(broadcast.value.broadcastPostCount)
 			CollectionCount.value = broadcast.value.broadcastCollectionCount
 			 // 在获取到节目信息后，再获取频道信息
-			 
 			    if (broadcast.value.channelId) {
 				/* console.log("broadcast.value.channelId",broadcast.value.channelId) */
 			      // 获取频道信息
@@ -175,6 +174,12 @@
 	//播放节目音频
 	const playBroadcastAudio =()=>{
 		playerStore.play(broadcastId.value);
+	}
+	//跳转关联帖子页
+	const goPostAssociation =()=>{
+		uni.navigateTo({
+		  url: "/pages/community/post-association?postAssociation=1&associationId="+broadcastId.value,
+		});   
 	}
 </script>
 

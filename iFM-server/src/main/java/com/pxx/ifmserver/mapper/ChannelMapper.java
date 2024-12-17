@@ -164,6 +164,15 @@ public interface ChannelMapper {
     int updateChannelSubscribeByChannelId(Integer channelId, Integer num);
 
     /**
+     * 更改界频道关联帖子量
+     * @param channelId
+     * @param num
+     * @return
+     */
+    @Update(("UPDATE channel SET channel_post_count = channel_post_count + #{num} WHERE channel_id = #{channelId}"))
+    int updateChannelPostCount(Integer channelId, Integer num);
+
+    /**
      * 根据频道ID删除对应的频道。
      * @param channelId 频道ID作为查询条件。
      * @return 被修改的行数,期望为1,错误为0

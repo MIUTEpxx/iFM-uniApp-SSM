@@ -238,6 +238,48 @@ export const deleteHistory = (userId:number,broadcastId:number) =>{
 	})
 }
 
+//删除节目
+export const deleteBroadcast = (userId:number,broadcastId:number) =>{
+	return request({
+		url:'/broadcast/deleteBroadcast',
+		method:'delete',
+		data:{userId:userId,broadcastId:broadcastId},
+	})
+}
+
+//创建节目
+export const createBroadcast = (userId:number,channelId:number,broadcastTitle:string,broadcastDetail:string,broadcastPicture:any) =>{
+
+	return request({
+		url:'/broadcast/createBroadcast',
+		method:'post',
+		filePath:broadcastPicture.url,
+		name:"broadcastPicture",
+		haveFile:true,//表明请求参数中有文件数据
+		data: {
+			userId:userId,
+			channelId:channelId,
+			broadcastTitle:broadcastTitle,
+			broadcastDetail:broadcastDetail,
+		},
+	})
+}
+//创建节目(添加图片数据)
+export const addAudioForBroadcast = (userId:number,broadcastId:number,audioFile:any) =>{
+
+	return request({
+		url:'/broadcast/addAudio',
+		method:'post',
+		filePath:audioFile.url,
+		name:"audioFile",
+		haveFile:true,//表明请求参数中有文件数据
+		data: {
+			userId:userId,
+			broadcastId:broadcastId,
+		},
+	})
+}
+
 //获取验证码
 export const getVCode = (userEmail:string) =>{
 	return request({
@@ -473,6 +515,93 @@ export const changePostLike = (postId:number,value:number) =>{
 		data:{
 			"postId":postId,
 			"value":value,
+		}
+	})
+}
+
+//获取帖子下的评论
+export const getCommentByPostId = (postId:number) =>{
+	return request({
+		url:'/comment/getCommentByPostId',
+		method:'get',
+		data:{
+			"postId":postId,
+		}
+	})
+}
+
+//添加评论(创建评论,非图片部分)
+export const addComment = (userId:number,postId:number,commentDetail:string) =>{
+	return request({
+		url:'/comment/addComment',
+		method:'post',
+		data:{
+			"userId":userId,
+			"postId":postId,
+			"commentDetail":commentDetail,
+		}
+	})
+}
+
+//添加评论(图片部分)
+export const addImageForComment = (userId:number,commentId:number,commentImage:any) =>{
+	return request({
+		url:'/comment/addImageForComment',
+		method:'post',
+		filePath:commentImage.url,
+		name:"commentImage",
+		haveFile:true,//表明请求参数中有文件数据
+		data:{
+			"userId":userId,
+			"commentId":commentId,
+		}
+	})
+}
+
+//点赞评论
+export const changeCommentLike = (commentId:number,value:number) =>{
+	return request({
+		url:'/comment/changeLike',
+		method:'post',
+		data:{
+			commentId:commentId,
+			value:value,
+		}
+	})
+}
+
+//根据评论id获取评论下的所有回复
+export const getReplyByCommentId = (commentId:number) =>{
+	return request({
+		url:'/reply/getReplyByCommentId',
+		method:'get',
+		data:{
+			"commentId":commentId,
+		}
+	})
+}
+
+//添加回复(创建评论,非图片部分)
+export const addReply = (userId:number,commentId:number,replyDetail:string) =>{
+	return request({
+		url:'/reply/addReply',
+		method:'post',
+		data:{
+			userId:userId,
+			commentId:commentId,
+			replyDetail:replyDetail,
+		}
+	})
+}
+
+//点赞/取消点赞回复,更改回复点赞量
+export const changeReplyLike = (replyId:number,value:number) =>{
+	return request({
+		url:'/reply/changeLike',
+		method:'post',
+		data:{
+			replyId:replyId,
+			value:value,
 		}
 	})
 }

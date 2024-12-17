@@ -57,7 +57,7 @@ public class ChannelController {
 
     /**
      * 关键词搜索频道接口
-     * @param keyWord
+     * @param keyword
      * @return
      */
     @GetMapping("/searchChannelByKeyWord")

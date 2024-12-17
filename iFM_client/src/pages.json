@@ -78,6 +78,13 @@
 			}
 		},
 		{
+			"path": "pages/channel/channel-detail-edit",
+			"style": {
+				"navigationBarTitleText": "可编辑的频道详情页",
+				"titleNView": false
+			}
+		},
+		{
 			"path": "pages/channel/channel-classify",
 			"style": {
 				"navigationBarTitleText": "频道分类页",
@@ -88,6 +95,13 @@
 			"path": "pages/broadcast/broadcast",
 			"style": {
 				"navigationBarTitleText": "节目详情页",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/broadcast/broadcast-detail-edit",
+			"style": {
+				"navigationBarTitleText": "可编辑的节目详情页",
 				"titleNView": false
 			}
 		},
@@ -153,6 +167,13 @@
 				"navigationBarTitleText": "帖子关联选择",
 				"titleNView": false
 			}
+		},
+		{
+			"path": "pages/community/post-association",
+			"style": {
+				"navigationBarTitleText": "关联帖子页",
+				"titleNView": false
+			}
 		}
 	],
 	"globalStyle": {
@@ -182,4 +203,5 @@
 	            }
 	        ]
 	  	} 
+
 }

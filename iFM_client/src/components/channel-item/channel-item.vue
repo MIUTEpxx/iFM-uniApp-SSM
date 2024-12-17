@@ -31,7 +31,7 @@
 <script setup lang="ts">
 	import { defineProps, ref, withDefaults } from 'vue';
 	import useBaseStores from '@/stores/base';
-	import { onShow } from '@dcloudio/uni-app';
+	import { onLoad, onShow } from '@dcloudio/uni-app';
 	import useUserStore from '@/stores/user';
 	import { changeSubscribe, checkSubscribe } from '@/request/api';
 	
@@ -102,15 +102,15 @@
 		});
 		
 	}
-	
+
 	onShow(()=>{
 		if(userStore.isLogin===true){
 			//若用户处于登录状态,检查用户是否已订阅该频道
 			checkSubscribe (userStore.userId,props.channelId).then((res:any) => {
-				 console.log("res",res)
+				// console.log("res",res)
 				if(res.success===true){
 					hasSubscribe.value=res.data.subscribe
-					console.log("hasSubscribe",hasSubscribe.value)
+				//	console.log("hasSubscribe",hasSubscribe.value)
 				}else{
 					uni.showToast({
 						title: res.message+'\n'+res.data.error,

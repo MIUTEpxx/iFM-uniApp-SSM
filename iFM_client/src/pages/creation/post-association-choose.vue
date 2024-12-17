@@ -92,9 +92,9 @@
 	//搜索内容类型 0:频道 1:节目
 	let searchContentType = ref(0);
 	//频道搜索结果
-	let channelList=ref([]);
+	let channelList=ref<any>([]);
 	//节目搜索结果
-	let broadcastList=ref([]);
+	let broadcastList=ref<any>([]);
 	//排序方法列表
 	let sortMethodList =ref([''])
 	//当前排序方法

@@ -50,7 +50,7 @@
 					 X 取消订阅
 					</uv-button>
 					
-					<view class="post">
+					<view class="post" @click="goPostAssociation">
 						<uv-icon name="chat" color="#86c7f9" size="40px"></uv-icon>
 						<p>{{numConversion(postCount)}} </p>
 					</view>
@@ -202,6 +202,11 @@
 		}
 	  });
 	
+	const goPostAssociation =()=>{
+		uni.navigateTo({
+		  url: "/pages/community/post-association?postAssociation=0&associationId="+channelId.value,
+		});   
+	}
 </script>
 
 <style>

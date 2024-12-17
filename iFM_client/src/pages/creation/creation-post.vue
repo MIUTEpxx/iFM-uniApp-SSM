@@ -46,7 +46,8 @@
 				width="180rpx" 
 				height="180rpx"
 				uploadIcon="plus-circle-fill"
-				uploadIconColor="#d7e3ee"				
+				uploadIconColor="#d7e3ee"	
+				accept="image"
 				@afterRead="handleAfterRead"
 				@delete="deletePic"
 				customStyle="
@@ -82,8 +83,20 @@
 				<view class="choose-association" v-if="associationId==-1" @click="goAssociationChoose">
 					<span>+</span>
 				</view>
-				<channel-item class="choose-association" v-else-if="associationType==0"  @click="goAssociationChoose" v-bind="channel"></channel-item>
-				<broadcast-item class="choose-association" v-else-if="associationType==1"  @click="goAssociationChoose" v-bind="channel"></broadcast-item>
+				<channel-item 
+				class="choose-association" 
+				v-else-if="associationType==0"  
+				:enableComponentClick="false" 
+				:showSubscribeButton="false" 
+				@click="goAssociationChoose" 
+				v-bind="association"></channel-item>
+				<broadcast-item 
+				class="choose-association" 
+				v-else-if="associationType==1"  
+				:enableComponentClick="false"
+				:showPlayButton="false" 
+				@click="goAssociationChoose" 
+				v-bind="association"></broadcast-item>
 			</view>
 			<view class="post-hashtag">
 				<uv-text :text="'帖子主题标签 当前已选择 '+checkboxValue.length+' 个标签'" color="#767f8b" size="20px" align="left"></uv-text>
@@ -125,7 +138,7 @@ import { logOut } from '../../utils/logOut';
 	//帖子详情内容
 	let postDetail=ref("");
 	//帖子主题标签
-	const hashtagList = ref([])
+	const hashtagList = ref<any>([])
 	//选中的帖子主题标签
 	let checkboxValue = ref([])
 	//上传的图片
@@ -136,10 +149,12 @@ import { logOut } from '../../utils/logOut';
 	let associationType = ref(-1);
 	//关联内容id
 	let associationId = ref(-1);
-	//关联频道数据
+/* 	//关联频道数据
 	let channel = ref()
 	//关联节目数据
-	let broadcast = ref()
+	let broadcast = ref() */
+	//关联内容
+	let association = ref<any>()
 	
 	// 删除图片
 	function deletePic(event:any) {
@@ -176,18 +191,19 @@ import { logOut } from '../../utils/logOut';
 			if(associationType.value==0){
 				//获取频道详情信息
 				getChannelDetail(associationId.value).then((res: any) => {
-				  channel.value = res.data.channel;
+				  association.value = res.data.channel;
 				}).catch((err: any) => {
 				  console.error('频道数据请求失败', err);
 				});
 			}else{
 				//获取节目详情信息
 				getBroadcastDetail(associationId.value).then((res: any) => {
-				  broadcast.value = res.data.channel;
+				  association.value = res.data.broadcast;
 				}).catch((err: any) => {
 				  console.error('节目数据请求失败', err);
 				});
 			}
+			console.log("association",association.value)
 		}
 		//获取主题标签数据
 		getHashtag ().then((res:any) => {
@@ -228,12 +244,14 @@ import { logOut } from '../../utils/logOut';
 		    popupRef.value.open();
 		}
 	}
+	
 	//取消创建帖子
 	const concelCreatepost =()=>{
 		if (popupRef.value) {
 		    popupRef.value.close();
 		}
 	}
+	
 	//确认创建帖子
 	const confirmCreatepost =()=>{
 		if(userStore.isLogin==false||userStore.userId==-1){
@@ -255,9 +273,9 @@ import { logOut } from '../../utils/logOut';
 			// 为帖子添加图片数据
 				for (const [index, file] of fileList.value.entries()) {
 					await addImageForPost(postId, file).then((res_: any) => {
-						if (res.success != true) {
+						if (res_.success != true) {
 							uni.showToast({
-							title: res.message + '\n' + res.data.error,
+							title: res_.message + '\n' + res_.data.error,
 							icon: 'error',
 							duration: 3000
 							});
@@ -341,13 +359,16 @@ import { logOut } from '../../utils/logOut';
 		margin-top: 15rpx;
 	}
 	.creation-post-body .post-association {
-		width: 90%;
+		width: 95%;
+	}
+	.creation-post-body .post-association >:first-child {
+		padding-left: 15rpx;
 	}
 	.creation-post-body .post-association .choose-association {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		margin-top: 15rpx;
+		margin: 15rpx 15rpx;
 		background: #d7e3ee;
 		height: 200rpx;
 		border-radius: 15rpx;
