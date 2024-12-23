@@ -1,7 +1,6 @@
 <template>
 	<view class="post-item">
 		<post-head 
-		@click="goToPostDetail"
 		:userId="props.userId" 
 		:userName="props.userName" 
 		:userPicture="props.userPicture"
@@ -24,6 +23,7 @@
 		:postCommentCount="props.postCommentCount" 
 		:postCollectionCount="props.postCollectionCount" 
 		:haveCollect="haveCollect"
+		:commentClickGoDetail="true"
 		iconSize="50" 
 		textSize="26"></post-interaction>
 	</view>
@@ -108,7 +108,7 @@ import { checkPostCollection } from "@/request/api";
 		},
 	});
 	
-	let haveCollect = ref(true)
+	let haveCollect = ref(false)
 	
 	onShow(()=>{
 		if(props.postId!=-1&&userStore.isLogin==true){

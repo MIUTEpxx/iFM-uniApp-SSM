@@ -60,12 +60,26 @@
 		haveLike:{
 			type:Boolean,
 			default:false
+		},
+		commentClickGoDetail:{
+			type:Boolean,
+			default:false
 		}
 	});
 	//父页面传递方法
 	const emit = defineEmits(['commentClick']);
 	const CommentClick = () => {
-		emit('commentClick');
+		if(props.commentClickGoDetail) {
+			//前往详情页
+			uni.navigateTo({
+			  url: "/pages/community/post-detail?postId="+props.postId,
+			});  
+		}
+		else { 
+			//打开帖子评论弹窗
+			emit('commentClick'); 
+		}
+		
 	};
 	
 	let haveLike = ref(props.haveLike);
