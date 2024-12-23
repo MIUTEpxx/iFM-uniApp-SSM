@@ -80,11 +80,11 @@ public interface ChannelMapper {
 
 
     /**
-     * 获取36小时内更新过节目的频道，并按订阅数降序排序，选取前20条记录
-     * @return 36小时内更新过节目的频道列表
+     * 获取hour小时内更新过节目的频道，并按订阅数降序排序，选取前num条记录
+     * @return hour小时内更新过节目的频道列表
      */
-    @Select("SELECT * FROM channel WHERE channel_update_time > NOW() - INTERVAL 36 HOUR ORDER BY channel_subscribe DESC LIMIT 20")
-    List<Channel> listPopularChannel();
+    @Select("SELECT * FROM channel WHERE channel_update_time > ( NOW() - INTERVAL #{hour} HOUR ) LIMIT #{num}")
+    List<Channel> listPopularChannel(int hour , int num);
 
 
     /**

@@ -42,4 +42,12 @@ public interface CommentService {
      * @return
      */
     Result changeLike(Integer commentId,int value);
+
+    /**
+     * 删除评论
+     * @param commentId
+     * @return
+     */
+    Result deleteComment(Integer commentId);
+
 }

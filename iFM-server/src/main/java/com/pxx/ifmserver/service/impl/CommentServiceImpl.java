@@ -5,6 +5,7 @@ import com.pxx.ifmserver.entity.dto.User;
 import com.pxx.ifmserver.entity.vo.CommentVO;
 import com.pxx.ifmserver.mapper.CommentMapper;
 import com.pxx.ifmserver.mapper.PostMapper;
+import com.pxx.ifmserver.mapper.ReplyMapper;
 import com.pxx.ifmserver.mapper.UserMapper;
 import com.pxx.ifmserver.result.Result;
 import com.pxx.ifmserver.service.CommentService;
@@ -29,6 +30,9 @@ public class CommentServiceImpl implements CommentService {
     UserMapper userMapper;
     @Autowired
     PostMapper postMapper;
+    @Autowired
+    ReplyMapper replyMapper;
+
     //评论图片储存路径
     private static final String COMMENT_IMAGE_PATH="/resources/images/comment/";
 
@@ -139,6 +143,21 @@ public class CommentServiceImpl implements CommentService {
         Map<String, Object> data = new HashMap<>();
         try {
             commentMapper.updateCommentLikeCount(commentId,value);
+            return Result.ok().data(data);
+        }catch (RuntimeException e){
+            data.put("error.message", e.getMessage());
+            return new Result(false,20001,"未知错误, 评论失败",data);
+        }
+    }
+
+    @Override
+    public Result deleteComment(Integer commentId) {
+        Map<String, Object> data = new HashMap<>();
+        try {
+            //删除评论下所有回复
+            replyMapper.deleteReplyByCommentId(commentId);
+            //删除评论
+            commentMapper.deleteCommentByPostId(commentId);
             return Result.ok().data(data);
         }catch (RuntimeException e){
             data.put("error.message", e.getMessage());

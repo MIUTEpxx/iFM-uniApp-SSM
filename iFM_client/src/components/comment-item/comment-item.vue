@@ -1,10 +1,10 @@
 <template>
 	<view class="comment-item">
 		<view class="user-avatar">
-			<uv-avatar :src="baseStore.baseUrl+props.userPicture" size="40px"></uv-avatar>
+			<uv-avatar :src="baseStore.baseUrl+props.userPicture" size="40px" @click="goUserDetail"></uv-avatar>
 		</view>
 		<view class="comment-content">
-			<uv-text class="user-name" :lines="2" :text="props.userName" color="#2a3138"  size="16px" align="left"></uv-text>
+			<uv-text class="user-name"  @click="goUserDetail" :lines="2" :text="props.userName" color="#2a3138"  size="16px" align="left"></uv-text>
 			<uv-read-more show-height="100rpx" :toggle="true" color="#61b7f9" closeText="显示全部" shadowStyle="backgroundImage:none;">
 				<uv-text class="content"  :text="props.commentDetail" color="#78889c"  size="14px" align="left"></uv-text>
 			</uv-read-more>
@@ -216,7 +216,11 @@
 		//更改点赞数据
 		commentLikeCount.value+=value;
 	}
-	
+	const goUserDetail = () =>{
+		uni.navigateTo({
+		  url: "/pages/user/user?userId="+props.userId,
+		});   
+	}
 </script>
 
 <style>

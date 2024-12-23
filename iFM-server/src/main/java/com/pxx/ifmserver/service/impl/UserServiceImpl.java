@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
             try {
                 // 更新数据库
                 userMapper.updateUserPicurlByUserId(userId, "/images/user/head/" + filename);
-                data.put("userPicture","/images/user/" + filename);
+                data.put("userPicture","/images/user/head/" + filename);
                 return  Result.ok().data(data);
             } catch (RuntimeException e) {
                 data.put("error",e.getMessage());
@@ -322,6 +322,24 @@ public class UserServiceImpl implements UserService {
         data.put("token",newToken);
         data.put("user",user);
         return Result.ok().data(data);
+    }
+
+    /**
+     * 根据关键词搜索用户
+     * @param keyword
+     * @return
+     */
+    @Override
+    public  Result searchUser(String keyword) {
+        Map<String, Object> data = new HashMap<>();
+        try {
+            List<User> userList = userMapper.listUserByKeyWord(keyword);
+            data.put("userList",userList);
+            return Result.ok().data(data);
+        }catch (DuplicateKeyException e) {
+            data.put("error",e.getMessage());
+            return new Result(false,20001,"未知错误",data);
+        }
     }
 
     /**

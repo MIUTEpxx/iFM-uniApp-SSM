@@ -1,5 +1,6 @@
 package com.pxx.ifmserver.mapper;
 
+import com.pxx.ifmserver.entity.dto.Broadcast;
 import com.pxx.ifmserver.entity.dto.User;
 import org.apache.ibatis.annotations.*;
 
@@ -57,6 +58,14 @@ public interface UserMapper {
     @Select("SELECT * FROM user WHERE user_name = #{userName}")
     User getUserByUserName(String userName);
 
+    /**
+     * 根据关键词获取用户
+     * @param keyWord
+     * @return
+     */
+    @Select("SELECT * FROM user WHERE user_name LIKE CONCAT('%', #{keyWord}, '%') " +
+            "OR user_profile LIKE CONCAT('%', #{keyWord}, '%')")
+    List<User> listUserByKeyWord(@Param("keyWord") String keyWord);
 
 
 

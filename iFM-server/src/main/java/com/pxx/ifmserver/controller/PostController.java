@@ -76,6 +76,16 @@ public class PostController {
     }
 
     /**
+     * 获取用户收藏的帖子
+     * @param userId
+     * @return postList
+     */
+    @GetMapping("/getFavoritePost")
+    public Result getFavoritePost(@RequestParam Integer userId) {
+        return postService.listFavoritePost(userId);
+    }
+
+    /**
      * 检查帖子是否被用户收藏
      * @param userId 用户id
      * @param postId 帖子id
@@ -136,7 +146,7 @@ public class PostController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         if(associationId==-1){associationId=null;}
         Post post=new Post();
@@ -160,7 +170,6 @@ public class PostController {
      */
     @PostMapping("/addImageForPost")
     public Result addImageForPost(
-            @RequestParam Integer userId,
             @RequestParam Integer postId,
             @RequestParam MultipartFile postImage){
         return postService.addImageForPost(postId,postImage);
@@ -204,7 +213,7 @@ public class PostController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         //删除节目
         Result r=postService.deletePostById(userId,postId);

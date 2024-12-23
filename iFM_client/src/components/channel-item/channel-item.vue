@@ -16,9 +16,10 @@
 			<uv-text 
 			:lines="2" 
 			:text="props.channelTitle" 
-			 color="#2b2b2b" size="32rpx" bold="true"></uv-text>
+			 color="#2b2b2b" size="30rpx" bold="true"></uv-text>
 			<view class="other-info" >
-				<p class="hashtag" v-for="(v,i) in props.channelHashtag" :key="i">{{v.hashtagName}}</p>
+				<!-- <p class="hashtag" v-for="(v,i) in props.channelHashtag" :key="i">{{v.hashtagName}}</p> -->
+				<uv-tags class="hashtag" v-for="(v,i) in props.channelHashtag" :key="i" :text="v.hashtagName" plain size="mini" color="#86c7f9" borderColor="#86c7f9"></uv-tags>
 			</view>
 		</view>
 		<view class="subscribe-button" v-if="props.showSubscribeButton">
@@ -128,11 +129,12 @@
 <style>
 	.channel-item {
 		display: flex;
-		margin: 5px 5px 10px 5px;
+		margin: 0 5px 20rpx 5px;
 		height: 110px;
 		border: 2px solid #cae0f1;
 		border-radius: 10px;
 		overflow: hidden;
+		background-color: #fff;
 	}
 	.channel-item ._image {
 		flex: 1.8;

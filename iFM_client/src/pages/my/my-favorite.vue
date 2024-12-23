@@ -27,24 +27,31 @@
 			<view v-if="inDelete" class="in-delete-button" @click="inDeleteClick">
 				<p>取消选择</p>
 			</view>
-			<view class="favorite-broadcast">
-				<scroll-view scroll-y class="broadcast-scroll">
-					<view class="broadcast-item-list" v-for="(item,i) in broadcastList" :key="i" >
-						<broadcast-item  class="item" v-bind="item" :showPlayButton="false"></broadcast-item>
-						<uv-icon  v-if="inDelete" @click="deleteBroacast(item,i)" name="trash" color="#ff7d7d" size="28"></uv-icon>	
-					</view>
-				</scroll-view>
+			<view class="favorite-broadcast-list" v-if="showContent==0">
+				<view class="broadcast-item-list" v-for="(item,i) in broadcastList" :key="i" >
+					<broadcast-item  class="item" v-bind="item" :showPlayButton="false"></broadcast-item>
+					<uv-icon  v-if="inDelete" @click="deleteBroacast(item,i)" name="trash" color="#ff7d7d" size="28"></uv-icon>	
+				</view>
+				<uv-text text="没有更多频道了" color="#8e9aa7"  size="16px" align="center"></uv-text>
+			</view>
+			<view class="favorite-post-list" v-else>
+				<view class="post-item-list" v-for="(item,i) in postList" :key="i" >
+					<uv-icon  class="delete-button" v-if="inDelete" @click="deletePost(item,i)" name="trash" color="#ff7d7d" size="28"></uv-icon>	
+					<post-item v-bind="item"></post-item>
+				</view>
+				<uv-text text="没有更多帖子了" color="#8e9aa7"  size="16px" align="center"></uv-text>
 			</view>
 		</view>
-		<player-bar :reserveSpace="true"></player-bar>
+		<player-bar></player-bar>
 	</view>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue"
-import { changeFavorite, getFavoriteBroadcast } from "@/request/api";
+import { changeFavorite, changePostCollection, getFavoriteBroadcast, getFavoritePost } from "@/request/api";
 import { onShow } from "@dcloudio/uni-app";
 import useUserStore from "../../stores/user";
+import useBaseStore from "@/stores/base";
 
 //是否处于删除状态
 let inDelete =ref(false)
@@ -53,6 +60,8 @@ const userStore =useUserStore()
 let showContent=ref(0)
 //收藏的节目
 let broadcastList=ref([])
+//收藏的帖子
+let postList = ref([])
 //切换显示的内容
 const showContentClick = (index:any) =>{
 	showContent.value=index.key
@@ -62,7 +71,6 @@ const inDeleteClick =() =>{
 	inDelete.value=!inDelete.value
 }
 const deleteBroacast =(item:any,index:number) =>{
-	
 	changeFavorite(userStore.userId,item.broadcastId).then((res:any) => {
 		console.log("res.data",res.data)
 		//取消收藏成功
@@ -80,19 +88,53 @@ const deleteBroacast =(item:any,index:number) =>{
 	  console.error('取消收藏失败', err); 
 	}); 
 }
+
+const deletePost =(item:any,index:number) =>{
+	changePostCollection(userStore.userId,item.postId).then((res:any) => {
+		console.log("res.data",res.data)
+		//取消收藏成功
+		if(res.success!=false){
+			// 删除postList中对应index的元素
+			postList.value.splice(index, 1);
+		}else{
+			uni.showToast({
+				title: res.message+'\n'+res.data.error,
+				icon: 'error',
+				duration: 6000
+			}) 
+		}
+	}).catch((err:any) => { 
+	  console.error('取消收藏失败', err); 
+	}); 
+}
+
 onShow(() => {
 	//获取用户收藏的节目
 	 getFavoriteBroadcast(userStore.userId).then((res:any) => {
 		broadcastList.value=res.data.broadcastList
-		//console.log("broadcastList",res.data)
 	}).catch((err:any) => { 
 	  console.error('收藏的节目数据请求失败', err); 
 	});
+	//获取用户收藏的帖子
+	getFavoritePost(userStore.userId).then((res:any) => {
+		postList.value=res.data.postList
+		postList.value = res.data.postList.map((post: any) => {
+			// 修改每个帖子的图片列表
+			post.postImageList = post.postImageList.map((postImage: any) => {
+			return useBaseStore().baseUrl + postImage;
+			});
+			return post;
+		});
+	}).catch((err:any) => { 
+	  console.error('收藏的帖子数据请求失败', err); 
+	});
+	
 });
 	
 </script>
 
 <style>
+
 	.my-favorite-body {
 		display: flex;
 	    flex-direction: column;
@@ -116,15 +158,14 @@ onShow(() => {
 		border: 3px solid #ff7d7d;
 		border-radius: 5px;
 	}
-	.favorite-broadcast {
-		width: 90%;
+	.favorite-broadcast-list {
+		width: 95%;
+		padding-top: 25rpx;
+		padding-bottom: 125rpx;
 		border: 3px dashed #9dcaf9;
 		border-radius: 10px;
 	}
-	.favorite-broadcast .broadcast-scroll {
-		height: 100%;
-	}
-	.broadcast-scroll .broadcast-item-list {
+	.broadcast-item-list {
 		display: flex;
 	    align-items: center;
 	    justify-content: space-between;	
@@ -133,7 +174,27 @@ onShow(() => {
 		flex: 1;
 	}
 	.broadcast-item-list>.item{
-		flex: 6;
+		flex: 9;
 	}
+	.favorite-post-list {
+		width: 100%;
+		min-height: 700rpx;
+		padding-bottom: 125rpx;
+		background: #dce8f9;
+		padding-top: 25rpx;
+		padding-bottom: 140rpx;
+	}
+	.post-item-list {
+		display: flex;
+		flex-direction: column;
+		/* align-items: flex-end; */ 
+		position:relative;
+	}
+	.post-item-list .delete-button {
+		position:absolute;
+		right: 150rpx;
+		top: 18rpx;
+	}
+
 
 </style>

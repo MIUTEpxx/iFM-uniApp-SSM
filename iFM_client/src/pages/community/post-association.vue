@@ -12,7 +12,10 @@
 			</view>
 			
 			<view class="association-post">
-				<uv-text text="关联帖子" color="#86c7f9" size="20px" align="left"></uv-text>
+				<view class="head">
+					<uv-text text="关联帖子" color="#86c7f9" size="20px" align="left"></uv-text>
+					<uv-button type="primary" @click="goCreatePost" text="点击发帖" color="#6eabf6" customStyle="width: 200rpx; height:60rpx"></uv-button>
+				</view>
 				<view class="post-item-list">
 					<post-item v-for="(item,i) in postList" :key="i" v-bind="item"></post-item>
 					<uv-text text="没有更多帖子了" color="#8e9aa7"  size="16px" align="center"></uv-text>
@@ -28,7 +31,9 @@ import { onLoad } from '@dcloudio/uni-app';
 import { ref } from 'vue';
 import { getBroadcastDetail, getChannelDetail, getPostByAssociationId } from '@/request/api';
 import useBaseStore from '@/stores/base';
+import useUserStore from '@/stores/user';
 	
+	const userStore = useUserStore()
 	//关联内容类型 0:频道 1:节目
 	const postAssociation = ref(-1)
 	//关联内容的id
@@ -94,7 +99,22 @@ import useBaseStore from '@/stores/base';
 				console.error('关联帖子获取请求失败', err); 
 		});
 	})
+
 	
+	const goCreatePost =()=>{
+		if(!userStore.isLogin){
+			uni.showToast({
+				title: '请登录后操作',
+				icon: 'error',
+				duration: 1000
+			}) 
+			return;
+		}
+		
+		uni.navigateTo({
+		    url: '/pages/creation/creation-post?associationType='+postAssociation.value+'&associationId='+associationId.value, // 目标页面的路径
+		});
+	}
 </script>
 
 <style scoped>
@@ -113,6 +133,11 @@ import useBaseStore from '@/stores/base';
 	}
 	.association-post {
 		width: 100%;
+	}
+	.association-post .head {
+		display: flex;
+		align-items: center;
+		margin-right: 25rpx;
 	}
 	.association-post > :first-child {
 		padding-bottom: 15rpx;

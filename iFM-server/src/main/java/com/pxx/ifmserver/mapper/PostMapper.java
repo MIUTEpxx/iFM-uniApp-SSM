@@ -51,12 +51,12 @@ public interface PostMapper {
     List<Post> listPostByAssociationId(Integer postAssociation ,Integer associationId);
 
     /**
-     * 获取若干小时内创建的帖子
+     * 获取若干小时内创建的帖子 前num个帖子
      * @param hour 小时
      * @return 帖子列表
      */
-    @Select("SELECT * FROM post WHERE gmt_create > (NOW() - INTERVAL #{hour} HOUR)")
-    List<Post> listPostCtreateInHour(Integer hour);
+    @Select("SELECT * FROM post WHERE gmt_create > (NOW() - INTERVAL #{hour} HOUR)  LIMIT #{num}")
+    List<Post> listPostCtreateInHour(int hour, int num);
 
     /**
      * 检查用户是否收藏了帖子
@@ -93,6 +93,14 @@ public interface PostMapper {
      */
     @Select("SELECT * FROM post_hashtag WHERE post_id = #{postId} ")
     List<Hashtag> listHashtagByPostId(Integer postId);
+
+    /**
+     * 获取用户收藏的帖子的id
+     * @param userId
+     * @return
+     */
+    @Select("SELECT post_id FROM post_favorite WHERE user_id = #{userId}")
+    List<Integer> listFavoritePostIdByUserId(Integer userId);
 
     /**
      * 用户添加帖子收藏

@@ -79,6 +79,15 @@ public class UserController {
     }
 
     /**
+     * 根据关键词搜索用户
+     * @param keyword 关键词
+     * @return userList
+     */
+    @GetMapping("/getUserByKeyword")
+    public Result getUserByKeyword(@RequestParam String keyword) {
+        return userService.searchUser(keyword);
+    }
+    /**
      * 创建新用户
      * @param userName
      * @param userPassword
@@ -120,7 +129,7 @@ public class UserController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         Result r = userService.updateUserPicurlByUserId(userId,file);
         r.getData().put("token",newToken);
@@ -145,7 +154,7 @@ public class UserController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         Result r = userService.updateUserProfileByUserId(userId,userProfile);
         r.getData().put("token",newToken);
@@ -170,7 +179,7 @@ public class UserController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         Result r = userService.updateUserNameByUserId(userId,userName);
         r.getData().put("token",newToken);
@@ -204,7 +213,7 @@ public class UserController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         Result r = userService.updateUserPassword(userId,userEmail,userPassword,code);
         r.getData().put("token",newToken);
@@ -240,7 +249,7 @@ public class UserController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         Result r = userService.updateUserEmail(userId,userEmail,userNewEmail,code1,code2);
         r.getData().put("token",newToken);

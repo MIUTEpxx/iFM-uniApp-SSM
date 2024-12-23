@@ -8,7 +8,6 @@ interface IBroadcast {
    broadcastCreateTime: number,
 }
 
-// src/utils/channelSort.ts
 export const sortBroadcastList = (broadcasts: IBroadcast[], sortMethod: number): any[] => {
   switch (sortMethod) {
     case 0: // 综合排序

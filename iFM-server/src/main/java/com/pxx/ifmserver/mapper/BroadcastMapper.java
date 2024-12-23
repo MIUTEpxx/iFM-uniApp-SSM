@@ -5,7 +5,6 @@ import com.pxx.ifmserver.entity.dto.BroadcastFavorite;
 import com.pxx.ifmserver.entity.dto.BroadcastHistory;
 import org.apache.ibatis.annotations.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -98,11 +97,11 @@ public interface BroadcastMapper {
     List<BroadcastHistory> listHistoryBroadcastByUserId(Integer userId);
 
     /**
-     * 获取72小时内创建的节目
+     * 获取 hour 小时内创建的节目 取前num个
      * @return 节目列表
      */
-    @Select("SELECT * FROM broadcast WHERE gmt_create > (NOW() - INTERVAL 72 HOUR)")
-    List<Broadcast> listBroadcastCtreateIn72H();
+    @Select("SELECT * FROM broadcast WHERE gmt_create > (NOW() - INTERVAL #{hour} HOUR)  LIMIT #{num}")
+    List<Broadcast> listBroadcastCtreateInHour(int hour, int num);
 
 
     /**
@@ -216,6 +215,7 @@ public interface BroadcastMapper {
     @Update(("UPDATE broadcast_history SET last_listen_duration = #{lastListenDuration} ,history_time = NOW() WHERE broadcast_id = #{broadcastId} AND user_id = #{userId}"))
     int updateBroadcastHistory(Integer userId,Integer broadcastId,Integer lastListenDuration);
 
+
     /**
      * 根据节目ID删除对应的节目。
      * @param broadcastId 节目ID作为查询条件。
@@ -223,6 +223,12 @@ public interface BroadcastMapper {
      */
     @Delete("DELETE FROM broadcast  WHERE broadcast_id = #{broadcastId}")
     int deleteBroadcast(Integer broadcastId);
+    @Delete(" DELETE FROM broadcast_history WHERE broadcast_id = #{broadcastId}")
+    int deleteBroadcastHistoryByBroadcastId(Integer broadcastId);
+    @Delete(" DELETE FROM broadcast_favorite WHERE broadcast_id = #{broadcastId}")
+    int deleteBroadcastFavoriteByBroadcastId(Integer broadcastId);
+
+
 
     /**
      * 删除节目收听历史记录。

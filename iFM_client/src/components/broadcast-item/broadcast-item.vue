@@ -90,11 +90,12 @@
 <style>
 	.broadcast-item {
 		display: flex;
-		margin: 5px 5px 10px 5px;
+		margin: 0 5px 20rpx 5px;
 		height: 110px;
 		border: 2px solid #cae0f1;
 		border-radius: 10px;
 		overflow: hidden;
+		background-color: #fff;
 	}
 	.broadcast-item ._image {
 		/* flex: 0 0 30%; */

@@ -5,9 +5,9 @@
 			<view class="channel-info">
 				<uv-text :lines="3" :text="channelDetail.channelTitle" color="#1d2b36" size="24px" bold="true"></uv-text>
 				<view class="other-info">
-					<uv-avatar :src="base_url+channelDetail.userPicture" size="65px"></uv-avatar>
+					<uv-avatar  @click="goUserDetail" :src="base_url+channelDetail.userPicture" size="65px"></uv-avatar>
 					<view class="more-info">
-						<uv-text :lines="2" :text="'作者: '+channelDetail.userName" color="#5d5d5d"  size="18px"></uv-text>
+						<uv-text @click="goUserDetail" :lines="2" :text="'作者: '+channelDetail.userName" color="#5d5d5d"  size="18px"></uv-text>
 						<uv-text :lines="2" :text="'发布: '+channelDetail.channelCreateTime" color="#4a6f8b" size="13px" customStyle="padding-top:5px"></uv-text>
 						<uv-text :lines="2" :text="'更新: '+channelDetail.channelUpdateTime" color="#4a6f8b" size="13px" customStyle="padding-top:5px"></uv-text>
 					</view>
@@ -205,6 +205,12 @@
 	const goPostAssociation =()=>{
 		uni.navigateTo({
 		  url: "/pages/community/post-association?postAssociation=0&associationId="+channelId.value,
+		});   
+	}
+	
+	const goUserDetail = () =>{
+		uni.navigateTo({
+		  url: "/pages/user/user?userId="+channelDetail.value.userId,
 		});   
 	}
 </script>

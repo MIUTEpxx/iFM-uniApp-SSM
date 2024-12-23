@@ -84,6 +84,8 @@ public class BroadcastController {
         return broadcastService.listFavoriteBroadcast(userId);
     }
 
+
+
     /**
      * 获取用户收听历史表中的节目 接口
      * @param userId
@@ -154,7 +156,7 @@ public class BroadcastController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 节目创建
         Result r= broadcastService.createBroadcast(channelId, userId, broadcastTitle, broadcastDetail, broadcastPicture);
@@ -186,7 +188,7 @@ public class BroadcastController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 节目创建
         Result r= broadcastService.addAudioForBroadcast(userId, broadcastId, audioFile);
@@ -217,7 +219,7 @@ public class BroadcastController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 更改界面封面
         Result r= broadcastService.updateBroadcastPicture(userId,broadcastId,broadcastPicture);
@@ -249,7 +251,7 @@ public class BroadcastController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 更改节目详情内容
         Result r= broadcastService.updateBroadcastDetail(userId,broadcastId,broadcastDetail);
@@ -280,7 +282,7 @@ public class BroadcastController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 更改节目标题
         Result r=broadcastService.updateBroadcastTitle(userId,broadcastId,broadcastTitle);
@@ -311,7 +313,7 @@ public class BroadcastController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 更改节目音频文件
         Result r= broadcastService.updateBroadcastAudio(userId,broadcastId,broadcastAudio);
@@ -338,7 +340,7 @@ public class BroadcastController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 用户收藏/取消收藏接口
         Result r= broadcastService.changeFavorite(userId,broadcastId);
@@ -395,7 +397,7 @@ public class BroadcastController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 用户删除节目
         Result r= broadcastService.deleteBroadcast(userId,broadcastId);
@@ -425,7 +427,7 @@ public class BroadcastController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 用户删除节目收听历史记录
         Result r= broadcastService.deleteBroadcastHistory(userId,broadcastId);

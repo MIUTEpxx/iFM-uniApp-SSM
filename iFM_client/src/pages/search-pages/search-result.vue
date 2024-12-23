@@ -61,7 +61,7 @@
 				<post-item v-for="(item,i) in postList" :key="i" v-bind="item"></post-item>
 			</view>
 			<view v-if="searchContent==3" class="search-result-content">
-				
+				<user-item v-for="(item,i) in userList" :key="i"  v-bind="item"></user-item>
 			</view>
 			<uv-load-more status="nomore" customStyle="padding:5px 0 10px 0;" />
 		</view>
@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { onLoad, onPageScroll } from '@dcloudio/uni-app';
-import {getPostByKeyword, searchBroadcast,searchChannel} from '@/request/api'
+import {getPostByKeyword, getUserByKeyword, searchBroadcast,searchChannel} from '@/request/api'
 import { ref } from 'vue';
 import { sortChannelList } from '@/utils/channelSort';
 import { sortBroadcastList } from '@/utils/broadcastSort';
@@ -83,6 +83,7 @@ let scrollTop=ref(0)
 let broadcastList=ref<any>([])
 let channelList=ref<any>([])
 let postList=ref<any>([])
+let userList=ref<any>([])
 //排序方法列表
 let sortMethodList =ref([''])
 //当前排序方法
@@ -135,6 +136,15 @@ onLoad((options:any) => {
 	}).catch((err:any) => { 
 	  console.error('帖子搜索请求失败', err); 
 	});
+	
+	getUserByKeyword(keyword.value).then((res:any)=>{
+		if(res.success==true){
+			console.log("res",res);
+			userList.value=res.data.userList
+		}
+	}).catch((err:any) => { 
+	  console.error('用户搜索请求失败', err); 
+	});
 })
 //改变当前排序
 //监听排序方式选择组件返回的数据(即当前选择的是第几个排序方式)
@@ -176,6 +186,7 @@ const sortSearchResult =()=>{
 <style>
 	.search-result-head {
 		padding-top: 10px;
+		
 	}
 	.sort-click {
 		display:flex;
@@ -185,6 +196,8 @@ const sortSearchResult =()=>{
 	}
 	.search-result-body {
 		margin-bottom: 10px;
+		padding-top: 25rpx;
+		background-color: #dce8f9;
 	}
 	.drop-content {
 		width: 100%;

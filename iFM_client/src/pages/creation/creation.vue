@@ -143,7 +143,6 @@ const cancelDelete =()=>{
 
 //删除用户创作内容
 const confirmDelete =() =>{
-	//确认删除提示框
 	if(showContent.value===0){
 		//删除我的频道
 		deleteChannel(userStore.userId,deleteId.value).then((res:any) => {
@@ -239,9 +238,9 @@ const goChannelDetailEdit=(item:any)=>{
 		margin-top: 20px;
 	}
 	.creation-body .creation-my {
-			display:flex;
-			padding: 20rpx;
-			width: 90%;
+		display:flex;
+		padding: 20rpx;
+		width: 90%;
 	 }
 	.creation-body .creat-new {
 		display:flex;

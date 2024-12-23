@@ -146,6 +146,46 @@ export const changeSubscribe = (userId:number,channelId:number) =>{
 	})
 }
 
+//修改节目标题
+export const updateChannelTitle = (userId:number,channelId:number,channelTitle:string) =>{
+	return request({
+		url:'/channel/updateChannelTitle',
+		method:'post',
+		data:{
+			userId:userId,
+			channelId:channelId,
+			channelTitle:channelTitle
+			},
+	})
+}
+//修改节目详情
+export const updateChannelDetail = (userId:number,channelId:number,channelDetail:string) =>{
+	return request({
+		url:'/channel/updateChannelDetail',
+		method:'post',
+		data:{
+			userId:userId,
+			channelId:channelId,
+			channelDetail:channelDetail
+			},
+	})
+}
+//修改节目封面图片
+export const updateChannelPicture = (userId:number,channelId:number,channelPicture:any) =>{
+	return request({
+		url:'/channel/updateChannelPicture',
+		method:'post',
+		filePath:channelPicture.url,
+		name:"channelPicture",
+		haveFile:true,//表明请求参数中有文件数据
+		data: {
+			userId:userId,
+			channelId:channelId,
+		},
+	})
+}
+
+
 //获取节目详情
 export const getBroadcastDetail = (broadcastId:number) =>{
 	return request({
@@ -280,12 +320,83 @@ export const addAudioForBroadcast = (userId:number,broadcastId:number,audioFile:
 	})
 }
 
+//修改节目标题
+export const updateBroadcastTitle = (userId:number,broadcastId:number,broadcastTitle:string) =>{
+	return request({
+		url:'/broadcast/updateBroadcastTitle',
+		method:'post',
+		data:{
+			userId:userId,
+			broadcastId:broadcastId,
+			broadcastTitle:broadcastTitle
+			},
+	})
+}
+//修改节目详情
+export const updateBroadcastDetail = (userId:number,broadcastId:number,broadcastDetail:string) =>{
+	return request({
+		url:'/broadcast/updateBroadcastDetail',
+		method:'post',
+		data:{
+			userId:userId,
+			broadcastId:broadcastId,
+			broadcastDetail:broadcastDetail
+			},
+	})
+}
+//修改节目封面图片
+export const updateBroadcastPicture = (userId:number,broadcastId:number,broadcastPicture:any) =>{
+	return request({
+		url:'/broadcast/updateBroadcastPicture',
+		method:'post',
+		filePath:broadcastPicture.url,
+		name:"broadcastPicture",
+		haveFile:true,//表明请求参数中有文件数据
+		data: {
+			userId:userId,
+			broadcastId:broadcastId,
+		},
+	})
+}
+//修改节目音频
+export const updateBroadcastAudio = (userId:number,broadcastId:number,broadcastAudio:any) =>{
+	return request({
+		url:'/broadcast/updateBroadcastAudio',
+		method:'post',
+		filePath:broadcastAudio.url,
+		name:"broadcastAudio",
+		haveFile:true,//表明请求参数中有文件数据
+		data: {
+			userId:userId,
+			broadcastId:broadcastId,
+		},
+	})
+}
+
 //获取验证码
 export const getVCode = (userEmail:string) =>{
 	return request({
 		url:'/user/getVCode',
 		method:'get',
 		data:{"userEmail":userEmail},
+	})
+}
+
+//根据用户id获取用户信息
+export const getUserById = (userId:number) =>{
+	return request({
+		url:'/user/getUserById',
+		method:'get',
+		data:{"userId":userId},
+	})
+}
+
+//根据关键词搜索用户
+export const getUserByKeyword = (keyword:string) =>{
+	return request({
+		url:'/user/getUserByKeyword',
+		method:'get',
+		data:{"keyword":keyword},
 	})
 }
 
@@ -372,6 +483,21 @@ export const changeUserProfile = (userId:number,userProfile:string) =>{
 		},
 	})
 }
+//修改用户头像
+export const changeUserPicture = (userId:number,file:any) =>{
+	return request({
+		url:'/user/updateUserPicture',
+		method:'post',
+		filePath:file.url,
+		name:"file",
+		haveFile:true,//表明请求参数中有文件数据
+		data:{
+			userId:userId,
+		},
+	})
+}
+
+
 
 
 // 帖子 //
@@ -469,6 +595,17 @@ export const getPostByKeyword = (keyword:string) =>{
 		method:'get',
 		data:{
 			"keyword":keyword,
+		}
+	})
+}
+
+//获取用户收藏的帖子
+export const getFavoritePost = (userId:number) =>{
+	return request({
+		url:'/post/getFavoritePost',
+		method:'get',
+		data:{
+			"userId":userId,
 		}
 	})
 }
@@ -605,3 +742,50 @@ export const changeReplyLike = (replyId:number,value:number) =>{
 		}
 	})
 }
+
+//获取用户搜索历史记录
+export const getSearchHistory = (userId:number) =>{
+	return request({
+		url:'/searchHistory/getSearchHistory',
+		method:'get',
+		data:{
+			"userId":userId,
+		}
+	})
+}
+
+//保存用户搜索记录
+export const saveSearchHistory = (userId:number,keyword:string) =>{
+	return request({
+		url:'/searchHistory/saveSearchHistory',
+		method:'post',
+		data:{
+			userId:userId,
+			keyword:keyword,
+		}
+	})
+}
+
+//删除用户所有历史记录
+export const deleteAllSearchHistory = (userId:number) =>{
+	return request({
+		url:'/searchHistory/deleteAll',
+		method:'delete',
+		data:{
+			userId:userId,
+		}
+	})
+}
+
+//删除某项用户搜索记录
+export const deleteSearchHistory = (userId:number,searchHistoryId:number) =>{
+	return request({
+		url:'/searchHistory/deleteSearchHistory',
+		method:'delete',
+		data:{
+			userId:userId,
+			searchHistoryId:searchHistoryId,
+		}
+	})
+}
+

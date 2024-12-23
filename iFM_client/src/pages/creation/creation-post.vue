@@ -124,11 +124,11 @@
 </template>
 
 <script setup lang="ts">
-	import { onShow, onUnload } from '@dcloudio/uni-app';
+	import { onLoad, onShow, onUnload } from '@dcloudio/uni-app';
 	import { ref } from 'vue';
 	import { addImageForPost, createPost, getBroadcastDetail, getChannelDetail, getHashtag } from "@/request/api"
 	import useUserStore from '../../stores/user';
-import { logOut } from '../../utils/logOut';
+	import { logOut } from '../../utils/logOut';
 	
 	const userStore = useUserStore();
 	//弹窗索引
@@ -178,6 +178,12 @@ import { logOut } from '../../utils/logOut';
 		 console.log("fileList", fileList.value);
 		
 	}
+	onLoad((options:any)=>{
+		associationType.value = JSON.parse(options.associationType); 
+		associationId.value = JSON.parse(options.associationId); // 字符串转对象
+		//获取关联内容
+		getAssociation();
+	})
 	
 	onShow(() => {
 		 // 监听acceptDataFromOpenedPage事件来接收数据
@@ -186,25 +192,9 @@ import { logOut } from '../../utils/logOut';
 			associationType.value=data.associationType;
 			associationId.value=data.associationId;
 		 });
-		 //判断是否有接收关联内容数据
-		if(associationId.value!=-1){
-			if(associationType.value==0){
-				//获取频道详情信息
-				getChannelDetail(associationId.value).then((res: any) => {
-				  association.value = res.data.channel;
-				}).catch((err: any) => {
-				  console.error('频道数据请求失败', err);
-				});
-			}else{
-				//获取节目详情信息
-				getBroadcastDetail(associationId.value).then((res: any) => {
-				  association.value = res.data.broadcast;
-				}).catch((err: any) => {
-				  console.error('节目数据请求失败', err);
-				});
-			}
-			console.log("association",association.value)
-		}
+		//获取关联内容
+		getAssociation();
+
 		//获取主题标签数据
 		getHashtag ().then((res:any) => {
 			hashtagList.value=res.data.hashtagList
@@ -213,10 +203,32 @@ import { logOut } from '../../utils/logOut';
 		  console.error('主题标签数据请求失败', err); 
 		});
 	});
+	
 	onUnload(()=> {
 	    // 当页面卸载时，移除事件监听
 	    uni.$off('acceptDataFromOpenedPage');
 	})
+	 
+	 const getAssociation =()=>{
+		 //判断是否有接收关联内容数据
+		 if(associationId.value!=-1){
+		 	if(associationType.value==0){
+		 		//获取频道详情信息
+		 		getChannelDetail(associationId.value).then((res: any) => {
+		 		  association.value = res.data.channel;
+		 		}).catch((err: any) => {
+		 		  console.error('频道数据请求失败', err);
+		 		});
+		 	}else{
+		 		//获取节目详情信息
+		 		getBroadcastDetail(associationId.value).then((res: any) => {
+		 		  association.value = res.data.broadcast;
+		 		}).catch((err: any) => {
+		 		  console.error('节目数据请求失败', err);
+		 		});
+		 	}
+		 }
+	 } 
 	  
 	//前往帖子关联内容选择页
 	const goAssociationChoose =()=>{

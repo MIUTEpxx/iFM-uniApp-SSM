@@ -1,17 +1,16 @@
 package com.pxx.ifmserver.service.impl;
 
-import com.pxx.ifmserver.entity.dto.Broadcast;
-import com.pxx.ifmserver.entity.dto.Hashtag;
-import com.pxx.ifmserver.entity.dto.Post;
-import com.pxx.ifmserver.entity.dto.User;
+import com.pxx.ifmserver.entity.dto.*;
 import com.pxx.ifmserver.entity.vo.BroadcastItemVO;
 import com.pxx.ifmserver.entity.vo.PostVO;
+import com.pxx.ifmserver.mapper.CommentMapper;
 import com.pxx.ifmserver.mapper.HashtagMapper;
 import com.pxx.ifmserver.mapper.PostMapper;
 import com.pxx.ifmserver.mapper.UserMapper;
 import com.pxx.ifmserver.result.Result;
 import com.pxx.ifmserver.service.BroadcastService;
 import com.pxx.ifmserver.service.ChannelService;
+import com.pxx.ifmserver.service.CommentService;
 import com.pxx.ifmserver.service.PostService;
 import com.pxx.ifmserver.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,13 @@ public class PostServiceImpl implements PostService {
     ChannelService channelService;
     @Autowired
     BroadcastService broadcastService;
+    @Autowired
+    CommentService commentService;
 
     //图片储存路径
     private static final String POST_IMAGE_PATH="/resources/images/post/";
+    @Autowired
+    private CommentMapper commentMapper;
 
     @Override
     public Result getPostByPostId(Integer postId) {
@@ -208,7 +211,7 @@ public class PostServiceImpl implements PostService {
             //获取近期(一星期以内)更新的至少88个帖子
             List<Post> postIdList = new ArrayList<>();
             while(postIdList.size()<88 && hour<24*7){
-                postIdList = postMapper.listPostCtreateInHour(hour);
+                postIdList = postMapper.listPostCtreateInHour(hour,89);
                 hour+=6;
             }
             //根据热门算法筛选30个帖子数据
@@ -406,10 +409,10 @@ public class PostServiceImpl implements PostService {
                 } else if (post.getPostAssociation()==1) {
                     broadcastService.changeBroadcastPostCount(post.getAssociationId(), -1);
                 }
+                postMapper.deletePostFavoriteById(postId,post.getPostId());
                 postMapper.deletePostById(postId);
                 postMapper.deletePostHashtag(postId);
                 postMapper.deletePostImage(postId);
-
             }
         }catch (RuntimeException e){
             return e.getMessage();
@@ -438,17 +441,56 @@ public class PostServiceImpl implements PostService {
                 data.put("error","非帖子创作者, 无权删除此帖子");
                 return new Result(false,20002,"删除失败",data);
             }
+            //删除评论和回复
+            List<CommentDTO> commentList = commentMapper.listCommentByPostId(postId);
+            for (CommentDTO comment : commentList) {
+                commentService.deleteComment(comment.getCommentId());
+            }
             //获取帖子图片路径
             List<String> imageFilePathList = postMapper.listImageByPostId(postId);
             //删除帖子和帖子的图片数据
             deletePost(postId,imageFilePathList);
-            //删除评论和回复
-            // 待实现......
+
 
             return Result.ok().data(data);
         }catch (RuntimeException e){
             data.put("error", e.getMessage());
             return new Result(false,20001,"未知错误, 删除失败",data);
+        }
+    }
+
+    @Override
+    public Result listFavoritePost(Integer userId) {
+        Map<String, Object> data = new HashMap<>();
+        try {
+            //获取用户收藏的帖子id
+            List<Integer> postIdList = postMapper.listFavoritePostIdByUserId(userId);
+            //视图层帖子实体类列表
+            List<PostVO> postVOList = new ArrayList<>();
+            for (Integer postId : postIdList) {
+                Post post = postMapper.getPostById(postId);
+                if(post==null){continue;}
+                //获取帖子图片数据
+                List<String> postImageList = postMapper.listImageByPostId(post.getPostId());
+                //获取帖子主题标签数据
+                List<Hashtag> postHashtagList = postMapper.listHashtagByPostId(post.getPostId());
+                //获取帖子创作用户的数据
+                User user=userMapper.getUserByUserId(post.getUserId());
+                //视图层帖子实体类
+                PostVO postVO = new PostVO();
+                postVO.setPost(post);
+                postVO.setUser(user);
+                postVO.setPostImageList(postImageList);
+                postVO.setPostHashtagList(postHashtagList);
+                //添加至视图层帖子实体类列表中
+                postVOList.add(postVO);
+            }
+            //将数据填入返回体
+            data.put("postList", postVOList);
+            return Result.ok().data(data);
+        }catch (RuntimeException e){
+            data.put("error.message", e.getMessage());
+            return new Result(false,20001,"未知错误, 帖子数据获取失败",data);
         }
     }
 }

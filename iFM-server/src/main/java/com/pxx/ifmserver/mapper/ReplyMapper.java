@@ -40,4 +40,12 @@ public interface ReplyMapper {
      */
     @Update("UPDATE reply SET reply_like_count = reply_like_count + #{num} WHERE reply_id = #{replyId}")
     public int updateReplyLikeCount(Integer replyId, int num);
+
+    /**
+     * 删除评论下的所有回复
+     * @param commentId
+     * @return
+     */
+    @Delete("DELETE FROM reply WHERE comment_id = #{commentId}")
+    public int deleteReplyByCommentId(Integer commentId);
 }

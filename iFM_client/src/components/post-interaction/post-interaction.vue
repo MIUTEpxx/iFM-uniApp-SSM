@@ -159,7 +159,8 @@
 		border-bottom: 2px solid #dce8f9;
 	}
 	.post-interaction {
-		margin-top: 25rpx;
+		margin-top: 15rpx;
+		padding-bottom: 10rpx;
 	}
 	.post-interaction .post-button {
 		display: flex;

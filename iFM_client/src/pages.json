@@ -31,7 +31,7 @@
 		{
 			"path": "pages/my/my-detail",
 			"style": {
-				"navigationBarTitleText": "用户信息",
+				"navigationBarTitleText": "个人信息",
 				"titleNView": false
 			}
 		},
@@ -67,6 +67,13 @@
 			"path": "pages/login-register/register",
 			"style": {
 				"navigationBarTitleText": "用户注册页",
+				"titleNView": false
+			}
+		},
+		{
+			"path": "pages/user/user",
+			"style": {
+				"navigationBarTitleText": "用户详情页",
 				"titleNView": false
 			}
 		},

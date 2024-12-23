@@ -1,15 +1,18 @@
 package com.pxx.ifmserver.service.impl;
 
 
+import com.pxx.ifmserver.entity.dto.Broadcast;
 import com.pxx.ifmserver.entity.dto.Channel;
 import com.pxx.ifmserver.entity.dto.Hashtag;
 import com.pxx.ifmserver.entity.dto.User;
 import com.pxx.ifmserver.entity.vo.ChannelItemVO;
 import com.pxx.ifmserver.entity.vo.ChannelVO;
+import com.pxx.ifmserver.mapper.BroadcastMapper;
 import com.pxx.ifmserver.mapper.ChannelMapper;
 import com.pxx.ifmserver.mapper.HashtagMapper;
 import com.pxx.ifmserver.mapper.UserMapper;
 import com.pxx.ifmserver.result.Result;
+import com.pxx.ifmserver.service.BroadcastService;
 import com.pxx.ifmserver.service.ChannelService;
 import com.pxx.ifmserver.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,9 @@ public class ChannelServiceImpl implements ChannelService {
     private HashtagMapper hashtagMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private BroadcastMapper broadcastMapper;
+
     /**
      * 根据频道Id获取该频道详细信息
      * 其中频道基本信息和频道主题标签信息分贝获取再整合
@@ -289,10 +295,35 @@ public class ChannelServiceImpl implements ChannelService {
                 data.put("error","非频道创建者,无权修改ID为 "+channelId+" 的频道");
                 return new Result(false,20002,"删除失败,无权操作",data);
             }
+            //开始删除
+            try {
+                //删除封面图片
+                String imagePath = channelMapper.getChannelByChannelId(channelId).getChannelPicture();
+                FileUtils.deletePicture(imagePath);
+            } catch (IOException e) {
+                data.put("error1", e.getMessage());
+            }
+            //删除频道下的节目
+            List<Broadcast> broadcastList = broadcastMapper.listBroadcastByChannelId(channelId);
+            BroadcastService broadcastService = new BroadcastServiceImpl();
+            for (Broadcast broadcast : broadcastList) {
+                broadcastService.deleteBroadcast(broadcast.getUserId(),broadcast.getChannelId());
+            }
             //删除频道记录
             channelMapper.deleteChannelByChannelId(channelId);
             //删除频道-主题标签记录
             channelMapper.deleteChannelHashtagByChannelId(channelId);
+        }catch (RuntimeException e){
+            data.put("error", e.getMessage());
+            return new Result(false,20001,"未知错误",data);
+        }
+        return Result.ok();
+    }
+
+    public Result deleteChannel_(Integer channelId){
+        Map<String, Object> data = new HashMap<>();
+        try{
+
         }catch (RuntimeException e){
             data.put("error.message", e.getMessage());
             return new Result(false,20001,"未知错误",data);
@@ -308,8 +339,14 @@ public class ChannelServiceImpl implements ChannelService {
     public Result listPopularChannel(){
         Map<String, Object> data = new HashMap<>();
         try {
-            //获取36小时内更新过节目的频道
-            List<Channel> channelList=channelMapper.listPopularChannel();
+            //单位 小时
+            int hour = 72;
+            //获取近期(一星期以内)更新的至少88个频道
+            List<Channel> channelList= new ArrayList<>();
+            while(channelList.size()<88 && hour<24*7){
+                channelList=channelMapper.listPopularChannel(hour, 89);
+                hour+=6;
+            }
             //将频道信息存入返回体的数据部分
             List<ChannelItemVO> channelItemVOList = new ArrayList<>();
             //将频道信息存入返回体的数据部分

@@ -373,7 +373,10 @@ public class BroadcastServiceImpl implements BroadcastService {
             }
 
             //删除节目记录
-           broadcastMapper.deleteBroadcast(broadcastId);
+            broadcastMapper.deleteBroadcast(broadcastId);
+            broadcastMapper.deleteBroadcastHistoryByBroadcastId(broadcastId);
+            broadcastMapper.deleteBroadcastFavoriteByBroadcastId(broadcastId);
+            //删除
         }catch (RuntimeException e){
             data.put("error.message", e.getMessage());
             return new Result(false,20001,"未知错误,节目删除失败",data);
@@ -399,8 +402,14 @@ public class BroadcastServiceImpl implements BroadcastService {
     @Override
     public Result listPopularBroadcast() {
         Map<String, Object> data = new HashMap<>();
-        //获取72小时内更新的节目
-        List<Broadcast> broadcastList=broadcastMapper.listBroadcastCtreateIn72H();
+        //单位 小时
+        int hour = 72;
+        //获取近期(一星期以内)更新的至少88个节目
+        List<Broadcast> broadcastList=new ArrayList<>();
+        while(broadcastList.size()<88 && hour<24*7){
+            broadcastList=broadcastMapper.listBroadcastCtreateInHour(hour,89);
+            hour+=6;
+        }
         // 计算每个节目的热门分数并排序
         Collections.sort(broadcastList, new Comparator<Broadcast>() {
             @Override
@@ -615,11 +624,14 @@ public class BroadcastServiceImpl implements BroadcastService {
             for(BroadcastFavorite broadcastFavorite:broadcastFavoriteList){
                 //整合节目基础数据
                 Broadcast broadcast=broadcastMapper.getBroadcastByBroadcastId(broadcastFavorite.getBroadcastId());
+                if(broadcast==null){continue;}
                 Channel channel = channelMapper.getChannelByChannelId(broadcast.getChannelId());
                 BroadcastItemVO broadcastItemVO=new BroadcastItemVO();
                 broadcastItemVO.setBroadcast(broadcast);
                 if(channel!=null){
                     broadcastItemVO.setChannelTitle(channel.getChannelTitle());
+                } else {
+                    continue;
                 }
                 //获取收藏时间戳
                 broadcastItemVO.setFavoriteTime(broadcastFavorite.getGmtCreate().toInstant(ZoneOffset.of("+8")).toEpochMilli());

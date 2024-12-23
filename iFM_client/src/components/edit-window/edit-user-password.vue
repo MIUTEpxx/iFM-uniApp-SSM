@@ -152,6 +152,10 @@ const confirmClick =()=>{
 </script>
 
 <style>
+	/* 将toast的z-index设置为最高 */
+	uni-toast {
+	    z-index: 9999 !important; /* 根据实际情况进行调整 */
+	}
 	.edit-user-password {
 		padding: 2% 5%;
 		background: white;

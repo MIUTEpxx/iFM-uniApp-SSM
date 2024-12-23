@@ -4,7 +4,7 @@
 		<view class="channel-edit-head">
 			<view class="channel-title-edit">
 				<uv-text :lines="3" :text="channelDetail.channelTitle" color="#1d2b36" size="24px" bold="true"></uv-text>
-				<uv-icon @click="" name="bianji" custom-prefix="custom-icon" color="#a3b2ca" size="60rpx"></uv-icon>
+				<uv-icon @click="openEditWindow(0)" name="bianji" custom-prefix="custom-icon" color="#a3b2ca" size="60rpx"></uv-icon>
 			</view>
 			
 			<view class="channel-image-edit">
@@ -18,8 +18,11 @@
 						customStyle=" position: absolute; top: 0px; right: 0; bottom: 0; left: 0;" >
 						</uv-image>
 				</view>
+				<view class="edit-button" @click="openEditWindow(2)">
 					<uv-icon @click="" name="bianji" custom-prefix="custom-icon" color="#a3b2ca" size="80rpx"></uv-icon>
 					<uv-text class="edit-text" text="更换封面" color="#a3b2ca" size="45rpx" ></uv-text>
+				</view>
+
 			</view>
 		</view>
 			
@@ -57,7 +60,7 @@
 			<view class="channel-edit-introduction">
 				<view class="introduction-head">
 					<uv-text text="频道简介" color="#61b7f9" size="20px" bold="true" customStyle="margin:0 0 10px 10px;"></uv-text>
-					<view class="detail-edit-buttom">
+					<view class="detail-edit-button" @click="openEditWindow(1)">
 						<uv-icon @click="" name="bianji" custom-prefix="custom-icon" color="#a3b2ca" size="45rpx"></uv-icon>
 						<uv-text class="edit-text" text="编辑简介" color="#a3b2ca" size="30rpx" ></uv-text>
 					</view>
@@ -128,12 +131,93 @@
 		@leftButtonClick="cancelDelete"
 		@rightButtonClick="confirmDelete">
 		</popup-window>
+		<!-- 修改内容的弹窗 -->
+		<uv-popup ref="popupEdit" mode="bottom" custom-style="background: #dce8f9; height: 1500rpx;">
+			<view class="edit-window-head">
+				<uv-icon @click="closeEdit" name="close-circle" color="#86c7f9" size="65rpx" ></uv-icon>
+				<uv-button type="primary" @click="editButtonClick" text="点击修改" color="#6eabf6" customStyle="width: 200rpx;"></uv-button>
+			</view>
+			<!-- 标题修改窗口 -->
+			<view class="edit-conten" v-if="editContent==0">
+				<uv-text text="编辑标题" color="#767f8b" size="20px" align="left"></uv-text>
+				<uv-textarea
+				class="broadcast-input"
+				v-model="newTitle" 
+				placeholder="请输入新标题"
+				adjustPosition="true" 
+				count="true"
+				maxlength=32
+				autoHeight="true"
+				border="none"
+				customStyle="background:#ebeff5;margin:25rpx 0;"
+				countStyle="background-color:rgba(0, 0, 0, 0.0);"
+				textStyle="font-size:32rpx;color:#404753;"
+				placeholderStyle="font-size:32rpx;color:#717d93;">
+				</uv-textarea>
+			</view>
+			<!-- 详情修改窗口 -->
+			<view class="edit-conten" v-else-if="editContent==1">
+				<uv-text text="编辑详情内容" color="#767f8b" size="20px" align="left"></uv-text>
+				<uv-textarea
+				class="broadcast-input"
+				v-model="newDetail" 
+				placeholder="请输入新详情内容"
+				adjustPosition="true" 
+				count="true"
+				maxlength=3000
+				height="450rpx"
+				border="none"
+				customStyle="background:#ebeff5;margin:25rpx 0;"
+				countStyle="background-color:rgba(0, 0, 0, 0.0);"
+				textStyle="font-size:32rpx;color:#404753;"
+				placeholderStyle="font-size:32rpx;color:#717d93;">
+				</uv-textarea>
+			</view>
+			<!-- 封面图片修改窗口 -->
+			<view class="edit-conten" v-else-if="editContent==2">
+				<uv-text text="点击选择新封面" color="#767f8b" size="20px" align="left" ></uv-text>
+				<view class="edit-image">
+					<uv-upload
+					:fileList="newImage" 
+					name="6" 
+					multiple 
+					:maxCount="1" 
+					width="420rpx" 
+					height="420rpx"
+					:previewFullImage="true"
+					:deletable="true"
+					accept="image"
+					@afterRead="handleAfterReadImage"
+					@delete="deletePic"
+					custom-style="
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					">
+						<view class="upload-new-image">
+							<span>+</span>
+						</view>
+				</uv-upload>
+			</view>
+				
+			</view>
+		</uv-popup>
+		<!-- 确认修改弹窗 -->
+		<popup-window
+		ref="popupConfirm"
+		popupTitleText="确认修改"
+		popupWindowText="请检查填写的修改内容"
+		leftButtonText="暂不修改"
+		rightButtonText="确定修改"
+		@leftButtonClick="concelEdit"
+		@rightButtonClick="confirmEdit">
+		</popup-window>
 	</view>
 </template>
 
 <script setup lang="ts">
 	import { onLoad } from "@dcloudio/uni-app";
-	import { getBroadcastByChannel,getChannelDetail,checkSubscribe, changeSubscribe, deleteBroadcast } from "@/request/api"; 
+	import { getBroadcastByChannel,getChannelDetail,checkSubscribe, changeSubscribe, deleteBroadcast, updateChannelTitle, updateChannelDetail, updateChannelPicture } from "@/request/api"; 
 	import { ref,watch } from 'vue';
 	import { changeTime } from "@/utils/timeChange"
 	import { numConversion} from '@/utils/numConversion';
@@ -147,6 +231,11 @@
 	const base_url = useBaseStores().baseUrl;
 	//获取用户信息
 	const userStore = useUserStores();
+	//修改窗口索引
+	const popupEdit = ref<any>(null);
+	//修改确认弹窗
+	const popupConfirm = ref<any>(null);
+	
 	//是否处于删除状态
 	let inDelete =ref(false)
 	//待删除的id
@@ -171,6 +260,194 @@
 	let postCount= ref(0)
 	//当前排序方式
 	let currentSortMethod=ref(0)
+	
+	
+	//当前修改的内容
+	let editContent = ref(0);//0:标题 1:详情内容 2:封面图片 3:音频文件
+	//新标题
+	let newTitle = ref("");
+	//新详情内容
+	let newDetail = ref("");
+	//新封面图片
+	let newImage = ref<any>([]);
+
+	
+	// 删除图片
+	function deletePic(event:any) {
+		newImage.value.splice(event.index, 1);
+	}
+	// 处理图片文件读取后的逻辑
+	function handleAfterReadImage(event:any) {
+		// 直接将文件赋值给imageList
+		newImage.value = event.file;
+	}
+
+	
+	//打开修改弹窗
+	const openEditWindow =(i:number)=>{
+		 if (popupEdit.value) {
+		    popupEdit.value.open();
+		}
+		//指定修改内容
+		editContent.value=i;
+	}
+	
+	//关闭编辑窗口 清空已输入信息
+	const closeEdit = () =>{
+		if (popupEdit.value) {
+		    popupEdit.value.close();
+		}
+		newTitle .value =  channelDetail.value.channelTitle;
+		newDetail.value =  channelDetail.value.channelDetail;
+		newImage .value =  []
+	}
+	
+	//点击修改按钮 检查内容 弹出确认弹窗
+	const editButtonClick = () =>{
+		if(editContent.value == 0) {
+			if(newTitle.value == "") {
+				uni.showToast({
+					title: '标题内容不能为空',
+					icon: 'error',
+					duration: 1000
+				}) 
+				return;
+			}else if(newTitle.value == channelDetail.value.channelTitle) {
+				uni.showToast({
+					title: '新标题不能和原标题相同',
+					icon: 'error',
+					duration: 1000
+				}) 
+				return;
+			}
+		}else if(editContent.value == 1) {
+			if(newDetail.value == "") {
+				uni.showToast({
+					title: '详情内容不能为空',
+					icon: 'error',
+					duration: 2000
+				}) 
+				return;
+			}else if(newDetail.value == channelDetail.value.channelDetail) {
+				uni.showToast({
+					title: '新详情内容不能和原详情内容相同',
+					icon: 'error',
+					duration: 2000
+				}) 
+				return;
+			}
+		}else if(editContent.value == 2) {
+			if(newImage.value.length == 0) {
+				uni.showToast({
+					title: '请选择图片作为新封面',
+					icon: 'error',
+					duration: 2000
+				}) 
+				return;
+			}
+		}
+		//打开确认弹窗
+		if (popupConfirm.value) {
+		    popupConfirm.value.open();
+		}
+		
+	}
+	
+	//关闭确认弹窗
+	const concelEdit = () => {
+		if (popupConfirm.value) {
+		    popupConfirm.value.close();
+		}
+		
+	}
+	
+	//确认修改
+	const confirmEdit = () => {
+		//关闭确认弹窗
+		concelEdit();
+		if(editContent.value == 0) {
+			//修改标题
+			updateChannelTitle(userStore.userId,channelId.value,newTitle.value).then((res:any)=>{
+				if(res.success===true){
+					//关闭编辑弹窗
+					closeEdit();
+					uni.showToast({
+						title: '修改成功!',
+						icon: 'success',
+						duration: 1000
+					}) 
+					// 设置1秒后刷新页面
+					setTimeout(() => {
+						uni.redirectTo({
+							url: '/pages/channel/channel-detail-edit?channelId='+channelId.value,
+						});
+					}, 1000); // 1000毫秒后执行
+				}else{
+					uni.showToast({
+						title: res.message+'\n'+res.data.error,
+						icon: 'error',
+						duration: 3000
+					}) 
+				}
+			}).catch((err: any) => {
+				console.error('标题修改请求失败', err);
+			});
+		}else if(editContent.value == 1) {
+			//修改详情
+			updateChannelDetail(userStore.userId,channelId.value,newDetail.value).then((res:any)=>{
+				if(res.success===true){
+					//关闭编辑弹窗
+					closeEdit();
+					uni.showToast({
+						title: '修改成功!',
+						icon: 'success',
+						duration: 1000
+					}) 
+					// 设置1秒后刷新页面
+					setTimeout(() => {
+						uni.redirectTo({
+							url: '/pages/channel/channel-detail-edit?channelId='+channelId.value,
+						});
+					}, 1000); // 1000毫秒后执行
+				}else{
+					uni.showToast({
+						title: res.message+'\n'+res.data.error,
+						icon: 'error',
+						duration: 3000
+					}) 
+				}
+			}).catch((err: any) => {
+				console.error('标题修改请求失败', err);
+			});
+		}else if(editContent.value == 2) {
+			//修改封面图片
+			updateChannelPicture(userStore.userId,channelId.value,newImage.value[0]).then((res:any)=>{
+				if(res.success===true){
+					//关闭编辑弹窗
+					closeEdit();
+					uni.showToast({
+						title: '修改成功!',
+						icon: 'success',
+						duration: 1000
+					}) 
+					// 设置1秒后刷新页面
+					setTimeout(() => {
+						uni.redirectTo({
+							url: '/pages/channel/channel-detail-edit?channelId='+channelId.value,
+						});
+					}, 1000); // 1000毫秒后执行
+				}else{
+					uni.showToast({
+						title: res.message+'\n'+res.data.error,
+						icon: 'error',
+						duration: 3000
+					}) 
+				}
+			}).catch((err: any) => {
+				console.error('标题修改请求失败', err);
+			});
+		}
+	}
 	
 	const sortMethodClick =(e:any)=>{
 		currentSortMethod.value=e.index+1
@@ -276,6 +553,9 @@
 					channelDetail.value.channelCreateTime=changeTime(channelDetail.value.channelCreateTime);
 					channelDetail.value.channelUpdateTime=changeTime(channelDetail.value.channelUpdateTime);
 					//console.log("channelDetail",channelDetail.value)
+					
+					newTitle .value =  channelDetail.value.channelTitle;
+					newDetail.value =  channelDetail.value.channelDetail;
 				}).catch((err:any) => { 
 					console.error('频道数据请求失败', err); 
 				}),
@@ -343,6 +623,9 @@
 </script>
 
 <style scoped>
+	.edit-button {
+		display: flex;
+	}
 	.channel-edit-head {
 		display: flex;
 		flex-direction: column;
@@ -415,11 +698,11 @@
 	.introduction-head {
 		display: flex;
 	}
-	.channel-edit-introduction .detail-edit-buttom {
+	.channel-edit-introduction .detail-edit-button {
 		display: flex;
 		align-items: center;
 	} 
-	.channel-edit-introduction .detail-edit-buttom .edit-text {
+	.channel-edit-introduction .detail-edit-button .edit-text {
 		padding-bottom: 6rpx;
 		padding-left: 5rpx;
 	}
@@ -498,5 +781,49 @@
 		font-size: 22px;
 		border: 3px solid #ff7d7d;
 		border-radius: 5px;
+	}
+	.edit-window-head {
+		display: flex;
+		margin-bottom: 15rpx;
+		padding: 15rpx;
+		border-bottom: 1px solid #d2d8e8;
+		background-color: white;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.audio-edit {
+		width: 90%;
+		border-top: 3px dashed #9dcaf9;
+	}
+	
+	.audio-edit .edit-image {
+		width: 400rpx;
+		height: 400rpx;
+		overflow: hidden;
+		border-radius: 15rpx;
+	}
+	.upload-new-image {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 35rpx 0;
+		width: 400rpx;
+		height: 400rpx;
+		background: #d7e3ee;
+		border-radius: 15rpx;
+	}
+	.upload-new-image >span {
+		margin-bottom: 25rpx;
+		color: white;
+		font-size: 150rpx;
+		font-weight: 900;
+	}
+	
+	.audio-edit>:first-child {
+		padding-bottom: 15rpx;
+	}
+	.edit-conten {
+		padding: 15rpx;
+		background: white;
 	}
 </style>

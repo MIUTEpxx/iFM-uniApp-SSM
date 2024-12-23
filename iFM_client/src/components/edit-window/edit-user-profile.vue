@@ -57,7 +57,7 @@ const confirmClick =()=>{
 		if(res.success==true){
 			//修改成功
 			props.cancelClick()
-			userStore.userName=newUserProfile.value
+			userStore.userProfile=newUserProfile.value
 			uni.showToast({
 				title: "昵称修改成功!",
 				icon: 'success',
@@ -75,6 +75,10 @@ const confirmClick =()=>{
 </script>
 
 <style>
+	/* 将toast的z-index设置为最高 */
+	uni-toast {
+	    z-index: 9999 !important; /* 根据实际情况进行调整 */
+	}
 	.edit-user-profile {
 		padding: 2% 5%;
 		background: white;

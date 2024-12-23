@@ -94,7 +94,7 @@ public class ChannelController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 获取用户订阅的频道列表
         Result r= channelService.listSubscribedChannel(userId);
@@ -145,7 +145,7 @@ public class ChannelController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 订阅频道/取消订阅(根据用户是否已订阅)
         Result r= channelService.changeSubscribe(userId,channelId);
@@ -176,7 +176,7 @@ public class ChannelController {
         if(newToken==null){
         Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 创建频道
         Result r= channelService.createChannel(userId, channelTitle, channelDetail, channelPicture, hashtagIdList);
@@ -185,7 +185,7 @@ public class ChannelController {
     }
 
     /**
-     * 跟换频道ID对应频道的封面图片接口
+     * 修改频道ID对应频道的封面图片接口
      * @param userId 用户Id
      * @param channelId 频道Id
      * @param channelPicture 频道新封面图片
@@ -208,7 +208,7 @@ public class ChannelController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 更换频道图片
         Result r= channelService.updateChannelPicture(userId,channelId, channelPicture);
@@ -240,7 +240,7 @@ public class ChannelController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 更换频道图片
         Result r= channelService.updateChannelDetail(userId,channelId, channelDetail);
@@ -272,7 +272,7 @@ public class ChannelController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         // 更换频道图片
         Result r= channelService.updateChannelTitle(userId,channelId, channelTitle);
@@ -302,7 +302,7 @@ public class ChannelController {
         if (newToken == null) {
             Map<String, Object> data = new HashMap<>();
             data.put("error", "Token安全令牌失效,请重新登录");
-            return new Result(false, 80000, "处理失败", data);
+            return new Result(false, 20005, "处理失败", data);
         }
         // 删除频道
         Result r = channelService.deleteChannel(userId, channelId);

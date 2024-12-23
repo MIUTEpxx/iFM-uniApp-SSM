@@ -1,6 +1,6 @@
 <template>
 		<view class="post-head">
-			<view class="user-post-head">
+			<view class="user-post-head" @click="goUserDetail">
 				<uv-avatar :src="baseStore.baseUrl+props.userPicture" size="45px"></uv-avatar>
 				<uv-text class="user-name" :lines="2" :text="props.userName" color="#78889c"  size="14px" align="left" bold="true"></uv-text>
 			</view>
@@ -54,7 +54,11 @@
 			}
 		});
 	
-	
+	const goUserDetail = () =>{
+		uni.navigateTo({
+		  url: "/pages/user/user?userId="+props.userId,
+		});   
+	}
 </script>
 
 <style>

@@ -22,6 +22,7 @@ public interface UserService {
     Result insertUser(User user,String code);
     Result loginPassword(Integer userId, String password) throws UnsupportedEncodingException, NoSuchAlgorithmException;
     Result loginEamil(String email, String code) throws UnsupportedEncodingException, NoSuchAlgorithmException;
+    Result searchUser(String keyword);
     Result getVCode(String userEmail);
     boolean verifyEmail(String userEmail, String code);
 }

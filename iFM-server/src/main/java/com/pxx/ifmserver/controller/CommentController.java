@@ -67,7 +67,7 @@ public class CommentController {
         if(newToken==null){
             Map<String, Object> data = new HashMap<>();
             data.put("error","Token安全令牌失效,请重新登录");
-            return new Result(false,80000,"处理失败",data);
+            return new Result(false,20005,"处理失败",data);
         }
         CommentDTO comment = new CommentDTO();
         comment.setUserId(userId);

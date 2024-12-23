@@ -49,7 +49,8 @@ import useBaseStore from '@/stores/base';
 	.head{
 		display: flex;
 		align-items: center;
-		margin: 20px;
+		padding: 20px;
+		background-color: #fff;
 		.home-button {
 			margin-left: 10px;
 			padding-bottom:5px;

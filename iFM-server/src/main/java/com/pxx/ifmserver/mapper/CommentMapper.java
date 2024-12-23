@@ -64,4 +64,13 @@ public interface CommentMapper {
      */
     @Update("UPDATE comment SET comment_reply_count = comment_reply_count + #{num} WHERE comment_id = #{commentId}")
     public int updateCommentReplyCount(Integer commentId, int num);
+
+    /**
+     * 删除帖子下的所有评论
+     * @param postId
+     * @return
+     */
+    @Delete("DELETE FROM comment WHERE post_id = #{postId}")
+    public int deleteCommentByPostId(Integer postId);
+
 }

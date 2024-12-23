@@ -193,7 +193,7 @@ const confirmClick =()=>{
 <style>
 	/* 将toast的z-index设置为最高 */
 	uni-toast {
-	    z-index: 19999 !important; /* 根据实际情况进行调整 */
+	    z-index: 1999999 !important; /* 根据实际情况进行调整 */
 	}
 	.edit-user-email {
 		padding: 2% 5%;

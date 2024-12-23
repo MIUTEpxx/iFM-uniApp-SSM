@@ -107,6 +107,7 @@ export default async (params: any) => {
 						// 根据返回的状态码做出对应的操作
 						if(res.data.code==20005){
 							//token安全令牌失效,用户重新登录
+							//console.log("token安全令牌失效,用户重新登录")
 							logOut();
 							resolve(res.data)
 						}						

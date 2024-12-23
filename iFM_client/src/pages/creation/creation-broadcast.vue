@@ -266,6 +266,7 @@
 		font-size: 150rpx;
 		font-weight: 900;
 	}
+	
 	.create-broadcast-body .creation-broadcast-input {
 		margin-top:50rpx;
 		width: 90%;

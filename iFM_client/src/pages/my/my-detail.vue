@@ -1,7 +1,7 @@
 <template>
 	<view class="my-detail">
 		<head-general titleContent="用户信息"></head-general>
-		<view class="my-detail-head">
+		<view class="my-detail-head" @click="editUserAvatarClick">
 			<uv-avatar
 			:src="base_url+userStore.userPicture" 
 			size="180px" :lazy-load="true"
@@ -36,28 +36,20 @@
 			<view class="user-profile-content">
 				<uv-text :text="userStore.userProfile" color="#3f444d"  size="18px"></uv-text>
 			</view>
-		</view>
-<!-- 		<uv-popup 
-		ref="popupRef" mode="center" 
-		:closeable="true" round="10px">
-			<view class="content">
-				<EditUserName     v-if="editUserName"></EditUserName>
-				<EditUserEmail 	  v-if="editUserEmail"></EditUserEmail>
-				<EditUserPassword v-if="editUserPassword"></EditUserPassword>
-				<EditUserProfile  v-if="editUserProfile"></EditUserProfile>
-			</view>
-		</uv-popup> -->	 
+		</view> 
 		<uv-overlay class="overlay" :show="show">
+			<EditUserAvatar	  :cancelClick="closeEdit"	class="overlay-content" v-if="editUserAvatar"></EditUserAvatar>
 			<EditUserName     :cancelClick="closeEdit"	class="overlay-content" v-if="editUserName"></EditUserName>
 			<EditUserEmail 	  :cancelClick="closeEdit"	class="overlay-content" v-if="editUserEmail"></EditUserEmail>
 			<EditUserPassword :cancelClick="closeEdit"	class="overlay-content" v-if="editUserPassword"></EditUserPassword>
 			<EditUserProfile  :cancelClick="closeEdit"	class="overlay-content" v-if="editUserProfile"></EditUserProfile>
 		</uv-overlay>
-		<player-bar :reserveSpace="true"></player-bar>
+		<player-bar></player-bar>
 	</view>
 </template>
 
 <script setup lang="ts">
+import EditUserAvatar from '@/components/edit-window/edit-user-avatar.vue';
 import EditUserEmail from '@/components/edit-window/edit-user-email.vue';
 import EditUserName from '@/components/edit-window/edit-user-name.vue';
 import EditUserPassword from '@/components/edit-window/edit-user-password.vue';
@@ -70,18 +62,19 @@ import { ref } from 'vue';
 const base_url = useBaseStores().baseUrl;
 const userStore = useUserStore()
 let show=ref(false)
-let editUserName =ref(false)
-let editUserEmail =ref(false)
-let editUserPassword =ref(false)
-let editUserProfile =ref(false)
-const popupRef = ref(null);
+let editUserAvatar =ref<any>(false)
+let editUserName =ref<any>(false)
+let editUserEmail =ref<any>(false)
+let editUserPassword =ref<any>(false)
+let editUserProfile =ref<any>(false)
 
+const editUserAvatarClick =()=>{
+	show.value=true
+	editUserAvatar.value=true
+}
 const editUserNameClick =()=>{
 	show.value=true
 	editUserName.value=true
-	if (popupRef.value) {
-		popupRef.value.open();
-	}
 }
 const editUserEmailClick =()=>{
 	show.value=true
@@ -97,6 +90,7 @@ const editUserProflieClick =()=>{
 }
 const closeEdit =()=>{
 	show.value=false
+	editUserAvatar.value=false
 	editUserName.value=false	
 	editUserEmail.value=false
 	editUserPassword.value=false
@@ -108,7 +102,10 @@ onShow(()=>{
 </script>
 
 <style>
-	
+	/* 将toast的z-index设置为最高 */
+	uni-toast {
+	    z-index: 19999999 !important; /* 根据实际情况进行调整 */
+	}
 	.my-detail-head {
 		display: flex;
 	    flex-direction: column;

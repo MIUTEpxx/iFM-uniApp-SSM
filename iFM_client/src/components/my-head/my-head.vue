@@ -3,7 +3,7 @@
 		<view class="user-info" @click="goMyDetail">
 			<view class="user-name">
 			<uv-text class="name" :lines="3" :text="props.userName" color="#1d2b36" size="24px" bold="true"></uv-text>
-			<uv-text text=">" color="#91a8c5" size="28px" bold="true" customStyle="margin-left:10px;"></uv-text>	
+			<uv-text v-if="props.isMyUser==true" text=">" color="#91a8c5" size="28px" bold="true" customStyle="margin-left:10px;"></uv-text>	
 			</view>
 			<uv-text :lines="3" :text="props.userProfile" color="#5782a3" size="18px"></uv-text>
 		</view>
@@ -28,6 +28,7 @@
 		userName:string;
 		userProfile:string;
 		userPicture:string;
+		isMyUser:boolean;
 	}
 	//设置默认值
 	const props = withDefaults(defineProps<IMyHead>(), {
@@ -35,9 +36,13 @@
 		userName:'游客123',
 		userProfile:"当前未登录",
 		userPicture:"/images/user/head/D.png",
+		isMyUser:true,
 	});
 	//跳转到个人详情页
 	const goMyDetail =()=>{
+		if(props.isMyUser==false) {
+			return;
+		}
 		if(!userStore.isLogin){
 			uni.showToast({
 				title: '请登录后操作',

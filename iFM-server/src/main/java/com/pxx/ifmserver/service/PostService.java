@@ -90,4 +90,11 @@ public interface PostService {
      * @return
      */
     Result deletePostById(Integer userId, Integer postId);
+
+    /**
+     * 根据用户id获取其收藏的帖子
+     * @param userId
+     * @return
+     */
+    Result listFavoritePost(Integer userId);
 }

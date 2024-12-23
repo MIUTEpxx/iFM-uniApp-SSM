@@ -13,7 +13,9 @@
 			:postSection="post.postSection"></post-head>
 		</view>
 		<view class="post-detail-body">
-			<uv-text class="post-detail"  :text="post.postDetail" lineHeight="40rpx" color="#363e47"  size="16px"></uv-text>
+			<uv-read-more show-height="600rpx" :toggle="true" color="#61b7f9" closeText="显示全部">
+				<uv-text class="post-detail"  :text="post.postDetail" lineHeight="40rpx" color="#363e47"  size="16px"></uv-text>
+			</uv-read-more>
 		</view>
 		<view class="post-detail-picture" v-if="postImageList.length!=0">
 			<uv-album :urls="postImageList" singleSize="700rpx" multipleSize="230rpx" space="8rpx" maxCount="9"  singleMode="aspectFill"></uv-album>
@@ -26,6 +28,7 @@
 			<uv-text class="text" :lines="1" text="关联节目" color="#86c7f9"  size="18px"></uv-text>
 			<broadcast-item v-bind="association"></broadcast-item>
 		</view>
+		<!-- 点赞,评论,收藏 -->
 		<post-interaction 
 		:postId="post.postId"
 		:postCollectionCount="postCollectionCount"
@@ -35,13 +38,14 @@
 		v-bind="post"
 		:haveCollection="haveCollect"
 		></post-interaction>
-		
+		<!-- 评论区 -->
 		<view class="post-comment-section">
 			<comment-item 
 			v-for="(item,i) in commentList" :key="i" 
 			v-bind="item"
 			@replyComment="openReply(item,i)"
 			@showMoreReply="openMoreReply(i)"></comment-item>
+			<uv-text text="没有更多评论了" color="#8e9aa7"  size="16px" align="center"></uv-text>
 		</view>
 		
 		<uv-popup ref="popupComment" mode="bottom" custom-style="background: #dce8f9; height: 1500rpx;">
@@ -285,6 +289,12 @@
 				icon: 'none',
 				duration: 3000
 			});
+			// 设置1秒后刷新页面
+			setTimeout(() => {
+				uni.redirectTo({
+					 url: "/pages/community/post-detail?postId="+postId.value,
+				});
+			}, 1000); // 1000毫秒后执行
 			replyDetail.value=""
 			closeReply();
 			postCollectionCount.value++;
@@ -407,6 +417,12 @@
 					 await new Promise(resolve => setTimeout(resolve, 500)); // 等待0.5秒
 				}
 				fileList.value = [];
+				// 设置1秒后刷新页面
+				setTimeout(() => {
+					uni.redirectTo({
+						url: "/pages/community/post-detail?postId=" + postId.value,
+					});
+				}, 5000); // 1000毫秒后执行
 			}
 			
 			// 循环结束后执行
