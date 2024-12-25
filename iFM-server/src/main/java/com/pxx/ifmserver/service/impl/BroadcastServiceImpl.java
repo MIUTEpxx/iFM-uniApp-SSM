@@ -404,9 +404,9 @@ public class BroadcastServiceImpl implements BroadcastService {
         Map<String, Object> data = new HashMap<>();
         //单位 小时
         int hour = 72;
-        //获取近期(一星期以内)更新的至少88个节目
+        //获取近期(一个月以内)更新的至少88个节目
         List<Broadcast> broadcastList=new ArrayList<>();
-        while(broadcastList.size()<88 && hour<24*7){
+        while(broadcastList.size()<88 && hour<24*30){
             broadcastList=broadcastMapper.listBroadcastCtreateInHour(hour,89);
             hour+=6;
         }

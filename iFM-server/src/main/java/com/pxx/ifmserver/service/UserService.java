@@ -12,7 +12,7 @@ public interface UserService {
 
     List<User> listUser();
     Result getUserByUserId(Integer userId);
-    User getUserByUserEmail(String userEmail);
+    Result checkEmail(String userEmail);
     User getUserByUserName(String userName);
     Result updateUserNameByUserId(Integer userId, String userName);
     Result updateUserProfileByUserId(Integer userId, String userProfile);

@@ -417,6 +417,16 @@ export const loginEmail = (userEmail:string,code:string) =>{
 		data:{"userEmail":userEmail,"code":code},
 	})
 }
+
+//检查邮箱是否已被注册
+export const checkEmail = (email:string) =>{
+	return request({
+		url:'/user/checkEmail',
+		method:'get',
+		data:{"email":email},
+	})
+}
+
 //创建账号
 export const createUser = (userName:string,userPassword:string,userEmail:string,code:string) =>{
 	return request({

@@ -91,7 +91,21 @@
 		hasSubscribe.value=!hasSubscribe.value
 		//用户订阅/取消订阅
 		changeSubscribe(userStore.userId,props.channelId).then((res: any) => {
-			if(res.success===false){
+			if(res.success==true){
+				if(hasSubscribe.value==true){
+					uni.showToast({
+						title: "订阅成功",
+						icon: 'none',
+						duration: 1000
+					})
+				}else{
+					uni.showToast({
+						title: "取消订阅",
+						icon: 'none',
+						duration: 1000
+					})
+				}
+			}else{
 				uni.showToast({
 					title: res.message+'\n'+res.data.error,
 					icon: 'error',

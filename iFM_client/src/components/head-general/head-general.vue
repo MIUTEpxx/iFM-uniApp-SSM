@@ -50,7 +50,7 @@ import useBaseStore from '@/stores/base';
 		display: flex;
 		align-items: center;
 		padding: 20px;
-		background-color: #fff;
+		/* background-color: #fff; */
 		.home-button {
 			margin-left: 10px;
 			padding-bottom:5px;

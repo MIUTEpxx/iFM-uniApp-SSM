@@ -87,6 +87,18 @@ public class UserController {
     public Result getUserByKeyword(@RequestParam String keyword) {
         return userService.searchUser(keyword);
     }
+
+    /**
+     * 检查邮箱是否已被用户注册
+     * @param email
+     * @return
+     */
+    @GetMapping("/checkEmail")
+    public Result checkEmail(@RequestParam String email) {
+        return userService.checkEmail(email);
+    }
+
+
     /**
      * 创建新用户
      * @param userName

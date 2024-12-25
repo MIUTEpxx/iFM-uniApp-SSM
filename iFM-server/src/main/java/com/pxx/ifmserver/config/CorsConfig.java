@@ -28,7 +28,8 @@ public class CorsConfig {//跨域请求的配置
                 // 第二个源地址
                 "http://localhost:8081",
                 //第三个...
-                "http://localhost:5173"
+                "http://localhost:5173",
+                "http://localhost:8082"
         ));
         // 2 设置访问源请求头:允许所有的请求头
         corsConfiguration.addAllowedHeader("*");

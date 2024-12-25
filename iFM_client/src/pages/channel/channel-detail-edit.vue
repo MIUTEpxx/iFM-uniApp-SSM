@@ -57,18 +57,24 @@
 					</view>
 				</view>
 			</view>
-			<view class="channel-edit-introduction">
-				<view class="introduction-head">
-					<uv-text text="频道简介" color="#61b7f9" size="20px" bold="true" customStyle="margin:0 0 10px 10px;"></uv-text>
-					<view class="detail-edit-button" @click="openEditWindow(1)">
-						<uv-icon @click="" name="bianji" custom-prefix="custom-icon" color="#a3b2ca" size="45rpx"></uv-icon>
-						<uv-text class="edit-text" text="编辑简介" color="#a3b2ca" size="30rpx" ></uv-text>
+			
+			<view class="channel-edit-introduction-bg">
+				<view class="channel-edit-introduction">
+					<view class="introduction-head">
+						<uv-text text="频道简介" color="#61b7f9" size="20px" bold="true" customStyle="margin:0 0 10px 10px;"></uv-text>
+						<view class="detail-edit-button" @click="openEditWindow(1)">
+							<uv-icon @click="" name="bianji" custom-prefix="custom-icon" color="#a3b2ca" size="45rpx"></uv-icon>
+							<uv-text class="edit-text" text="编辑简介" color="#a3b2ca" size="30rpx" ></uv-text>
+						</view>
 					</view>
+					<uv-read-more ref="readMore" show-height="100px" :toggle="true" color="#61b7f9" shadowStyle="backgroundImage:none;">
+						<uv-parse class="content" :content="channelDetail.channelDetail" @load="load"></uv-parse>
+						<!-- <uv-text :text="channelDetail.channelDetail" color="#203d53" size="18px" customStyle="margin:0 5px 5px 10px;"></uv-text> -->
+					</uv-read-more>
 				</view>
-				<uv-read-more show-height="100px" :toggle="true" color="#61b7f9" shadowStyle="backgroundImage:none;">
-					<uv-text :text="channelDetail.channelDetail" color="#203d53" size="18px" customStyle="margin:0 5px 5px 10px;"></uv-text>
-				</uv-read-more>
 			</view>
+
+			
 			<view class="creat-new" @click="goCreationNew">
 				<view class="creat-title">
 					<p>节</p>
@@ -218,7 +224,7 @@
 <script setup lang="ts">
 	import { onLoad } from "@dcloudio/uni-app";
 	import { getBroadcastByChannel,getChannelDetail,checkSubscribe, changeSubscribe, deleteBroadcast, updateChannelTitle, updateChannelDetail, updateChannelPicture } from "@/request/api"; 
-	import { ref,watch } from 'vue';
+	import { nextTick, ref,watch } from 'vue';
 	import { changeTime } from "@/utils/timeChange"
 	import { numConversion} from '@/utils/numConversion';
 	import useBaseStores from '@/stores/base';
@@ -235,6 +241,8 @@
 	const popupEdit = ref<any>(null);
 	//修改确认弹窗
 	const popupConfirm = ref<any>(null);
+	//
+	const readMore = ref<any>(null)
 	
 	//是否处于删除状态
 	let inDelete =ref(false)
@@ -605,6 +613,14 @@
 	      }).catch((err: any) => {
 	          console.error('请求失败', err);
 	      });
+		  
+		  //
+		  nextTick(() => {
+		    if (readMore.value) {
+		      readMore.value.init();
+		  	/* console.log("readMore.value.init();") */
+		    }
+		  });
 	  });
 
 	const goCreationNew=()=>{
@@ -619,7 +635,11 @@
 		  url: "/pages/broadcast/broadcast-detail-edit?broadcastId="+item.broadcastId,
 		}); 
 	}
-	
+	const load =()=>{
+		setTimeout(()=>{
+			readMore.value.init();
+		},1000)
+	}
 </script>
 
 <style scoped>
@@ -654,28 +674,24 @@
 	}
 	.channel-edit-detail-body {
 		margin-top:20px;
-		margin: 0 10px 0 10px;
+		/* margin: 0 10px 0 10px; */
 	}
 	.channel-edit-detail-body  .channel-edit-subscribe {
 		display: flex;
 	    justify-content: space-between;
-	    align-items: center;		
-		
-		margin: 20px 10px 20px 10px;
-		
-		
+	    align-items: center;
+		margin: 25rpx ;
+		margin-top: 60rpx;
+		margin-bottom: 10rpx;
 	}
 	 .channel-edit-subscribe .subscribe-number{
 		display: flex;
 		align-items: center;
-		
 	}
 	 .channel-edit-subscribe .button {
 		display: flex;
 	    align-items: center;
 	    justify-content: space-around;	
-				
-		
 	}
 	 .channel-edit-subscribe .button .post {
 		flex: 0 0 30%;
@@ -688,12 +704,15 @@
 	 .channel-edit-subscribe .button  .post p{
 		font-size: 16px;
 	}
+	.channel-edit-introduction-bg {
+		background: #dce8f9;
+		padding: 25rpx 0;
+	}
 	.channel-edit-introduction {
-		margin: 20px 0 20px 0;
+		/* margin: 20px 0 20px 0; */
 		padding: 10px;
 		min-height: 100px;
-		box-shadow: 2px 2px 5px 2px #aebfd6;
-		border-radius: 10px;
+		background-color: #fff;
 	}
 	.introduction-head {
 		display: flex;
@@ -708,7 +727,8 @@
 	}
 	.creat-new {
 		display:flex;
-		margin: 35rpx 0 25rpx 0;
+		margin: 25rpx;
+		margin-top: 35rpx;
 		overflow: hidden;
 		/* width: 90%; */
 		border: 1px solid #a9bee4;
@@ -742,24 +762,30 @@
 	}
 	.broadcast-sort {
 		display: flex;
+		margin: 15rpx 25rpx;
 	}
 	.broadcast-scroll {
 		max-height: 500px;
-		margin-top: 10px;
+		/* margin-top: 10px; */
+		padding: 10rpx 0rpx;
 		padding-bottom: 110px;
 		overflow: hidden;
-		border-top: 3px dashed #9dcaf9;
+		/* border-top: 3px dashed #9dcaf9; */
+		background: #dce8f9;
 	}
 	.broadcast-item-list {
 		display: flex;
 	    align-items: center;
 	    justify-content: space-between;	
+		
 	}
 	.broadcast-item-list>*{
 		flex: 1;
 	}
 	.broadcast-item-list>.item{
 		flex: 9;
+		margin:10rpx;
+		
 	}
 	.delete-button {
 		display:flex;
@@ -769,6 +795,7 @@
 	}
 	.un-delete-button {
 		padding: 3px 5px;
+		margin-left: 25rpx;
 		color: #ff7d7d;
 		font-size: 22px;
 		border: 3px solid #ff7d7d;
@@ -776,6 +803,7 @@
 	}
 	.in-delete-button {
 		padding: 3px 5px;
+		margin-left: 25rpx;
 		color: white;
 		background-color: #ff7d7d;
 		font-size: 22px;

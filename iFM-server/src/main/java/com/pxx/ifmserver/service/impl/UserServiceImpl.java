@@ -60,9 +60,23 @@ public class UserServiceImpl implements UserService {
     public User getUserByUserName(String userName) {
         return userMapper.getUserByUserName(userName);
     }
+
     @Override
-    public User getUserByUserEmail(String userEmail){
-        return userMapper.getUserByUserEmail(userEmail);
+    public Result checkEmail(String userEmail){
+        Map<String, Object> data = new HashMap<>();
+        try{
+            User user = userMapper.getUserByUserEmail(userEmail);
+            if (user!=null){
+                data.put("hasRegistered",true);
+            } else {
+                data.put("hasRegistered",false);
+            }
+            return  Result.ok().data(data);
+        }catch (RuntimeException e){
+            data.put("error",e.getMessage());
+            Result result = new Result(false,20001,"未知错误, 邮箱检查失败",data);
+            return result;
+        }
     }
 
     /**

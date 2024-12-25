@@ -5,8 +5,9 @@
 		</view>
 		<view class="comment-content">
 			<uv-text class="user-name"  @click="goUserDetail" :lines="2" :text="props.userName" color="#2a3138"  size="16px" align="left"></uv-text>
-			<uv-read-more show-height="100rpx" :toggle="true" color="#61b7f9" closeText="显示全部" shadowStyle="backgroundImage:none;">
-				<uv-text class="content"  :text="props.commentDetail" color="#78889c"  size="14px" align="left"></uv-text>
+			<uv-read-more ref="readMore" show-height="100rpx" :toggle="true" color="#61b7f9" closeText="显示全部" shadowStyle="backgroundImage:none;">
+				<uv-parse class="content" :content="props.commentDetail" @load="load"></uv-parse>
+				<!-- <uv-text class="content"  :text="props.commentDetail" color="#78889c"  size="14px" align="left"></uv-text> -->
 			</uv-read-more>
 			<view class="comment-picture">
 				<uv-album :urls="commentImageList" singleSize="400rpx" multipleSize="200rpx" space="8rpx" maxCount="3"  singleMode="aspectFill"></uv-album>
@@ -41,7 +42,7 @@
 
 <script setup lang="ts">
 	import useBaseStore from "@/stores/base"
-	import { ref, watch } from "vue";
+	import { nextTick, ref, watch } from "vue";
 	import { changeTimeStamp } from "@/utils/timeChange"
 	import useUserStore from "@/stores/user";
 	import { changeCommentLike, getReplyByCommentId } from "@/request/api";
@@ -49,6 +50,9 @@
 	
 	const baseStore=useBaseStore();
 	const userStore=useUserStore()
+	//
+	const readMore =ref<any>(null);
+	
 	const props = defineProps({
 		showReply: {
 			type: Boolean,
@@ -146,6 +150,13 @@
 				console.error('评论下的回复数据获取请求失败', err); 
 			});
 		}
+		//
+		nextTick(() => {
+		  if (readMore.value) {
+		    readMore.value.init();
+			/* console.log("readMore.value.init();") */
+		  }
+		});
 	})
 	
 	// 监听 props 的变化并更新本地引用
@@ -220,6 +231,13 @@
 		uni.navigateTo({
 		  url: "/pages/user/user?userId="+props.userId,
 		});   
+	}
+	
+	//
+	const load =()=>{
+		setTimeout(()=>{
+			readMore.value.init();
+		},1000)
 	}
 </script>
 

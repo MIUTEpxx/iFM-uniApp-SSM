@@ -13,8 +13,9 @@
 			:postSection="post.postSection"></post-head>
 		</view>
 		<view class="post-detail-body">
-			<uv-read-more show-height="600rpx" :toggle="true" color="#61b7f9" closeText="显示全部">
-				<uv-text class="post-detail"  :text="post.postDetail" lineHeight="40rpx" color="#363e47"  size="16px"></uv-text>
+			<uv-read-more ref="readMore" show-height="600rpx" :toggle="true" color="#61b7f9" closeText="显示全部">
+				<uv-parse class="content" :content="post.postDetail" @load="load"></uv-parse>
+				<!-- <uv-text class="post-detail"  :text="post.postDetail" lineHeight="40rpx" color="#363e47"  size="16px"></uv-text> -->
 			</uv-read-more>
 		</view>
 		<view class="post-detail-picture" v-if="postImageList.length!=0">
@@ -40,6 +41,26 @@
 		></post-interaction>
 		<!-- 评论区 -->
 		<view class="post-comment-section">
+			<view class="comment-sort">
+				<!-- 评论排序 -->
+				<uv-text text="评论区" color="#61b7f9" size="24px"></uv-text>
+				<uv-tabs 
+				@click="sortMethodClick"
+				:list="[{name:'热门'},{name:'最近'},{name:'最早'}]"
+				lineWidth="20" 
+				lineColor="#61b7f9" 
+				:activeStyle="{
+					color: '#303133',
+					fontWeight: 'bold',
+					transform: 'scale(1.05)'
+				}"
+				:inactiveStyle="{
+					color: '#606266',
+					transform: 'scale(1)'
+				}" 
+				itemStyle="padding:0 5px 5px 5px; height: 34px;"
+				></uv-tabs>		
+			</view>
 			<comment-item 
 			v-for="(item,i) in commentList" :key="i" 
 			v-bind="item"
@@ -169,10 +190,11 @@
 <script setup lang="ts">
 	import { onLoad, onShow } from "@dcloudio/uni-app";
 	import useBaseStore from "@/stores/base"
-	import { ref } from "vue"; 
+	import { nextTick, ref } from "vue"; 
 	import { addComment, addImageForComment, addReply, checkPostCollection, getBroadcastDetail, getChannelDetail, getCommentByPostId, getPostByPostId, getReplyByCommentId } from "@/request/api";
 	import useUserStore from "@/stores/user";
 	import { logOut } from "@/utils/logOut";
+	import { sortCommentClick } from "@/utils/commentSort";
 	
 	const baseStore=useBaseStore();
 	const userStore=useUserStore();
@@ -195,6 +217,8 @@
 	const  popupRefComment = ref<any>(null);
 	//确认发布回复弹窗索引
 	const  popupRefReply = ref<any>(null);
+	//
+	const readMore =ref<any>(null);
 	
 	//评论文本内容
 	let commentDetail= ref("");
@@ -226,6 +250,14 @@
 	let currentCommentIndex = ref(0)
 	//当前回复的评论的id
 	let currentCommentId = ref(0)
+	
+	//当前排序方式
+	let currentSortMethod=ref(0)
+	//点击排序选项
+	const sortMethodClick =(e:any)=>{
+		currentSortMethod.value=e.index;
+		commentList.value = sortCommentClick(commentList.value,currentSortMethod.value)
+	}
 	
 	//打开发布回复弹窗
 	const openReply =  (item:any,index:number) => {
@@ -535,7 +567,9 @@
 		getCommentByPostId(postId.value).then((res:any)=>{
 			if(res.success==true){
 				commentList.value = res.data.commentList;
-				console.log(commentList.value);
+				/* console.log(commentList.value); */
+				//对评论进行排序
+				commentList.value = sortCommentClick(commentList.value,currentSortMethod.value)
 			}else{
 				uni.showToast({
 					title: res.message+'\n'+res.data.error,
@@ -565,8 +599,21 @@
 			});
 		}
 
+		//
+		nextTick(() => {
+		  if (readMore.value) {
+		    readMore.value.init();
+			/* console.log("readMore.value.init();") */
+		  }
+		});
 		
 	})
+	//
+	const load =()=>{
+		setTimeout(()=>{
+			readMore.value.init();
+		},1000)
+	}
 	
 </script>
 
@@ -602,6 +649,12 @@
 		min-height: 200rpx;
 		background: #dce8f9;
 		padding-top: 25rpx;
+	}
+	.post-comment-section .comment-sort {
+		display:flex;
+		margin-bottom: 25rpx;
+		padding: 15rpx;
+		background-color: #fff;
 	}
 	.more-reply-content .more-reply-scroll {
 		height: 950rpx;

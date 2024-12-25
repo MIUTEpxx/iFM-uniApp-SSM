@@ -14,11 +14,16 @@
 				<scroll-view scroll-y class="broadcast-scroll">
 					<view class="broadcast-item-list" v-for="(item,i) in broadcastList" :key="i" >
 						<broadcast-item class="item" v-bind="item" :showPlayButton="false"></broadcast-item>
+						<view class="current-play"  v-if="playerStore.playList[playerStore.currentIndex]==item.broadcastId">
+							<uv-text  text="当前正在播放" lineHeight="60rpx" color="#86c7f9"  size="28rpx" ></uv-text>
+							<uv-icon   name="play-right-fill" color="#89ccff" size="40rpx"></uv-icon>
+						</view>
 						<uv-icon  v-if="inDelete" @click="deleteBroacast(item,i)" name="trash" color="#ff7d7d" size="28"></uv-icon>	
 					</view>
 				</scroll-view>
 			</view>
 		</view>
+		<player-bar></player-bar>
 	</view>
 </template>
 
@@ -36,7 +41,7 @@ const playerStore = usePlayerStore()
 let inDelete =ref(false)
 
 //播放列表中的节目
-let broadcastList=ref([])
+let broadcastList=ref<any>([])
 
 const inDeleteClick =() =>{
 	inDelete.value=!inDelete.value
@@ -93,6 +98,7 @@ onShow(() => {
 		height: 100%;
 	}
 	.broadcast-scroll .broadcast-item-list {
+		position: relative;
 		display: flex;
 	    align-items: center;
 	    justify-content: space-between;	
@@ -100,8 +106,15 @@ onShow(() => {
 	.broadcast-item-list>*{
 		flex: 1;
 	}
-	.broadcast-item-list .item{
-		flex: 5;
+	.broadcast-item-list>.item{
+		flex: 9;
+	}
+	.broadcast-item-list .current-play {
+		position: absolute;
+		top:5rpx ;
+		right: 10rpx;
+		display: flex;
+		align-items: center;
 	}
 
 </style>

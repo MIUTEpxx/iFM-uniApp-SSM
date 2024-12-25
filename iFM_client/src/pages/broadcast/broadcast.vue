@@ -55,8 +55,9 @@
 		</view>
 		<view class="broadcast-detail-content">
 			<uv-text :lines="3" text="节目详情内容" color="#5cbaf9" size="20px" bold="true" customStyle="flex-direction: row-reverse;"></uv-text>
-			<uv-read-more show-height="300px" :toggle="true" color="#61b7f9" shadowStyle="backgroundImage:none;">
-				<uv-text :text="broadcast.broadcastDetail" color="#203d53" size="18px" customStyle="margin:15px 5px 5px 10px;"></uv-text>
+			<uv-read-more ref="readMore" show-height="300px" :toggle="true" color="#61b7f9" shadowStyle="backgroundImage:none;">
+				<uv-parse class="content" :content="broadcast.broadcastDetail" @load="load"></uv-parse>
+				<!-- <uv-text :text="broadcast.broadcastDetail" color="#203d53" size="18px" customStyle="margin:15px 5px 5px 10px;"></uv-text> -->
 			</uv-read-more>
 		</view>	
 		<player-bar></player-bar>
@@ -66,7 +67,7 @@
 <script  setup lang="ts">
 	import { onLoad } from "@dcloudio/uni-app";
 	import { getChannelDetail, getBroadcastDetail, checkCollect, changeFavorite } from "@/request/api"; 
-	import { ref,watch } from 'vue';
+	import { nextTick, ref,watch } from 'vue';
 	import { changeTime } from "@/utils/timeChange"
 	import { numConversion} from '@/utils/numConversion';
 	import { formatDuration} from '@/utils/durationFormatter';
@@ -81,6 +82,8 @@
 	const userStore = useUserStores();
 	//全局音频播放器
 	const playerStore= usePlayerStore();
+	//
+	const readMore = ref<any>(null);
 	
 	let broadcastId = ref(0);
 	//储存频道信息
@@ -160,7 +163,13 @@
 			  });
 		}        
 		
-		
+		//
+		nextTick(() => {
+		  if (readMore.value) {
+		    readMore.value.init();
+			/* console.log("readMore.value.init();") */
+		  }
+		});
 	});
 	//将音频添加至播放列表
 	const addPlayerList =()=>{
@@ -180,6 +189,12 @@
 		uni.navigateTo({
 		  url: "/pages/community/post-association?postAssociation=1&associationId="+broadcastId.value,
 		});   
+	}
+	
+	const load =()=>{
+		setTimeout(()=>{
+			readMore.value.init();
+		},1000)
 	}
 </script>
 

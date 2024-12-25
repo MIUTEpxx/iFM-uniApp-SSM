@@ -208,9 +208,9 @@ public class PostServiceImpl implements PostService {
         try {
             //单位 小时
             int hour = 72;
-            //获取近期(一星期以内)更新的至少88个帖子
+            //获取近期(一个月以内)更新的至少88个帖子
             List<Post> postIdList = new ArrayList<>();
-            while(postIdList.size()<88 && hour<24*7){
+            while(postIdList.size()<88 && hour<24*30){
                 postIdList = postMapper.listPostCtreateInHour(hour,89);
                 hour+=6;
             }

@@ -341,9 +341,9 @@ public class ChannelServiceImpl implements ChannelService {
         try {
             //单位 小时
             int hour = 72;
-            //获取近期(一星期以内)更新的至少88个频道
+            //获取近期(一个月以内)更新的至少88个频道
             List<Channel> channelList= new ArrayList<>();
-            while(channelList.size()<88 && hour<24*7){
+            while(channelList.size()<88 && hour<24*30){
                 channelList=channelMapper.listPopularChannel(hour, 89);
                 hour+=6;
             }

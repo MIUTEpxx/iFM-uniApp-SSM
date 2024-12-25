@@ -56,12 +56,16 @@
 					</view>
 				</view>
 			</view>
-			<view class="channel-introduction">
+			<view class="channel-introduction-bg">
+				<view class="channel-introduction">
 					<uv-text text="频道简介" color="#61b7f9" size="20px" bold="true" customStyle="margin:0 0 10px 10px;"></uv-text>
-				<uv-read-more show-height="100px" :toggle="true" color="#61b7f9" shadowStyle="backgroundImage:none;">
-					<uv-text :text="channelDetail.channelDetail" color="#203d53" size="18px" customStyle="margin:0 5px 5px 10px;"></uv-text>
-				</uv-read-more>
+					<uv-read-more ref="readMore" show-height="80px" :toggle="true" color="#61b7f9" shadowStyle="backgroundImage:none;">
+						<uv-parse class="content" :content="channelDetail.channelDetail" @load="load"></uv-parse>
+						<!-- <uv-text :text="channelDetail.channelDetail" color="#203d53" size="18px" customStyle="margin:0 5px 5px 10px;"></uv-text> -->
+					</uv-read-more>
+				</view>
 			</view>
+
 			<view class="broadcast-sort">
 				<uv-text :lines="3" text="单集节目" color="#61b7f9" size="24px"></uv-text>
 				<uv-tabs 
@@ -95,7 +99,7 @@
 <script setup lang="ts">
 	import { onLoad } from "@dcloudio/uni-app";
 	import { getBroadcastByChannel,getChannelDetail,checkSubscribe, changeSubscribe } from "@/request/api"; 
-	import { ref,watch } from 'vue';
+	import { nextTick, ref,watch } from 'vue';
 	import { changeTime } from "@/utils/timeChange"
 	import { numConversion} from '@/utils/numConversion';
 	import useBaseStores from '@/stores/base';
@@ -109,6 +113,9 @@
 	const userStore = useUserStores();
 	//排序方法
 	const list=[{name:'最新发布'},{name:'最早发布'},{name:'最多收藏'}];
+	//
+	const readMore = ref<any>(null);
+	//频道id
 	let channelId = ref(0);
 	//储存频道详情信息
 	let channelDetail = ref<any>([]);
@@ -200,6 +207,14 @@
 			  console.error('订阅数据请求失败', err); 
 			});
 		}
+		//
+		nextTick(() => {
+		  if (readMore.value) {
+		    readMore.value.init();
+			/* console.log("readMore.value.init();") */
+		  }
+		});
+		
 	  });
 	
 	const goPostAssociation =()=>{
@@ -213,6 +228,11 @@
 		  url: "/pages/user/user?userId="+channelDetail.value.userId,
 		});   
 	}
+	const load =()=>{
+		setTimeout(()=>{
+			readMore.value.init();
+		},5000)
+	}
 </script>
 
 <style>
@@ -221,86 +241,86 @@
 		align-items: center;
 		padding: 0 20px 0 20px;
 		height: 150px;
-		
-		.channel-info {
-			flex:0 0 65%;
-			
-			.other-info {				
-				display: flex;
-				justify-content: flex-start;
-				margin-top: 15px;
-				
-				.more-info {
-					padding:0 15px 5px 15px;
-				}
-			}
-		}
-		.channel-image {
-			position: relative;
-			flex:0 0 35%;
-			height: 0;
-			padding: 0;
-			padding-bottom: 35%; 
-		}
-		
+	}
+	
+	.channel-detail-head .channel-info {
+		flex:0 0 65%;
+	}
+	.channel-detail-head .channel-info .other-info {
+		display: flex;
+		justify-content: flex-start;
+		margin-top: 15px;
+	}
+	
+	.other-info .more-info {
+		padding:0 15px 5px 15px;
+	}
+	
+	.channel-detail-head .channel-image {
+		position: relative;
+		flex:0 0 35%;
+		height: 0;
+		padding: 0;
+		padding-bottom: 35%; 
 	}
 	
 	.channel-detail-body {
 		margin-top:20px;
-		margin: 0 10px 0 10px;
-		
-		.channel-subscribe {
-			display: flex;
-	        justify-content: space-between;
-	        align-items: center;		
-			
-			margin: 20px 10px 20px 10px;
-			
-			.subscribe-number{
-				display: flex;
-				align-items: center;
-		
-			}
-			.button {
-				display: flex;
-	            align-items: center;
-	            justify-content: space-around;	
-						
-				.post {
-					flex: 0 0 30%;
-					display: flex;
-	                flex-direction: column;
-	                align-items: center;
-					margin-left: 10px;
-					color: #407aa7;
-					
-					p{
-						font-size: 16px;
-					}
-					
-				}
-			}
-		}
-		
-		.channel-introduction {
-			margin: 20px 0 20px 0;
-			padding: 10px;
-			min-height: 100px;
-			box-shadow: 2px 2px 5px 2px #aebfd6;
-			border-radius: 10px;
-		}
-		
-		.broadcast-sort {
-			display: flex;
-		}
-		.broadcast-scroll {
-			max-height: 500px;
-			margin-top: 10px;
-			padding-bottom: 110px;
-			overflow: hidden;
-			border-top: 3px dashed #9dcaf9;
-		}
+		/* margin: 0 10px 0 10px; */
 	}
 	
+	.channel-detail-body .channel-subscribe {
+		display: flex;
+	    justify-content: space-between;
+	    align-items: center;		
+		margin: 25rpx;
+	}
+	.channel-detail-body .channel-subscribe .subscribe-number{
+		display: flex;
+		align-items: center;
+	}
+	.channel-detail-body .channel-subscribe .button {
+		display: flex;
+	    align-items: center;
+	    justify-content: space-around;	
+	}
+	
+	.channel-detail-body .channel-subscribe .button .post {
+		flex: 0 0 30%;
+		display: flex;
+	    flex-direction: column;
+	    align-items: center;
+		margin-left: 10px;
+		color: #407aa7;
+	}
+	
+	.channel-detail-body .channel-subscribe .button .post p{
+		font-size: 16px;
+	}
+	
+	.channel-introduction-bg {
+		background: #dce8f9;
+		padding: 25rpx 0;
+	}
+	.channel-introduction {
+		/* margin: 20px 0 20px 0; */
+		padding: 10px;
+		min-height: 100px;
+		background-color: #fff;
+	}
+	
+	.broadcast-sort {
+		display: flex;
+		margin: 20rpx 15rpx;
+	}
+	.broadcast-scroll {
+		max-height: 500px;
+		/*margin-top: 10px; */
+		padding: 20rpx 0rpx;
+		padding-bottom: 110px;
+		overflow: hidden;
+		/* border-top: 3px dashed #9dcaf9; */
+		background: #dce8f9;
+	}
 	
 </style>

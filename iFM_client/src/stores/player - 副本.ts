@@ -45,11 +45,6 @@ export const usePlayerStore = defineStore('Player',{
   actions: {
 	 // 播放列表里面添加音乐
 		pushPlayList(replace: boolean, list: number[]) {
-			let willPlay = <boolean>false;
-			if(this.playList.length==0){
-				//若播放列表为空,则直接播放加入列表的第一个节目
-				willPlay = true;
-			}
 			if (replace) {
 				//直接替换播放列表
 				this.playList = list;
@@ -60,21 +55,11 @@ export const usePlayerStore = defineStore('Player',{
 				  this.playList.push(audio);
 				}
 			})
-			if(willPlay==true){
-				//播放列表中的第一个节目
-				this.play(this.playList[0]);
-				willPlay = false;
-			}
 		},
 		 // 删除播放列表中某节目
 		deleteBroadcast(id: number) {
-			let currenBroadcastId = this.playList[this.currentIndex]
-		    this.playList = this.playList.filter((boadcastId: number) => boadcastId !== id);
-			if(currenBroadcastId==id){
-				//如果删除的是当前正在播放的节目, 则播放下一个节目
-				this.currentIndex--;
-				 this.next();
-			}
+		     this.playList = this.playList.filter((boadcastId: number) => boadcastId !== id);
+			 
 		},
 		// 清空播放列表
 		clearPlayList() {
@@ -226,22 +211,17 @@ export const usePlayerStore = defineStore('Player',{
 				//随机播放
                 this.randomPlay();
             } else {
-				if(this.playList.length==0) {
-					//播放列表为空
-					//清空当前播放节目的信息
-					this.clearPlayList();
-				}
-                else if(this.currentIndex+1 >= this.playList.length) {
+                if(this.currentIndex+1 >= this.playList.length) {
 					//现在已经是播放列表中最后一个节目了
                    /* uni.showToast({
                         icon: "none",
                         title: "没有下一首"
                     })
 					this.clearPlayList() */
-/* 					uni.showToast({
+					uni.showToast({
 					     icon: "none",
 					     title: "播放列表第一个节目"
-					 }) */
+					 })
 					this.currentIndex=0;
 					this.play(this.playList[0]);
                 }else{

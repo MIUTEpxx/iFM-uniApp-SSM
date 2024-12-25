@@ -36,7 +36,7 @@
 			<view class="input-email" v-else>
 				 <view class="input">
 				 	<p>邮箱:</p>
-				 	<uv-input v-model="userEmail" placeholder="请输入内容" border="bottom" fontSize="20px" clearable='true'></uv-input>
+				 	<uv-input v-model="userEmail" placeholder="请输入内容邮箱" border="bottom" fontSize="20px" clearable='true'></uv-input>
 				 </view>
 				 <view class="input">
 				 	<p>验证码:</p>
@@ -80,7 +80,7 @@
 
 <script setup lang="ts" >
 	import { ref } from 'vue';
-	import { loginEmail,loginPassword,getVCode } from "@/request/api";
+	import { loginEmail,loginPassword,getVCode, checkEmail } from "@/request/api";
 	import useUserStore from '@/stores/user';
 	
 	const userStroe =useUserStore()
@@ -125,6 +125,31 @@
 			}) 
 			return;
 		}
+		//检查邮箱是否已被注册,再决定是否要发送验证码
+		checkEmail (userEmail).then((res:any) => {
+			console.log(res);
+			if(res.success == true){
+				if(res.data.hasRegistered == false) {
+					//邮箱未经注册, 不发送验证码
+					uni.showToast({
+						title: '该邮箱未注册',
+						icon: 'error',
+						duration: 2000
+					}) 
+					return;
+				}
+			}else{
+				uni.showToast({
+					title: res.message+'\n'+res.data.error,
+					icon: 'error',
+					duration: 3000
+				}) 
+				return;
+			}
+		}).catch((err:any) => { 
+		  console.error('邮箱检查请求失败', err); 
+		});
+		
 		getVCode (userEmail).then((res:any) => {
 			if(res.code===20000){
 				//验证码发送成功
@@ -187,7 +212,16 @@
 				}) 
 				return;
 			}
-			
+			//账号不能包含数字以外的字符
+			console.log(isUserIdNumeric(userId));
+			if(isUserIdNumeric(userId)==false){
+				uni.showToast({
+					title: '账号错误',
+					icon: 'error',
+					duration: 2000
+				}) 
+				return;
+			}
 			loginPassword (userId,userPassword).then((res:any) => {
 				userInfo.value=res.data.user
 				//console.log("userInfo",userInfo.value)
@@ -250,6 +284,12 @@
 			});
 		}
 	}
+	
+	// 检测userId是否只包含数字
+	function isUserIdNumeric(id: string): boolean {
+	  return /^\d+$/.test(id);
+	}
+	
 	
 	
 </script>
