@@ -20,7 +20,7 @@
 			</view>
 			<view class="user-info">
 				<span>邮箱:</span>
-				<uv-text :text="userStore.userEmail" color="#5d5d5d"  size="20px"></uv-text>
+				<uv-text lines="3" :text="userStore.userEmail" color="#5d5d5d"  size="20px"></uv-text>
 				<uv-icon @click="editUserEmailClick" name="bianji" custom-prefix="custom-icon" color="#a3b2ca" size="30px"></uv-icon>
 			</view>
 			<view class="user-info">
@@ -144,9 +144,11 @@ onShow(()=>{
 		color: #7ab7e6;
 	}
 	.overlay {
+		z-index: 100;
 		position: relative;	
 	}
 	.overlay .overlay-content{
+		z-index: 100;
 		position: absolute;
 		top: 20%;
 		left: 50%; /* 设置 left 为 50% */

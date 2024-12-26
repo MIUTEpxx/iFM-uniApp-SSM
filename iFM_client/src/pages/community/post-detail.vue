@@ -540,6 +540,7 @@
 					associationId.value=post.value.associationId
 					getBroadcastDetail(associationId.value).then((res:any)=>{
 						if(res.success==true){
+							console.log(res);
 							association.value=res.data.broadcast
 						}else{
 							uni.showToast({

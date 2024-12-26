@@ -74,17 +74,22 @@ let vCode1=''
 let vCode2=''
 
 const getVCodeClick1 =()=>{
+	if (!canSendVCode1.value) {
+	   // 如果不能发送验证码，直接返回
+	   return;
+	 }
 	getVCodeFunc(userStore.userEmail,1);
 }
 const getVCodeClick2 =()=>{
+	if (!canSendVCode2.value) {
+	   // 如果不能发送验证码，直接返回
+	   return;
+	 }
 	getVCodeFunc(newEmail,2);
 }
 // 获取验证码
 const getVCodeFunc =(userEmail:string,index:number) =>{
-	 if (!canSendVCode1.value) {
-	    // 如果不能发送验证码，直接返回
-	    return;
-	  }
+
 	if(userEmail.trim().length <= 0){
 		uni.showToast({
 			title: '邮箱不能为空',
@@ -93,17 +98,17 @@ const getVCodeFunc =(userEmail:string,index:number) =>{
 		}) 
 		return;
 	}
+	// 开始倒计时
+	if(index===1){startCountdown1();}
+	else {startCountdown2();}
 	getVCode (userEmail).then((res:any) => {
-		if(res.code===20000){
+		if(res.success==true){
 			//验证码发送成功
 			uni.showToast({
 				title: "验证码发送成功!",
 				icon: 'success',
 				duration: 2000
 			}) 
-			// 开始倒计时
-			if(index===1){startCountdown1();}
-			else {startCountdown2();}
 		}else{
 			uni.showToast({
 				title: res.message+'\n'+res.data.error,
@@ -170,15 +175,19 @@ const confirmClick =()=>{
 		return;
 	}
 	changeUserEmail(userStore.userId,userStore.userEmail,newEmail,vCode1,vCode2).then((res:any)=>{
+		//清空验证码
+		vCode1=''
+		vCode2=''
 		if(res.success==true){
-			//修改成功
-			props.cancelClick()
 			userStore.userEmail=newEmail
+			//修改成功
 			uni.showToast({
 				title: "邮箱修改成功!",
 				icon: 'success',
 				duration: 2000
 			}) 
+			//关闭弹窗
+			props.cancelClick()
 		}else{
 			uni.showToast({
 				title: res.message+'\n'+res.data.error,

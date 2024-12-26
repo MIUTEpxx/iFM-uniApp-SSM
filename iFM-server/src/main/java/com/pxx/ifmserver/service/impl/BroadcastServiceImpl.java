@@ -2,6 +2,7 @@ package com.pxx.ifmserver.service.impl;
 
 import com.pxx.ifmserver.entity.dto.*;
 import com.pxx.ifmserver.entity.vo.BroadcastItemVO;
+import com.pxx.ifmserver.entity.vo.BroadcastVO;
 import com.pxx.ifmserver.mapper.BroadcastMapper;
 import com.pxx.ifmserver.mapper.ChannelMapper;
 import com.pxx.ifmserver.mapper.UserMapper;
@@ -44,7 +45,12 @@ public class BroadcastServiceImpl implements BroadcastService {
     public Result getBroadcastByBroadcastId(Integer broadcastId){
         Map<String, Object> data = new HashMap<>();
         try {
-            data.put("broadcast",broadcastMapper.getBroadcastByBroadcastId(broadcastId));
+            Broadcast broadcast = broadcastMapper.getBroadcastByBroadcastId(broadcastId);
+            Channel channel = channelMapper.getChannelByChannelId(broadcast.getChannelId());
+            BroadcastVO broadcastVO = new BroadcastVO();
+            broadcastVO.setBroadcast(broadcast);
+            broadcastVO.setChannelTitle(channel.getChannelTitle());
+            data.put("broadcast",broadcastVO);
             return Result.ok().data(data);
         }catch (DuplicateKeyException e){
             data.put("error", e.getMessage());

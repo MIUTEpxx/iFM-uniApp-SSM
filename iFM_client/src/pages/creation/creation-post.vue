@@ -84,14 +84,14 @@
 					<span>+</span>
 				</view>
 				<channel-item 
-				class="choose-association" 
+				class="choose-association_" 
 				v-else-if="associationType==0"  
 				:enableComponentClick="false" 
 				:showSubscribeButton="false" 
 				@click="goAssociationChoose" 
 				v-bind="association"></channel-item>
 				<broadcast-item 
-				class="choose-association" 
+				class="choose-association_" 
 				v-else-if="associationType==1"  
 				:enableComponentClick="false"
 				:showPlayButton="false" 
@@ -382,6 +382,14 @@
 		align-items: center;
 		margin: 15rpx 15rpx;
 		background: #d7e3ee;
+		height: 200rpx;
+		border-radius: 15rpx;
+	}
+	.creation-post-body .post-association .choose-association_ {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 15rpx 15rpx;
 		height: 200rpx;
 		border-radius: 15rpx;
 	}

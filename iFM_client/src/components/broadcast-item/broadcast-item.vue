@@ -95,7 +95,7 @@
 		border: 2px solid #cae0f1;
 		border-radius: 10px;
 		overflow: hidden;
-		background-color: #fff;
+		background: #fff;
 	}
 	.broadcast-item ._image {
 		/* flex: 0 0 30%; */

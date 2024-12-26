@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
     public Result updateUserEmail(Integer userId, String userEmail, String newEmail,  String code1,String code2){
         Map<String, Object> data = new HashMap<>();
         try{
-            User user=userMapper.getUserByUserEmail(userEmail);
+            User user=userMapper.getUserByUserEmail(newEmail);
             if(user!=null){
                 data.put("error","该邮箱已被其他用户绑定");
                 return new Result(false,50002,"修改失败",data);

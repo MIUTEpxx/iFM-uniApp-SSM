@@ -57,12 +57,15 @@ const props = defineProps({
     required: true
   },
 });
+
 // 获取验证码按钮点击事件
 	const getVCodeClick =() =>{
 		 if (!canSendVCode.value) {
 		    // 如果不能发送验证码，直接返回
 		    return;
 		  }
+		  // 开始倒计时
+		  startCountdown();
 		getVCode (userStore.userEmail).then((res:any) => {
 			if(res.code===20000){
 				//验证码发送成功
@@ -71,8 +74,6 @@ const props = defineProps({
 					icon: 'success',
 					duration: 2000
 				}) 
-				// 开始倒计时
-				startCountdown();
 			}else{
 				uni.showToast({
 					title: res.message+'\n'+res.data.error,
@@ -111,15 +112,6 @@ const confirmClick =()=>{
 		}) 
 		return;
 	}
-	//检查密码格式是否正确
-	if(!checkPassword(newUserPassword1.value,newUserPassword2.value)){
-		uni.showToast({
-			title: '密码格式有误',
-			icon: 'error',
-			duration: 2000
-		}) 
-		return;
-	}
 	if(newUserPassword1.value.trim().length <= 0||
 	newUserPassword2.value.trim().length <= 0||
 	vCode.value.trim().length <= 0){
@@ -130,16 +122,28 @@ const confirmClick =()=>{
 		}) 
 		return;
 	}
+	//检查密码格式是否正确
+	if(!checkPassword(newUserPassword1.value,newUserPassword2.value)){
+		uni.showToast({
+			title: '密码格式有误',
+			icon: 'error',
+			duration: 2000
+		}) 
+		return;
+	}
+
 	changeUserPassword(userStore.userId,newUserPassword1.value,userStore.userEmail,vCode.value).then((res:any)=>{
+		//清空验证码
+		vCode.value=""
 		if(res.success==true){
 			//修改成功
-			props.cancelClick()
-			userStore.userName=newUserName.value
 			uni.showToast({
-				title: "昵称修改成功!",
+				title: "密码修改成功!",
 				icon: 'success',
 				duration: 2000
 			}) 
+			userStore.userName=newUserName.value
+			props.cancelClick()
 		}else{
 			uni.showToast({
 				title: res.message+'\n'+res.data.error,
@@ -148,6 +152,7 @@ const confirmClick =()=>{
 			}) 
 		}
 	})
+
 }
 </script>
 

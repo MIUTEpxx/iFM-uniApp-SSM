@@ -137,6 +137,26 @@
 						duration: 2000
 					}) 
 					return;
+				}else{
+					//若邮箱注册,则向其发送验证码
+					getVCode (userEmail).then((res:any) => {
+						if(res.success==true){
+							//验证码发送成功
+							uni.showToast({
+								title: "验证码发送成功!",
+								icon: 'success',
+								duration: 2000
+							}) 
+						}else{
+							uni.showToast({
+								title: res.message+'\n'+res.data.error,
+								icon: 'error',
+								duration: 3000
+							}) 
+						}
+					}).catch((err:any) => { 
+					  console.error('验证码发送请求失败', err); 
+					});
 				}
 			}else{
 				uni.showToast({
@@ -149,27 +169,8 @@
 		}).catch((err:any) => { 
 		  console.error('邮箱检查请求失败', err); 
 		});
-		
-		getVCode (userEmail).then((res:any) => {
-			if(res.code===20000){
-				//验证码发送成功
-				uni.showToast({
-					title: "验证码发送成功!",
-					icon: 'success',
-					duration: 2000
-				}) 
-				// 开始倒计时
-				startCountdown();
-			}else{
-				uni.showToast({
-					title: res.message+'\n'+res.data.error,
-					icon: 'error',
-					duration: 3000
-				}) 
-			}
-		}).catch((err:any) => { 
-		  console.error('验证码发送请求失败', err); 
-		});
+		// 开始倒计时
+		startCountdown();
 	}
 	
 	// 开始倒计时

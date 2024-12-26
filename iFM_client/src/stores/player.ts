@@ -69,11 +69,17 @@ export const usePlayerStore = defineStore('Player',{
 		 // 删除播放列表中某节目
 		deleteBroadcast(id: number) {
 			let currenBroadcastId = this.playList[this.currentIndex]
+			if( this.currentIndex>this.playList.indexOf(id) ) {
+				//如果删除了播放列表中, 在当前播放的节目之前的节目, 则应修改当前播放节目的索引值
+				this.currentIndex--;
+			}	
 		    this.playList = this.playList.filter((boadcastId: number) => boadcastId !== id);
+			// console.log("currentIndex",this.currentIndex)
+			// console.log("indexOf(id)",this.playList.indexOf(id))
 			if(currenBroadcastId==id){
 				//如果删除的是当前正在播放的节目, 则播放下一个节目
 				this.currentIndex--;
-				 this.next();
+				this.next();
 			}
 		},
 		// 清空播放列表
@@ -107,7 +113,7 @@ export const usePlayerStore = defineStore('Player',{
 			this.authorName=broadcast.userName
 			this.channelTitle=broadcast.channelTitle
 			this.currentTime=broadcast.lastListenDuration
-			console.log("setBroadcastInfo",broadcast)
+			//console.log("setBroadcastInfo",broadcast)
 		},
 		 // 播放节目(节目id)
 		async play(broadcastId: number) {
@@ -145,7 +151,7 @@ export const usePlayerStore = defineStore('Player',{
 				//再次更新当前播放的节目在播放列表中的索引
 				this.currentIndex= this.playList.indexOf(broadcastId);
 			}
-		    console.log('play')
+		    // console.log('play')
 		   
 		    
 		    const audio = getPlayer();//获取全局播放器实例
@@ -158,7 +164,7 @@ export const usePlayerStore = defineStore('Player',{
 		            audio.epname = this.channelTitle;   // 频道标题
 		            audio.coverImgUrl = this.baseUrl+this.broadcastPicture;  //封面图片
 		        }
-				console.log(this.baseUrl+this.broadcastAudio);
+				//console.log(this.baseUrl+this.broadcastAudio);
 				//设置音源
 				//console.log("audio",audio)
 		        audio.src = this.baseUrl+this.broadcastAudio;
@@ -222,6 +228,7 @@ export const usePlayerStore = defineStore('Player',{
 		 },
         // 下一曲
         next() {
+			if(this.playList.length==1&&this.currentIndex==0){return}
             if (this.loopType === 2) {
 				//随机播放
                 this.randomPlay();
@@ -233,15 +240,6 @@ export const usePlayerStore = defineStore('Player',{
 				}
                 else if(this.currentIndex+1 >= this.playList.length) {
 					//现在已经是播放列表中最后一个节目了
-                   /* uni.showToast({
-                        icon: "none",
-                        title: "没有下一首"
-                    })
-					this.clearPlayList() */
-/* 					uni.showToast({
-					     icon: "none",
-					     title: "播放列表第一个节目"
-					 }) */
 					this.currentIndex=0;
 					this.play(this.playList[0]);
                 }else{
@@ -252,6 +250,7 @@ export const usePlayerStore = defineStore('Player',{
         },
         // 上一曲
         prev() {
+			if(this.playList.length==1&&this.currentIndex==0){return}
             if(this.currentIndex <= 0) {
                /* uni.showToast({
                     icon: "none",

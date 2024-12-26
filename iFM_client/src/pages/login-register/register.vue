@@ -94,16 +94,16 @@
 			}) 
 			return;
 		}
+		// 开始倒计时
+		startCountdown();
 		getVCode (userEmail).then((res:any) => {
-			if(res.code===20000){
+			if(res.code==true){
 				//验证码发送成功
 				uni.showToast({
 					title: "验证码发送成功!",
 					icon: 'success',
 					duration: 2000
 				}) 
-				// 开始倒计时
-				startCountdown();
 			}else{
 				uni.showToast({
 					title: res.message+'\n'+res.data.error,

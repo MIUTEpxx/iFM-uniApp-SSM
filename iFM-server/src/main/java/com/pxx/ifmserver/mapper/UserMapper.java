@@ -95,7 +95,7 @@ public interface UserMapper {
      * @param userEmail 用户新邮箱
      * @return 被修改的行数,期望为1,错误为0
      */
-    @Update("UPDATE user SET user_emali = #{userEmail} WHERE user_id = #{userId}")
+    @Update("UPDATE user SET user_email = #{userEmail} WHERE user_id = #{userId}")
     int updateUserEmailByUserId(Integer userId, String userEmail);
 
     /**
@@ -122,6 +122,6 @@ public interface UserMapper {
      * @param userPassword 用户新密码
      * @return 被修改的行数,期望为1,错误为0
      */
-    @Update("UPDATE user SET user_password = #{user_password} WHERE user_id = #{userId}")
+    @Update("UPDATE user SET user_password = #{userPassword} WHERE user_id = #{userId}")
     int updateUserPasswordByUserId(Integer userId, String userPassword);
 }
