@@ -143,6 +143,7 @@
 			        console.error('频道数据请求失败', err);
 			      });
 			    }
+			 readMore.value.init();	
 		}).catch((err:any) => {
 		  console.error('节目数据请求失败', err); 
 		});
@@ -166,7 +167,7 @@
 		//
 		nextTick(() => {
 		  if (readMore.value) {
-		    readMore.value.init();
+		   /* readMore.value.init(); */
 			/* console.log("readMore.value.init();") */
 		  }
 		});
@@ -190,7 +191,7 @@
 		  url: "/pages/community/post-association?postAssociation=1&associationId="+broadcastId.value,
 		});   
 	}
-	
+	//
 	const load =()=>{
 		setTimeout(()=>{
 			readMore.value.init();

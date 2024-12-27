@@ -1,6 +1,6 @@
 <template>
 	<view class="user">
-		<head-general titleContent="用户详情"></head-general>
+		<head-general titleContent="用户详情" style="background-color: #fff;"></head-general>
 		<view class="user-head">
 			<my-head v-bind="user" :isMyUser="false"></my-head>
 			<view class="show-content-tbs">

@@ -212,12 +212,14 @@ onShow(() => {
 	
 const goCreationNew	=()=>{
 	if(showContent.value==0){
+			//频道创建页
 		uni.navigateTo({
 		  url: "/pages/creation/creation-channel",
 		}); 
 	} else {
+		//帖子创建页
 		uni.navigateTo({
-		  url: "/pages/creation/creation-post",
+		   url: '/pages/creation/creation-post?associationType='+-1+'&associationId='+-1,
 		}); 
 	}
  

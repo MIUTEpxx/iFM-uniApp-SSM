@@ -454,14 +454,14 @@
 					uni.redirectTo({
 						url: "/pages/community/post-detail?postId=" + postId.value,
 					});
-				}, 5000); // 1000毫秒后执行
+				}, 2000); // 1000毫秒后执行
 			}
 			
 			// 循环结束后执行
 			await uni.showToast({
 				title: '评论发布成功!',
 				icon: 'none',
-				duration: 3000
+				duration: 2000
 			});
 			//清空输入的评论内容
 			commentDetail.value="" ;
