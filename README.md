@@ -1,6 +1,8 @@
 # iFM uniApp+SpringBoot
  播客App 前后端分离移动端项目
 
+仓库地址:[MIUTEpxx/iFM-uniApp-SpringBoot: 播客App 前后端分离小程序项目](https://github.com/MIUTEpxx/iFM-uniApp-SpringBoot?tab=readme-ov-file)
+
 **前端:**
 
 uni-app + Vue3 + Typescript + Pinia + Vite
