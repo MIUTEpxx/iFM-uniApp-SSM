@@ -244,6 +244,14 @@ export const getBroadcastAudio = (userId:number,broadcastId:number) =>{
 		data:{"userId":userId,"broadcastId":broadcastId},
 	})
 }
+//增加节目播放量
+export const increasePlayCount = (broadcastId:number) =>{
+	return request({
+		url:'/broadcast/increasePlayCount',
+		method:'post',
+		data:{broadcastId:broadcastId},
+	})
+}
 //更新节目收听历史记录
 export const updateHistory = (userId:number,broadcastId:number,lastListenDuraction:number) =>{
 	return request({

@@ -64,7 +64,7 @@ onShow(() => {
 	//获取用户收藏的节目
 	 getHistory(userStore.userId).then((res:any) => {
 		broadcastList.value=res.data.broadcastList
-		//console.log("broadcastList",res.data)
+		console.log("broadcastList",res.data)
 	}).catch((err:any) => { 
 	  console.error('收藏的节目数据请求失败', err); 
 	});

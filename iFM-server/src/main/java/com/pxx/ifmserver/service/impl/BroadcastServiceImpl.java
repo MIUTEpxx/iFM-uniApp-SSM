@@ -574,9 +574,10 @@ public class BroadcastServiceImpl implements BroadcastService {
             for(BroadcastHistory broadcastHistory:broadcastHistoryList){
                 //整合节目基础数据
                 Broadcast broadcast=broadcastMapper.getBroadcastByBroadcastId(broadcastHistory.getBroadcastId());
+                if(broadcast==null){continue;}
                 BroadcastItemVO broadcastItemVO=new BroadcastItemVO();
                 broadcastItemVO.setBroadcast(broadcast);
-                //获取上次收听到的上次
+                //获取上次收听到的时长
                 broadcastItemVO.setLastListenDuration(broadcastHistory.getLastListenDuration());
                 //获取上次收听的时间戳
                 broadcastItemVO.setHitoryTime(broadcastHistory.getHistoryTime().toInstant(ZoneOffset.of("+8")).toEpochMilli());

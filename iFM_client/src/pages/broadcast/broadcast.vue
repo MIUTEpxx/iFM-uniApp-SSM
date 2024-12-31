@@ -192,11 +192,11 @@
 		});   
 	}
 	//
-	const load =()=>{
+/* 	const load =()=>{
 		setTimeout(()=>{
 			readMore.value.init();
 		},1000)
-	}
+	} */
 </script>
 
 <style>

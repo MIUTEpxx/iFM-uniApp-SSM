@@ -2,7 +2,7 @@ import { defineStore, storeToRefs } from 'pinia'
 import { getPlayer } from '@/utils/initPlayer';
 import { onUnmounted, ref, watch } from 'vue';
 import useBaseStore from '@/stores/base'
-import { getBroadcastAudio, updateHistory } from "@/request/api"; 
+import { getBroadcastAudio, increasePlayCount, updateHistory } from "@/request/api"; 
 import useUserStore from './user';
 // 定义频道数据结构
 /* interface IBroadcastAudio {
@@ -131,6 +131,20 @@ export const usePlayerStore = defineStore('Player',{
 			getBroadcastAudio(userStore.userId,broadcastId).then((res: any) => {
 					if(res.success===true){
 						this.setBroadcastInfo(res.data.broadcast)
+						//增加节目播放量
+						increasePlayCount(res.data.broadcast.broadcastId).then((res: any) => {
+							if(res.success!=true){
+								uni.showToast({
+									title: res.message+'\n'+res.data.error,
+									icon: 'error',
+									duration: 3000
+								})
+							}
+						}).catch((err: any) => {
+							console.error('节目播放量增加请求失败', err);
+							this.isPlaying = true;//是否播放中
+							return
+						});
 					}else{
 						uni.showToast({
 							title: res.message+'\n'+res.data.error,
